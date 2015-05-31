@@ -441,18 +441,16 @@ function f_liste(interpreteur,token,params) { /*******************************/
         if (params[i].numero<token.numero) v=s+' '+v; else v=v+s+' ';
     }
     i=0;s='';n=0;
-    tr='mot';
+    tr='?';
     while (i<params.length) {
         if (params[i].numero>n) n = params[i].numero;
         try {
             switch (token.procedure.code) {
-                case 'COMPTE':  t = params[0].split();
-                                //else t = params[0].valeur.split('');                                    
+                case 'COMPTE':  t = params[0].split();                                                            
                                 s=t.length;
                                 tr='nombre';                     
                                 break;                 
-                case 'DERNIER': if (params[0].est_liste()) t = params[0].valeur.trim().split(/[\s,]+/);
-                                else t = params[0].valeur.split('');                                    
+                case 'DERNIER': t = params[0].split();                                     
                                 if (t.length>0) {
                                     s = t[t.length - 1];
                                 } else {
@@ -464,8 +462,7 @@ function f_liste(interpreteur,token,params) { /*******************************/
                                 }                           
                                 break;                
                 case 'ITEM':    if (i==1) {
-                                    if (params[1].est_liste()) t = params[1].valeur.trim().split(/[\s,]+/);
-                                    else t = params[1].valeur.split('');
+                                    t = params[1].split(); 
                                     params[0].valeur = Math.floor(params[0].valeur - 1);
                                     if ((params[0].valeur>=0) && (t.length>params[0].valeur)) {
                                         s = t[params[0].valeur];
@@ -496,8 +493,7 @@ function f_liste(interpreteur,token,params) { /*******************************/
                                     default           : break;                                    
                                 }                                
                                 break;                                 
-                case 'PREMIER': if (params[0].est_liste()) t = params[0].valeur.trim().split(/[\s,]+/);
-                                else t = params[0].valeur.split('');                                    
+                case 'PREMIER': t = params[0].split();                                    
                                 if (t.length>0) {
                                     s = t[0];                                    
                                 } else {
@@ -509,9 +505,9 @@ function f_liste(interpreteur,token,params) { /*******************************/
                                 }                           
                                 break;
                 case 'SP':      if (params[0].est_liste()) {
-                                    t = params[0].valeur.trim().split(/[\s,]+/);
+                                    t = params[0].split(); 
                                     tr='liste';
-                                } else t = params[0].valeur.split('');                                    
+                                } else t = params[0].split();                                   
                                 if (t.length>0) {
                                     s=''
                                     for (i=1;i<t.length;i++) {
@@ -528,9 +524,9 @@ function f_liste(interpreteur,token,params) { /*******************************/
                                 }  
                                 break;
                 case 'SD':      if (params[0].est_liste()) {
-                                    t = params[0].valeur.trim().split(/[\s,]+/);
+                                    t = params[0].split(); 
                                     tr='liste';
-                                } else t = params[0].valeur.split('');                                    
+                                } else t = params[0].split();                                  
                                 if (t.length>0) {
                                     s=''
                                     for (i=0;i<t.length-1;i++) {
@@ -842,7 +838,14 @@ function f_si(interpreteur,token,params) { /**********************************/
         if ((ret) && (ret.type=='erreur')) {
             return ret;
         }        
-        //if ((interpreteur.dernier_token.type!=='eop') && (! interpreteur.analyseur_lexical.fin_analyse)) interpreteur.analyseur_lexical.back(1);
+        if (interpreteur.dernier_token.type!=='eop') {                
+            var l = interpreteur.pile_fun.length;            
+            if (l==0) {
+                if (! interpreteur.analyseur_lexical.fin_analyse) interpreteur.analyseur_lexical.back(1);                       
+            } else {
+                    if (interpreteur.pile_fun[l-1].index>0) interpreteur.pile_fun[l-1].index--;                                                        
+                }            
+        }       
         interpreteur.dernier_token = new Token('eop','');               
     } else if (token.procedure.code=='SINON') {
         interpreteur.enfant = new Interpreteur(interpreteur.ID,interpreteur.LWlogo,interpreteur);                      
@@ -850,7 +853,16 @@ function f_si(interpreteur,token,params) { /**********************************/
         if ((ret) && (ret.type=='erreur')) {
             return ret;
         }        
-        //if ((interpreteur.dernier_token.type!=='eop') && (! interpreteur.analyseur_lexical.fin_analyse)) interpreteur.analyseur_lexical.back(1);
+        
+        if (interpreteur.dernier_token.type!=='eop') {                
+            var l = interpreteur.pile_fun.length;            
+            if (l==0) {
+                if (! interpreteur.analyseur_lexical.fin_analyse) interpreteur.analyseur_lexical.back(1);                       
+            } else {
+                    if (interpreteur.pile_fun[l-1].index>0) interpreteur.pile_fun[l-1].index--;                                                        
+                }            
+        }           
+        
         interpreteur.dernier_token = new Token('eop','');    
     }
     return ;

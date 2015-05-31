@@ -34,6 +34,10 @@ LWLogo.prototype.run = function (code) {
   code = code.rtrim();
   if (code.length<1) return;  
   this.reference.procedures_util=[];
+  this.en_pause=false;
+  for (r=0;r<this.tortues.length;r++) {
+      if (this.tortues[r]) this.tortues[r].reset();
+  }  
   r = this.interpretes[0].interpreter(code);
   if ((r) && (r.type=='erreur')) {
       this.erreur(r);

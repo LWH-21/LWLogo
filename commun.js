@@ -170,7 +170,24 @@ function Token(type,nom,exdata,l,c) {
     this.origine = '?';               //Origine du token analyse=Analyseur syntaxique, interprete=interpreteur, eval=evaluation
     this.numero=numero_ordre++;
     switch (this.type) {
-	case 'cont'	  : break;
+        case '?'          : nom = nom.trim();
+                            if (isNumber(nom)) {
+                                this.type='nombre';
+                                this.valeur = parseFloat(nom);
+                            } else if ((nom.charAt(0)=='[') && (nom.charAt(nom.length-1)==']')) {
+                                this.type='liste';
+                                this.valeur='';
+                                nom = nom.substring(1, nom.length-1); 
+                                var t=nom.trim().split(/[\s,]+/);
+                                for (var i=0;i<t.length;i++) {
+                                    this.valeur = this.valeur+t[i]+' ';
+                                }
+                                this.valeur = this.valeur.trim();
+                            } else {
+                                this.type='mot';
+                            }
+                            break;
+        case 'cont'	      : break;        
         case 'eof'        : this.valeur = null;break;
         case 'eol'        : this.valeur = null;break;
         case 'eop'        : this.valeur = null;break;
@@ -258,14 +275,24 @@ Token.prototype.est_nombre = function () { /**********************************/
 } // est_nombre
 
 Token.prototype.longueur = function () { /************************************/
-    var lg = 0;
-    if (this.nom) lg=this.nom.length;
-    switch(this.type) {
-        case 'symbole'  : 
-        case 'variable' : lg = lg+1;
-                          break;
-        default : return false;
-    }
+    var lg = 0,s;
+    switch (this.type) {
+        case 'cont'	      : 
+        case 'eof'        : 
+        case 'eol'        :
+        case 'eop'        : 
+        case 'erreur'     : break;
+        case 'liste'      : lg=this.valeur.length+2;break;
+        case 'mot'        : lg=this.valeur.length;break;    
+        case 'nombre'     : s=this.valeur+' ';lg = s.length - 1;break;
+        case 'booleen'    : lg = this.nom.length;break;
+        case 'operateur'  : lg = this.nom.length;break;
+        case 'parenthese' : lg = this.nom.length;break;
+        case 'symbole'    : lg = this.nom.length;break;
+        case 'variable'   : lg = this.nom.length+1;break;
+        default           : return 'type '+this.type+' inconnu';
+    } 
+    return lg;
 } // longueur
 
 Token.prototype.split = function () { /***************************************/
@@ -421,7 +448,8 @@ function FunContexte(token,params) { /****************************************/
         var v = token.procedure.args[i].clone();        
         if (i<params.length) {
             if (params[i]) {
-                v.valeur = params[i].valeur;                
+                v.valeur = params[i].valeur;
+                v.src = params[i];                
             } 
         }
         this.ctx.ajoute(v);        

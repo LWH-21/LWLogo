@@ -437,9 +437,9 @@ Analyse_lexicale.prototype.tests = function() { /*****************************/
                             test=true;
                         } else if (this.tokens[i-1].ligne<this.tokens[i].ligne) { // pas sur la même ligne
                             test=true;
-                        } else if (this.tokens[i-1].colonne+this.tokens[i-1].longueur()+1<this.tokens[i].colonne) { // pas collé
+                        } else if (this.tokens[i-1].colonne+this.tokens[i-1].longueur()<this.tokens[i].colonne) { // pas collé
                             test=true;
-                        }  else test=false;                                               
+                        }  else test=false; 
                     }
                 }
                 
@@ -447,6 +447,7 @@ Analyse_lexicale.prototype.tests = function() { /*****************************/
             if (test) {
                 this.tokens[i+1].valeur = 0 - this.tokens[i+1].valeur;
                 this.tokens[i+1].nom = '-'+this.tokens[i+1].nom;
+                this.tokens[i+1].colonne = this.tokens[i].colonne;
                 this.tokens.splice(i,1);            
             } else i++;
         }        

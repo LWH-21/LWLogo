@@ -59,9 +59,11 @@ Tortue.prototype.convert = function (x,y) { /*********************************/
 
 /* Conversion des points "marquants de la tortue *****************************/
 /* Ces points servent Ã  la gestion des collisions                            */
-Tortue.prototype.convert_pts = function (pts) { /*****************************/    
+Tortue.prototype.convert_pts = function (pts,xr,yr) { /*************************/    
     var ret = [],i=0,x,y,sin,cos,p;
     var direction = ((this.cap) * (Math.PI / 180));
+    if (!xr) xr=this.posx;
+    if (!yr) yr=this.posy;
     sin = Math.sin(direction);
     cos = Math.cos(direction);
     for (i=0;i<pts.length;i++) {
@@ -70,7 +72,7 @@ Tortue.prototype.convert_pts = function (pts) { /*****************************/
         
 /*x2=x1*Cosinus(a) - y1*Sinus(a)
  y2=x1*Sinus(a) + y1*Cosinus(a)        */
-        p = this.convert(x+this.posx, y+this.posy);
+        p = this.convert(x+xr, y+yr);
         ret.push(p);
     }
     return ret;
@@ -290,7 +292,7 @@ Tortue.prototype.set_tortue = function(t) { /*********************************/
                         this.points.push(new Point(0,0));
                         this.points.push(new Point(-10,-15));
                         this.points.push(new Point(0,-10));
-                        this.points.push(new Point(10,-15));                        
+                        this.points.push(new Point(10,-15));
                         break;
     }  
     this.draw();  
@@ -309,7 +311,7 @@ Tortue.prototype.commande= function(cmd,param) {
 
 Tortue.prototype.collision = function(x,y) {
     var p;    
-    p = this.convert_pts(this.points);           
+    p = this.convert_pts(this.points,x,y);           
     return this.LWlogo.monde.collision(p);
 }
 
@@ -374,7 +376,7 @@ Tortue.prototype.tick = function() {
                                 dy = dep * Math.sin(direction);
                                 dx = this.posx + dx;
                                 dy = this.posy + dy;  
-                                if (this.collision(dx,dy)) { // Déplacement incomplet on renvoie la différence
+                                if (this.collision(dx,dy)) { // Deplacement incomplet on renvoie la difference
                                     this.retour(new Token('nombre',this.param[0]-this.param_tr[0],'ignore'));
                                     rep=0;
                                 } else {
@@ -382,7 +384,7 @@ Tortue.prototype.tick = function() {
                                     this.posy = dy;
                                     this.param_tr[0]=this.param_tr[0]-1;
                                     if (this.param_tr[0]<0) this.param_tr[0]=0; 
-                                    if (this.param_tr[0]<=0) { // Déplacement complet
+                                    if (this.param_tr[0]<=0) { // Deplacement complet
                                         this.retour(new Token('nombre',this.param[0],'ignore'));                
                                         rep=0;
                                     } else if (rep<1) {
@@ -440,18 +442,7 @@ Tortue.prototype.tick = function() {
                                 this.param_tr[3] = this.cap;
                                 dep = Math.atan2(this.posx-this.param_tr[1], this.posy-this.param_tr[0]);
                                 dep = dep+Math.PI;
-                                this.cap = dep*(-180/Math.PI);
-                                
-                                /*Angle entre 2 points quelquonques :
-vers_degre=180/3.141592
-angle=int(atn((y1-y2)/(x1-x2))*vers_degre*1000)/1000 
-* 
-       var dx:Number = this.destination.x - this.x;
-        var dy:Number = this.destination.y - this.y;
-        var monAngle:Number = Math.atan2(dy, dx);
-        this.sonAngle = monAngle+Math.PI;
-                                */
-                                
+                                this.cap = dep*(-180/Math.PI);                                
                             }
                             this.debut = false;
                             do {
