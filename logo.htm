@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html lang="fr" dir="ltr" class="client-nojs">
+  <head>
+ 
+    </head>
+<body>
+
+
+<div id="sortie" style="position:relative; width:800px; height:500px; margin-left: auto;  margin-right: auto; margin-bottom: 10px; display:block">
+    <canvas id="monde" style="z-index: 2; position:absolute; left:0px; right:0px; top:0px;border:1px solid #00FF00;" height="500px" width="800px">
+    <p class="chromeframe alert alert-warning">Votre navigateur est trop <em>ancien</em> pour afficher correctement cette page. Vous devriez le <a href="http://browsehappy.com/">remplacer par un navigateur plus r&eacute;cent</a>.</p>
+    </canvas>
+    <canvas id="dessin" style="z-index: 1; position:absolute; left:0px; right:0px; top:0px; border:1px solid #FF0000; " height="500px" width="800px">
+    <p class="chromeframe alert alert-warning">Votre navigateur est trop <em>ancien</em> pour afficher correctement cette page. Vous devriez le <a href="http://browsehappy.com/">remplacer par un navigateur plus r&eacute;cent</a>.</p>
+    </canvas>
+    <canvas id="tortue" style="z-index: 3; position:absolute; left:0px;  right:0px; top:0px;border:1px solid #0000FF; " height="500px" width="800px"> 
+    <p class="chromeframe alert alert-warning">Votre navigateur est trop <em>ancien</em> pour afficher correctement cette page. Vous devriez le <a href="http://browsehappy.com/">remplacer par un navigateur plus r&eacute;cent</a>.</p>
+    </canvas>
+    <div id="WebGLCanvas" style="z-index: 4; position:absolute; left:0px;  right:0px; top:0px;border:none;"></div> 
+</div>
+
+<button id="play" style="vertical-align: top;margin-top:2px;" onclick="play()">Lancer</button>
+<button id="stop" style="vertical-align: top;margin-top:2px;" onclick="stop()">Stop</button>
+<button id="pause" style="vertical-align: top;margin-top:2px;" onclick="pause()">Pause</button>       
+    
+
+
+<div id="tabs-int" style="height:300px;overflow:auto;">
+    
+<textarea id="editor" rows="10" cols="150">    
+; Programme de démonstration
+
+Pour Spirale :n :d :s :a
+  Baissecrayon
+  Donne "x :d
+  Repete Arrondi :n / :s [Avance :x Droite :a Donne "x :x + :s]
+fin
+
+pour Spirales
+  VideEcran
+  FixeCouleurCrayon [255 000 000] Spirale 200 0 1.1 53
+  Attends 100 VideEcran
+  FixeCouleurCrayon [000 255 000] Spirale 300 0 4 90
+  Attends 100 VideEcran
+  FixeCouleurCrayon [000 000 255] Spirale 500 0 3 178
+  FixeCouleurCrayon [0 0 0] 
+  LeveCrayon
+  Origine
+  FixeCap 0
+  BaisseCrayon 
+fin
+
+MontreTortue
+Spirales
+</textarea>
+
+</div> <!--page-->
+
+
+<script src="commun.js"></script>
+<script src="LWLogo.js"></script>
+<script src="monde.js"></script>
+<script src="tortue.js"></script>
+<script src="Lexicale.js"></script>
+<script src="interpreteur.js"></script>
+<script src="reference.js"></script>
+
+
+
+<script>
+
+var editor;
+var reader;
+
+logo = new LWLogo();
+logo.editeur = editor;   
+
+function play() {
+    var s;
+    s = document.getElementById('editor').value;
+    if (s.length>0) logo.run(s);
+} 
+function stop() {
+    logo.stop();
+}
+function pause() {
+    logo.pause();
+}
+        
+
+</script>
+
+</body>
+</html>
