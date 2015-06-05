@@ -89,7 +89,7 @@ Interpreteur.prototype.donne_valeur= function(token,type_attendu) {
     return token;
 }
 
-Interpreteur.prototype.valorise= function(token) {
+Interpreteur.prototype.valorise= function(token,maj) {
     var ret,n,e,trouve=false;    
     if (!token) this.erreur(token,'nul',new Error().stack); 
     
@@ -104,7 +104,8 @@ Interpreteur.prototype.valorise= function(token) {
                 if (ret.type!='erreur') {
                     trouve=true;
                     token.valeur = ret.valeur;   
-                    if (ret.src) token.src = ret.src;  
+                    if (ret.src) token.src = ret.src; 
+                    if (maj) ret.valeur = maj.valeur;
                 } else n--;
             }
              
@@ -113,6 +114,7 @@ Interpreteur.prototype.valorise= function(token) {
                 ret = e.contexte.get(token);
                 if (ret.type=='erreur') trouve = false ; else {
                     token.valeur = ret.valeur;
+                    if (maj) ret.valeur = maj.valeur;
                     if (ret.src) token.src = ret.src;   
                     trouve=true;                    
                 }
@@ -334,13 +336,24 @@ Interpreteur.prototype.interprete = function() {
     s=''; cpt=0;
     this.ordre_tortue = false;
         
-    do {
-          
+    do {          
         cpt++;               
         // Si un "sous-interprete" est défini...
-        if (this.enfant) {
+        if (this.enfant) {            
             if (this.enfant.termine) {
-                this.nettoie_pile_arg();
+                this.nettoie_pile_arg();                
+                if (this.enfant.pile_arg.length>0) {
+                    token=this.enfant.pile_arg.pop();
+                    if (token) {
+                        if (this.enfant.src) {
+                            token.numero=this.enfant.src.numero;
+                            // en attendant mieux...                           
+                            if ((this.enfant.src.procedure) && (this.enfant.src.procedure.code='EXECUTE')) {
+                                this.pile_arg.push(token);                        
+                            }
+                        }
+                    }
+                }
                 this.enfant = null;
                 return;
             } else {
@@ -402,7 +415,8 @@ Interpreteur.prototype.interprete = function() {
 
 Interpreteur.prototype.interpreter = function(code,dligne,dcolonne,token) { 
   var ret;
-  ret = this.analyseur_lexical.init(this.LWlogo,code,dligne,dcolonne,token);  
+  ret = this.analyseur_lexical.init(this.LWlogo,code,dligne,dcolonne,token); 
+  this.src = token; 
   this.dernier_token = null;  
   this.pile_arg=[];
   this.pile_op=[];

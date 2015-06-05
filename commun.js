@@ -7,8 +7,8 @@
 function erreur (t,s,cpl) { /*************************************************/
         var err = new Token('erreur',s);
         err.origine = '?'; 
-        err.valeur = t.nom;
         if (t) {
+            err.valeur = t.nom;
             err.ligne = t.ligne;
             err.colonne = t.colonne;  
         }
@@ -28,10 +28,6 @@ if (!Array.indexOf){ /********************************************************/
    return -1;
   }
 } // Array.indexOf
-
-function max(a,b) { /*********************************************************/
-    if (a>b) return a;else return b;
-} // max
 
 if (!String.rtrim){ /*********************************************************/
     String.prototype.rtrim = function() {
@@ -128,8 +124,15 @@ function test_params(interpreteur,token,params) { /* *************************/
                 if (j > i) j=i;
                 switch (exp.charAt(j)) {
                     case '*'    : break;
-                    case 'n'    : if (! params[i].est_nombre()) {
-                                    ret = erreur(token,'nombre',new Error().stack);
+                    case 'b'    : if (! params[i].est_booleen()) {
+                                    ret = erreur(token,'booleen',new Error().stack);
+                                    ret.origine='eval';
+                                    ret.valeur = s;
+                                    return ret;
+                                  }
+                                  break;                     
+                    case 'c'    : if (! params[i].est_couleur())  {
+                                    ret = erreur(token,'couleur',new Error().stack);
                                     ret.origine='eval';
                                     ret.valeur = s;
                                     return ret;
@@ -141,14 +144,14 @@ function test_params(interpreteur,token,params) { /* *************************/
                                     ret.valeur = s;
                                     return ret;
                                   }
-                                  break; 
-                    case 'b'    : if (! params[i].est_booleen()) {
-                                    ret = erreur(token,'booleen',new Error().stack);
+                                  break;  
+                    case 'n'    : if (! params[i].est_nombre()) {
+                                    ret = erreur(token,'nombre',new Error().stack);
                                     ret.origine='eval';
                                     ret.valeur = s;
                                     return ret;
                                   }
-                                  break;                              
+                                  break;                            
                    default      : 
                 }
             }        
@@ -237,6 +240,25 @@ Token.prototype.est_booleen = function () { /*********************************/
         default : return false;
     }
 } // est_booleen
+
+/* Une couleur est une liste de trois nombres par ex. [255 0 64]             */
+Token.prototype.est_couleur = function () { /*********************************/
+    var t,ret;
+    switch(this.type) {
+        case 'liste'    :   
+        case 'variable' :   t = this.split();
+                            ret = false;
+                            if (t.length==3) {
+                                for (i=0;i<3;i++) {
+                                    if (! isNumber(t[i])) return false;
+                                }
+                                return true;
+                            }
+                            return ret;
+                            break;
+        default : return false;
+    }
+} // est_couleur
 
 Token.prototype.est_liste = function () { /***********************************/
 

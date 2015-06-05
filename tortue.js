@@ -25,7 +25,7 @@ function Tortue(id,nom_canvas, dessin, logo) { /******************************/
     this.font = "Verdana"
     this.fontsize=30;
     
-    this.montre_points = true; // Affichage ou non des points utilises pour tester les collisions
+    this.montre_points = false; // Affichage ou non des points utilises pour tester les collisions
     this.points = []; // Points servant au calcul des collisions.
     
     this.visible = true;
@@ -34,7 +34,7 @@ function Tortue(id,nom_canvas, dessin, logo) { /******************************/
     this.oldx = 0;
     this.oldy = 0;
     this.vitesse = 100;
-    this.dessin_tortue = this.dessin_simple;
+    this.dessin_tortue = this.dessin_std;
     
     this.bulle = 0;
     this.text='';
@@ -69,9 +69,6 @@ Tortue.prototype.convert_pts = function (pts,xr,yr) { /*************************
     for (i=0;i<pts.length;i++) {
         x = pts[i].x * cos - pts[i].y*sin ;
         y = pts[i].x * sin +  pts[i].y*cos;
-        
-/*x2=x1*Cosinus(a) - y1*Sinus(a)
- y2=x1*Sinus(a) + y1*Cosinus(a)        */
         p = this.convert(x+xr, y+yr);
         ret.push(p);
     }
@@ -79,42 +76,63 @@ Tortue.prototype.convert_pts = function (pts,xr,yr) { /*************************
 } // convert_pts
 
 Tortue.prototype.dessin_simple = function(ctx) { /****************************/
-    ctx.save();
- /*   ctx.fillStyle="#009933";
-    ctx.strokeStyle="#336633";
-    ctx.lineWidth=1;
-    ctx.scale(1,1.5);
-    ctx.beginPath();
-    ctx.arc(0,0,10,0*Math.PI,2*Math.PI);    
-    ctx.stroke();ctx.fill();  
-    ctx.arc(0,0,5,0*Math.PI,2*Math.PI); 
-    ctx.stroke();
-    ctx.restore();  
-    ctx.save();
+    ctx.save();  
     ctx.fillStyle="#009933";
-    ctx.strokeSyle="#000000"; 
-    ctx.lineWidth=2;   
-    ctx.beginPath();    
-    ctx.arc(0,-15,5,0*Math.PI,2*Math.PI);    
-    ctx.stroke();
-    ctx.fill(); */
-    
-    ctx.fillStyle="#009933";
-    ctx.strokeStyle="#336633";
+    ctx.strokeStyle="#000000";
+
     ctx.beginPath();
-    ctx.arc(-10,-5,5,0*Math.PI,2*Math.PI);
-    ctx.arc(10,-5,5,0*Math.PI,2*Math.PI);
-    ctx.arc(-10,7,5,0*Math.PI,2*Math.PI);
-    ctx.arc(10,7,5,0*Math.PI,2*Math.PI);
-    ctx.stroke();ctx.fill();
+      
+    var i,tx=2,ty=2.3;
     
+    //tête
+    var x = [   2,  3,   3,   1,  -1,  -3, -3,   -2 ];
+    var y = [-7.5, -9, -11, -14, -14, -11, -9, -7.5];        
+    for (i=0;i<x.length;i++) {
+        if (i==0) ctx.moveTo(x[i]*tx,y[i]*ty); else ctx.lineTo(x[i]*tx ,y[i]*ty);
+    }
+    ctx.stroke();ctx.fill();    
+    // Patte AVD   
     ctx.beginPath();
-    
-    ctx.moveTo(6,-15);ctx.lineTo(-6,-15);ctx.lineTo(-10,-7);ctx.lineTo(-10,7);ctx.lineTo(-6,15);
-    ctx.lineTo(6,15);ctx.lineTo(10,7);ctx.lineTo(10,-7);ctx.lineTo(6,-15);
-    
+    var x = [7.5, 10, 10,  8.5, 5.5];
+    var y = [ -3, -5, -7, -8.5, -6.5];        
+    for (i=0;i<x.length;i++) {
+        if (i==0) ctx.moveTo(x[i]*tx ,y[i]*ty); else ctx.lineTo(x[i]*tx ,y[i]*ty);
+    }
+    ctx.stroke();ctx.fill(); 
+    // Patte AVG   
+    ctx.beginPath();      
+    for (i=0;i<x.length;i++) {
+        if (i==0) ctx.moveTo(-x[i]*tx ,y[i]*ty); else ctx.lineTo(-x[i]*tx ,y[i]*ty);
+    }
     ctx.stroke();ctx.fill();
-    
+    // Patte ARD   
+    ctx.beginPath();      
+    for (i=0;i<x.length;i++) {
+        if (i==0) ctx.moveTo(x[i]*tx ,-y[i]*ty); else ctx.lineTo(x[i]*tx ,-y[i]*ty);
+    }
+    ctx.stroke();ctx.fill();   
+    // Patte ARG   
+    ctx.beginPath();      
+    for (i=0;i<x.length;i++) {
+        if (i==0) ctx.moveTo(-x[i]*tx ,-y[i]*ty); else ctx.lineTo(-x[i]*tx ,-y[i]*ty);
+    }
+    ctx.stroke();ctx.fill(); 
+    // Corps    
+    ctx.beginPath();
+    var x = [7.5, 7.5, 5.5,   2, -2, -5.5, -7.5, -7.5, -7.5, -5.5, -2,  2, 5.5,  7.5, 7.5   ];
+    var y = [  0,   3, 6.5, 7.5,  7.5,  6.5,    3,    0, -3,   -6.5, -7.5, -7.5,  -6.5, -3,  0];        
+    for (i=0;i<x.length;i++) {
+        if (i==0) ctx.moveTo(x[i]*tx ,y[i]*ty); else ctx.lineTo(x[i]*tx ,y[i]*ty);
+    }
+    ctx.stroke();ctx.fill();
+    tx=tx/1.5;ty=ty/1.5;    
+    ctx.beginPath();      
+    for (i=0;i<x.length;i++) {
+        if (i==0) ctx.moveTo(-x[i]*tx ,-y[i]*ty); else ctx.lineTo(-x[i]*tx ,-y[i]*ty);
+    }
+    ctx.stroke();ctx.fill();   
+    ctx.strokeRect(-4,-5,8,10); 
+   
     ctx.restore();  
 } // dessin_simple
 
@@ -124,11 +142,11 @@ Tortue.prototype.dessin_std = function(ctx) { /*******************************/
     ctx.strokeStyle="#FF9900";
     ctx.lineWidth=2;
     ctx.beginPath();
-    ctx.moveTo(0,0);
-    ctx.lineTo(-7,15);
-    ctx.lineTo(0,10);
-    ctx.lineTo(7,15);
+    ctx.moveTo(0,-10);
+    ctx.lineTo(-7,5);
     ctx.lineTo(0,0);
+    ctx.lineTo(7,5);
+    ctx.lineTo(0,-10);
     ctx.stroke();
     ctx.fill();   
     ctx.restore();
@@ -136,20 +154,14 @@ Tortue.prototype.dessin_std = function(ctx) { /*******************************/
 
 Tortue.prototype.dessin_3d = function() {
     if (this.LWlogo.troisD) {
-        var x,y;
-        x = this.posx;
-        y = this.posy;
-        this.LWlogo.troisD.tortues[this.ID].position.x = x;
-        this.LWlogo.troisD.tortues[this.ID].position.z = -y;
-        this.LWlogo.troisD.renderer.render(this.LWlogo.troisD.scene,this.LWlogo.troisD.camera);
-        this.LWlogo.troisD.dessin.needsUpdate=true;
-        
+        this.LWlogo.troisD.update();                
     }
 }
 
 Tortue.prototype.draw = function() { /****************************************/
 
     if (this.LWlogo.troisD) {
+        this.dessine();  
         this.dessin_3d();       
     } else {
         var w = this.canvas.width, h = this.canvas.height, ctx=this.canvas.getContext("2d");
@@ -202,9 +214,9 @@ Tortue.prototype.draw = function() { /****************************************/
             }
             ctx.shadowBlur=0;        
             ctx.translate(p.x,p.y);
-            ctx.rotate(-this.cap*Math.PI/180);        
+            ctx.rotate(this.cap*Math.PI/180);        
             this.dessin_tortue(ctx);
-            ctx.rotate(+this.cap*Math.PI/180);
+            ctx.rotate(-this.cap*Math.PI/180);
             ctx.translate(-p.x,-p.y);
             if (this.montre_points) {
                 var p1,i;    
@@ -247,8 +259,8 @@ Tortue.prototype.draw = function() { /****************************************/
                 }
                 ctx.restore();
         }    
-     }
-     this.dessine();   
+        this.dessine(); 
+     }  
 } // draw
 
 Tortue.prototype.dessine = function() { /**************************************/
@@ -355,11 +367,13 @@ Tortue.prototype.videecran =function(v) {
 }
 
 Tortue.prototype.tick = function() {    
-    var dx,dy,dep,rep;
+    var dx,dy,dep,rep,v;
     var direction;
     this.oldx = this.posx;
-    this.oldy = this.posy;
-    rep = this.vitesse;
+    this.oldy = this.posy;    
+    v = this.vitesse / 50;   
+    if (v>1) rep = Math.ceil(v); else rep=1;
+   
     switch (this.ordre.procedure.code) {
         case 'ATTENDS'  :   var d = new Date();
                             var t = d.getTime(); 
@@ -369,11 +383,13 @@ Tortue.prototype.tick = function() {
                             }                                  
                             if ((t - this.param_tr[1])>=this.param_tr[0]) this.retour(new Token('booleen',true,'ignore'));  
                             break;
-        case 'AV'       :   direction = ((this.cap+90) * (Math.PI / 180));
+        case 'AV'       :   direction = ((this.cap) * (Math.PI / 180));
                             do {
-                                if (this.param_tr[0]<1) dep = this.param_tr[0]; else dep = 1;                            
-                                dx = dep * Math.cos(direction);
-                                dy = dep * Math.sin(direction);
+                                if (this.param_tr[0]<1) dep = this.param_tr[0]; else {
+                                    if (v>=1) dep = 1; else dep=Math.min(this.param_tr[0],v);                           
+                                }
+                                dx = dep * Math.sin(direction);
+                                dy = dep * Math.cos(direction);
                                 dx = this.posx + dx;
                                 dy = this.posy + dy;  
                                 if (this.collision(dx,dy)) { // Deplacement incomplet on renvoie la difference
@@ -382,7 +398,7 @@ Tortue.prototype.tick = function() {
                                 } else {
                                     this.posx = dx;
                                     this.posy = dy;
-                                    this.param_tr[0]=this.param_tr[0]-1;
+                                    this.param_tr[0]=this.param_tr[0]-dep;
                                     if (this.param_tr[0]<0) this.param_tr[0]=0; 
                                     if (this.param_tr[0]<=0) { // Deplacement complet
                                         this.retour(new Token('nombre',this.param[0],'ignore'));                
@@ -394,11 +410,13 @@ Tortue.prototype.tick = function() {
                                 rep --;
                             } while (rep>0) 
                             break;
-        case 'BC'       :   this.crayon_baisse = true;
-                            this.retour(new Token('booleen',true,'ignore'));                   
+        case 'BC'       :   var chg= ! this.crayon_baisse;
+                            this.crayon_baisse = true;
+                            this.retour(new Token('booleen',chg,'ignore'));                   
                             break;  
-        case 'CACHETORTUE': this.visible=false;
-                            this.retour(new Token('booleen',true,'ignore'));                  
+        case 'CACHETORTUE': var chg = this.visible; // La commande renvoie VRAI si l'état de la tortue a changé
+                            this.visible=false;
+                            this.retour(new Token('booleen',chg,'ignore'));                  
                             break;  
         case 'CAP'      :   this.retour(new Token('nombre',this.cap,'!'));                  
                             break; 
@@ -426,7 +444,7 @@ Tortue.prototype.tick = function() {
                             this.texte(this.param_tr[0]);
                             this.retour(new Token('nombre', this.param_tr[1],'!'));
                             break;                            
-        case 'FCC'      :   this.couleur_crayon = 'rgb('+this.param_tr[2]+','+this.param_tr[1]+','+this.param_tr[0]+')';                            
+        case 'FCC'      :   this.couleur_crayon = 'rgb('+(this.param_tr[2] % 256)+','+(this.param_tr[1] % 256)+','+(this.param_tr[0] % 256)+')';                            
                             this.retour(new Token('booleen',true,'ignore')); 
                             break;                             
         case 'FTC'      :   this.taille_crayon = this.param_tr[0];
@@ -435,19 +453,20 @@ Tortue.prototype.tick = function() {
         case 'FIXECAP'  :   this.cap = (this.param_tr[0] % 360);
                             if (this.cap<0) this.cap+=360;
                             this.retour(new Token('booleen',true,'ignore'));                
-                            break;     
+                            break; 
+        case 'FIXEXY'   :                                
         case 'FIXEPOS'  :   if (this.debut) {
                                 this.param_tr[3] = this.posx;
                                 this.param_tr[2] = this.posy;
                                 this.param_tr[3] = this.cap;
                                 dep = Math.atan2(this.posx-this.param_tr[1], this.posy-this.param_tr[0]);
                                 dep = dep+Math.PI;
-                                this.cap = dep*(-180/Math.PI);                                
+                                this.cap = dep*(180/Math.PI);                                
                             }
                             this.debut = false;
                             do {
                                 // param_tr[1] => x, param_tr[0] => y, 
-                                var n = max(Math.abs(this.posx - this.param_tr[1]), Math.abs(this.posy - this.param_tr[0]));
+                                var n = Math.max(Math.abs(this.posx - this.param_tr[1]), Math.abs(this.posy - this.param_tr[0]));
                                 if (n<1) {
                                     dx = this.param_tr[1];
                                     dy = this.param_tr[0];                                    
@@ -526,8 +545,9 @@ Tortue.prototype.tick = function() {
                                 rep--;
                             } while (rep>0) 
                             break; 
-        case 'LC'       :   this.crayon_baisse = false;
-                            this.retour(new Token('booleen',true,'ignore'));                  
+        case 'LC'       :   var chg= this.crayon_baisse;
+                            this.crayon_baisse = false;
+                            this.retour(new Token('booleen',chg,'ignore'));                  
                             break; 
         case 'MONTRE':      this.bulle = new Date().getTime();
                             var that = this;
@@ -536,32 +556,38 @@ Tortue.prototype.tick = function() {
                             if (this.text.length<=1) this.bulle = 0;
                             this.retour(new Token('booleen',true,'ignore'));                  
                             break;                            
-        case 'MONTRETORTUE': this.visible=true;
-                            this.retour(new Token('booleen',true,'ignore'));                  
-                            break;
+        case 'MONTRETORTUE': var chg = ! this.visible; // La commande renvoie VRAI si l'état de la tortue a changé
+                            this.visible=true;
+                            this.retour(new Token('booleen',chg,'ignore'));                  
+                            break;                            
         case 'NETTOIE'  :   this.videecran();
                             this.retour(new Token('booleen',true,'ignore'));  
                             break;
         case 'ORIGINE'  :   this.posx = 0;
                             this.posy = 0;
+                            this.cap = 0;
                             this.retour(new Token('booleen',true,'ignore'));                              
                             break;
-        case 'RE'       :   direction = ((this.cap+90) * (Math.PI / 180));
-                            do {                                
-                                if (this.param_tr[0]<1) dep = this.param_tr[0]; else dep = 1;                            
-                                dx = (-dep) * Math.cos(direction);
-                                dy = (-dep) * Math.sin(direction);
+        case 'POS'      :   this.retour(new Token('liste',this.posx+' '+this.posy,'!')); 
+                            break;                             
+        case 'RE'       :   direction = ((this.cap) * (Math.PI / 180));
+                            do {
+                                if (this.param_tr[0]<1) dep = this.param_tr[0]; else {
+                                    if (v>=1) dep = 1; else dep=Math.min(this.param_tr[0],v);                           
+                                }
+                                dx = -dep * Math.sin(direction);
+                                dy = -dep * Math.cos(direction);
                                 dx = this.posx + dx;
                                 dy = this.posy + dy;  
-                                if (this.collision(dx,dy)) {
+                                if (this.collision(dx,dy)) { // Deplacement incomplet on renvoie la difference
                                     this.retour(new Token('nombre',this.param[0]-this.param_tr[0],'ignore'));
                                     rep=0;
                                 } else {
                                     this.posx = dx;
                                     this.posy = dy;
-                                    this.param_tr[0]=this.param_tr[0]-1;
+                                    this.param_tr[0]=this.param_tr[0]-dep;
                                     if (this.param_tr[0]<0) this.param_tr[0]=0; 
-                                    if (this.param_tr[0]<=0) {
+                                    if (this.param_tr[0]<=0) { // Deplacement complet
                                         this.retour(new Token('nombre',this.param[0],'ignore'));                
                                         rep=0;
                                     } else if (rep<1) {
@@ -569,19 +595,57 @@ Tortue.prototype.tick = function() {
                                     }                               
                                 } 
                                 rep --;
-                            } while (rep>0)                         
+                            } while (rep>0)                   
                             break;                            
-        case 'TD'       :   dep = this.param_tr[0]; 
-                            this.cap = this.cap - dep                            
-                            this.cap = this.cap % 360;                            
-                            if (this.cap < 0) this.cap = this.cap + 360;
-                            this.retour(new Token('nombre',0,'ignore'));                    
+        case 'TD'       :   do {
+                                if (this.param_tr[0]<1) dep = this.param_tr[0]; else {
+                                    if (v>=1) dep = 1; else dep=Math.min(this.param_tr[0],v);                           
+                                }
+                                var oldcap = this.cap;
+                                this.cap = this.cap + dep;
+                                if (this.cap < 0) this.cap = this.cap + 360;
+                                this.cap = this.cap % 360; 
+                                if (this.collision(dx,dy)) { // Deplacement incomplet on renvoie la difference
+                                    this.cap = oldcap;
+                                    this.retour(new Token('nombre',this.param[0]-this.param_tr[0],'ignore'));
+                                    rep=0;
+                                } else {                                   
+                                    this.param_tr[0]=this.param_tr[0]-dep;
+                                    if (this.param_tr[0]<0) this.param_tr[0]=0; 
+                                    if (this.param_tr[0]<=0) { // Deplacement complet                                        
+                                        this.retour(new Token('nombre',this.param[0],'ignore'));                
+                                        rep=0;
+                                    } else if (rep<1) {
+                                        this.retour(new Token('nombre',this.param[0],'ignore'));    
+                                    }                               
+                                } 
+                                rep --;        
+                            } while (rep>0);                 
                             break;   
-        case 'TG'       :   dep = this.param_tr[0]; 
-                            this.cap = this.cap + dep                            
-                            this.cap = this.cap % 360;                            
-                            if (this.cap < 0) this.cap = this.cap + 360;
-                            this.retour(new Token('nombre',0,'ignore'));                    
+        case 'TG'       :   do {
+                                if (this.param_tr[0]<1) dep = this.param_tr[0]; else {
+                                    if (v>=1) dep = 1; else dep=Math.min(this.param_tr[0],v);                           
+                                }
+                                var oldcap = this.cap;
+                                this.cap = this.cap - dep;
+                                if (this.cap < 0) this.cap = this.cap + 360;
+                                this.cap = this.cap % 360; 
+                                if (this.collision(dx,dy)) { // Deplacement incomplet on renvoie la difference
+                                    this.cap = oldcap;
+                                    this.retour(new Token('nombre',this.param[0]-this.param_tr[0],'ignore'));
+                                    rep=0;
+                                } else {                                   
+                                    this.param_tr[0]=this.param_tr[0]-dep;
+                                    if (this.param_tr[0]<0) this.param_tr[0]=0; 
+                                    if (this.param_tr[0]<=0) { // Deplacement complet                                        
+                                        this.retour(new Token('nombre',this.param[0],'ignore'));                
+                                        rep=0;
+                                    } else if (rep<1) {
+                                        this.retour(new Token('nombre',this.param[0],'ignore'));    
+                                    }                               
+                                } 
+                                rep --;        
+                            } while (rep>0);                     
                             break; 
         case 'VE'       :   this.cap = 0;this.taille_crayon = 1;
                             this.posx = 0;this.visible = true;

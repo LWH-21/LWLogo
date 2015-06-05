@@ -259,7 +259,7 @@ Analyse_lexicale.prototype.suivant =function() { /****************************/
                     token.origine = 'analyse';            
                     return token;                
                 }        
-        } else if ("+-*/^=><".indexOf(c)>=0) {                              // Operateur + - * /       
+        } else if ("+-*/%^=><&|".indexOf(c)>=0) {                              // Operateur + - * /       
             switch (c) {
                 case '<' : var suivant = this.src.charAt(0);
                            if ((suivant=='=') || (suivant=='>')) {
@@ -393,7 +393,7 @@ Analyse_lexicale.prototype.suivant =function() { /****************************/
  
 /* Tests sur l'analyse lexicale **********************************************/ 
 Analyse_lexicale.prototype.tests = function() { /*****************************/
-        var i,t,test;
+        var i,j,t,test;
         // Suppression des lignes inutiles 
         i = 1;
         while (i<this.tokens.length) {
@@ -458,6 +458,35 @@ Analyse_lexicale.prototype.tests = function() { /*****************************/
             if ((t.type=='mot') || (t.type=='operateur')) this.decore(t);
             i++;
         }
+        // Moins unaires
+        i = 0;
+        while (i<this.tokens.length) {
+            test=false;
+            if ((this.tokens[i].type=='operateur') && (this.tokens[i].nom=='-')) {                
+                // Le token suivant doit être un nombre, sur la même ligne
+                if ((i+1<this.tokens.length) && (this.tokens[i+1].ligne==this.tokens[i].ligne)) {
+                    // si pas de token précédent => ok
+                    if (i==0) {
+                        test=true; 
+                    } else if (this.tokens[i-1].type=='operateur') { // Si le token précédent est un opérateur
+                        test=true;
+                    } else if ((this.tokens[i-1].type=='parenthese') && (this.tokens[i-1].nom=='(')) { // parenthese ouvrante
+                        test=true;
+                    } else test=false; 
+                    
+                }
+                
+            }
+            if (test) {
+                 for (j=0;j<this.logo.reference.procedures.length;j++) {
+                    if (this.logo.reference.procedures[j].code=='MOINS')  {
+                        this.tokens[i].procedure = this.logo.reference.procedures[j];              
+                        break;                
+                    } 
+                }
+            } 
+            i++;
+        }        
         /*if (debug) {
             for (i=0;i<this.tokens.length;i++) {
                 t = this.tokens[i];

@@ -6,7 +6,10 @@ var debug=true;
 
 
 /* Initialisation de l'interpreteur ******************************************/
-function LWLogo() {       
+function LWLogo(canvas_dessin, canvas_tortue, canvas_monde) {     
+    if (! canvas_dessin) canvas_dessin='dessin';
+    if (! canvas_tortue) canvas_tortue='tortue';
+    if (! canvas_monde) canvas_monde='monde';  
     this.en_pause = false;    
     this.reference = new Reference();
     this.horloge = new Horloge(this);
@@ -14,16 +17,17 @@ function LWLogo() {
     this.interpretes[0] = new Interpreteur(0,this,null);
     this.en_cours = false;
     this.tortues = [];    
-    this.monde = new Monde('monde');
-    this.tortues[0] = new Tortue(0,'tortue','dessin',this);
+    this.monde = new Monde(canvas_monde);
+    this.tortues[0] = new Tortue(0,canvas_tortue,canvas_dessin,this);
     this.editeur = null;
     this.vitesse(50);
-    var canvas = document.getElementById('dessin');
+    var canvas = document.getElementById(canvas_dessin);
     var ctx=canvas.getContext("2d");   
     ctx.fillStyle="rgba(255,255,255,0.1)";   
     ctx.clearRect ( 0 , 0 , canvas.width,canvas.height );    
     ctx.fillRect ( 0 , 0 , canvas.width,canvas.height );   
     this.troisD=null;
+    this.draw_info();
 }
 
 /* Lancement ****************************************************************/
@@ -75,15 +79,91 @@ LWLogo.prototype.pause = function() {
 
 LWLogo.prototype.vitesse = function(v) {    
     if (v>100) v=100;
-    if (v<0) v=0;
+    if (v<1) v=1;
     this.ma_vitesse = v;
-    if (this.horloge.demarree) {
-        this.horloge.stop();
-        this.horloge.start();
-    }
 }
 
 LWLogo.prototype.draw_info = function () {
+    var canvas = document.getElementById('etat'),ntortue,i;
+    if (canvas) {
+        ntortue = 0;
+        var w = canvas.width, h = canvas.height, ctx=canvas.getContext("2d");
+        var x,y,j,a,sin,cos;
+        x = 400;y=120;
+        ctx.clearRect(0,0,w,h);
+        ctx.beginPath();
+        ctx.strokeStyle="#0000FF";
+        ctx.moveTo(x,y-90);
+        ctx.lineTo(x,y+90);
+        ctx.moveTo(x-90,y);
+        ctx.lineTo(x+90,y);
+        ctx.arc(x,y,75,0,2*Math.PI);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.textAlign="center"; 
+        ctx.fillStyle="#000000";
+        ctx.strokeStyle="#FF0000";
+        a=Math.PI + Math.PI/12;
+        j=-30;
+        for (i=1;i<=12;i++) {
+            a = a+ Math.PI/6;
+            sin = Math.sin(a);
+            cos = Math.cos(a);
+            ctx.moveTo(x + 60*cos - 60*sin, y+ 60*sin +60*cos);
+            ctx.lineTo(x+ 50*cos - 50*sin, y+ 50*sin +50*cos);
+            j=(j+30) % 360;            
+            ctx.fillText(j+'°',x + 70*cos - 70*sin, y+ 70*sin +70*cos);
+        }
+        ctx.stroke();
+        ctx.fillText(Math.round(this.tortues[ntortue].cap)+'°',x,y+120);       
+        
+        ctx.beginPath();
+        ctx.strokeStyle="#0000FF";
+        ctx.fillText('0',x+255,y-5);
+        ctx.moveTo(x+250,y-100);
+        ctx.lineTo(x+250,y+100);
+        ctx.moveTo(x+250-100,y);
+        ctx.lineTo(x+250+100,y);        
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.strokeStyle="#FF0000";
+        a = 200/this.monde.largeur; 
+        a = this.tortues[ntortue].posx*a;
+        a=a+x+250;
+        ctx.moveTo(a,y-100);ctx.lineTo(a,y+100);
+        ctx.fillText(Math.round(this.tortues[ntortue].posx),a,y+120);
+        a = 200/this.monde.hauteur; 
+        a = this.tortues[ntortue].posy*a;
+        a=y-a;   
+        ctx.moveTo(x+250-100,a);ctx.lineTo(x+250+100,a)  
+        ctx.fillText(Math.round(this.tortues[ntortue].posy),x+360,a);        
+        ctx.stroke();
+        ctx.fillStyle="#000000";
+        ctx.textAlign="start"; 
+        ctx.fillText(this.reference.libelle.statut,5,20);
+        if (this.en_pause) ctx.fillText(this.reference.libelle.enpause,5,40); else ctx.fillText(this.reference.libelle.encours,5,40);
+        ctx.fillText(this.reference.libelle.pile,5,60);ctx.fillText(this.interpretes[ntortue].pile_fun.length,100,60);
+        ctx.strokeStyle="#000000";
+        if (this.tortues[ntortue].en_cours) ctx.fillStyle="#FF0000";
+        else ctx.fillStyle='#00FF00';
+        ctx.beginPath();
+        ctx.arc(120,15,10,0,2*Math.PI);
+        ctx.fill();
+        ctx.stroke();
+        
+        
+        ctx.save();
+        ctx.translate(x,y);
+        ctx.rotate(this.tortues[ntortue].cap*Math.PI/180);          
+        this.tortues[ntortue].dessin_tortue(ctx);              
+        ctx.fillStyle="#ff0000"; 
+       /* for (i=0;i<this.tortues[ntortue].points.length;i++) {           
+            ctx.fillRect(this.tortues[ntortue].points[i].x-2,this.tortues[ntortue].points[i].y-2,4,4);
+        }*/                 
+        ctx.rotate(-this.tortues[ntortue].cap*Math.PI/180);
+        ctx.translate(-x,-y);        
+        ctx.restore();        
+    }
 }
 
 LWLogo.prototype.draw_debug = function () {
@@ -153,11 +233,17 @@ LWLogo.prototype.tick = function (that) {
     var t,i,termine;
     
     if (this.en_cours) return;
+    
+    this.draw_info();
+    
+    if (this.troidD) {
+        this.troisD.render();
+    }
+    
     if (this.en_pause) return;
     this.en_cours = true;
     termine = false;
     
-    this.draw_info();
     
     for (i=0;i<this.interpretes.length;i++) {
     
@@ -183,6 +269,10 @@ LWLogo.prototype.tick = function (that) {
     if (termine) {
         this.horloge.stop();
     }
+    
+    if (this.troidD) {
+        this.troisD.render();
+    }    
     
     this.en_cours = false;
     
@@ -245,13 +335,22 @@ LWLogo.prototype.erreur = function(token) {
         if (lg>0) {
             var Range = require("ace/range").Range;            
             editor.selection.setRange(new Range(l-1, c-1, l-1, c+lg));
-        }
-        //this.editeur.moveCursorTo(l-1,c-1);
+        }        
     } 
 
-    s=this.reference.erreur(token);    
-    $( "#err_dialog" ).html(s);
-    $( "#err_dialog" ).dialog( "open" );
+      
+    if (typeof jQuery == 'undefined') {
+        s = token.toString();
+        console.log('Ligne: '+token.ligne+' Colonne: '+token.colonne);
+        console.log(token.nom);
+        console.log(token.exdata);
+        console.log(token);        
+        window.alert(s);
+    } else {  
+        s=this.reference.erreur(token);
+        $( "#err_dialog" ).html(s);
+        $( "#err_dialog" ).dialog( "open" );
+    }
     
     
 }
@@ -267,10 +366,7 @@ LWLogo.prototype.affichage = function (n) {
 
 LWLogo.prototype.close_3d = function (obj) {
     if (this.troisD) {
-        this.troisD.scene = null;
-        this.troisD.camera = null;    
-        $('#'+this.troisD.nom).empty();
-        $('#'+this.troisD.nom).hide();               
+        this.troisD.close();             
     }    
     this.troisD = null;
     $('#dessin').show();
@@ -281,73 +377,13 @@ LWLogo.prototype.close_3d = function (obj) {
 LWLogo.prototype.init_3d = function (obj) {
      
     if (this.troisD) return;
-     
-    var WIDTH = 800;var HEIGHT = 500;    
+    
     $('#dessin').hide();
     $('#tortue').hide();
     $('#monde').hide();
-    $('#'+obj).show();    
-    this.troisD = new Object();
-    this.troisD.nom = obj;
-    this.troisD.scene = new THREE.Scene();
-    this.troisD.camera = new THREE.PerspectiveCamera( 65, WIDTH/HEIGHT, 0.1, 1000 ); 
-    //this.troisD.camera = new THREE.OrthographicCamera( WIDTH / - 2, WIDTH / 2, HEIGHT / 2, HEIGHT / - 2, 1, 1000 );   
-    this.troisD.renderer = new THREE.WebGLRenderer({antialias:true});
-    this.troisD.renderer.setSize( WIDTH, HEIGHT );
-    $('#'+obj).append(this.troisD.renderer.domElement);     
-    
-    //controls = new THREE.OrbitControls( this.troisD.camera );
-    
-    this.troisD.pointLight =  new THREE.PointLight(0xFFFFFF);
-    this.troisD.pointLight.position.x = 10;
-    this.troisD.pointLight.position.y = 50;
-    this.troisD.pointLight.position.z = 130;
-    this.troisD.scene.add(this.troisD.pointLight);    
-         
-     
-	var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-	var material = new THREE.MeshBasicMaterial( { color: 0x660000 } );
-    this.troisD.tortues=[];
-	this.troisD.tortues[0] = new THREE.Mesh( geometry, material );
-	this.troisD.scene.add(this.troisD.tortues[0]);
-    this.troisD.tortues[0].position.y = -0.5;
-    this.troisD.tortues[0].scale.x = 20;
-    this.troisD.tortues[0].scale.y = 20;
-    this.troisD.tortues[0].scale.z = 20;
 
-    
-    var canvas = document.getElementById('dessin');
-    WIDTH=canvas.width;
-    HEIGHT = canvas.height;
-    this.troisD.dessin = new THREE.Texture(canvas); 
-    this.troisD.dessin.magFilter = THREE.NearestFilter;
-    this.troisD.dessin.minFilter = THREE.LinearFilter;       
-    var geometry = new THREE.PlaneGeometry( WIDTH, HEIGHT);
-    //var material = new THREE.MeshBasicMaterial( { color: 0x000066 } );
-    var material = new THREE.MeshBasicMaterial( {
-        map: this.troisD.dessin, side:THREE.DoubleSide
-    } );
-	var sol = new THREE.Mesh( geometry, material );
-	this.troisD.scene.add( sol );
-    sol.rotation.x = -Math.PI/2;
-    //sol.rotation.z = Math.PI;
-    //sol.position.y = Math.PI/2;
-
-    this.troisD.camera.rotation.x=-0.5;    
-    this.troisD.camera.position.y = 400;
-	this.troisD.camera.position.z = 220;
-    this.troisD.camera.up = new THREE.Vector3(0,0,-1);
-    this.troisD.camera.lookAt(new THREE.Vector3(0,0,0));
-//	var render = function () {
-//	requestAnimationFrame( render );
-
-	//logo.troisD.renderer.render(logo.troisD.scene,logo.troisD.camera);
-
-
-    //render();  
-    //$('#'+obj).show();
-    this.troisD.dessin.needsUpdate = true;
-    this.troisD.renderer.render(this.troisD.scene,this.troisD.camera);
+    this.troisD = new Logo3D(this,obj);
+    this.troisD.init();     
 }
 
  
@@ -359,12 +395,8 @@ function Horloge(parent) {
 } 
 
 Horloge.prototype.start = function() {
-    var v;
-    if (this.logo.ma_vitesse<=0) {
-      v = 110;
-    } else v = Math.floor(100 / this.logo.ma_vitesse);
     if (this.demarree) this.stop();    
-    this.timer = setInterval(function () {this.logo.tick(this.logo);},v);
+    this.timer = setInterval(function () {this.logo.tick(this.logo);},0);
     this.demarree = true;
 }
 

@@ -12,11 +12,20 @@ function Reference() { /******************************************************/
     /* Procedures du langage */
     this.procedures = [];   
     this.procedures_util = [];
+    
+    /* LibellÃ©s */
+    
+    this.libelle = {
+        encours: 'En cours',
+        enpause: 'En pause.',
+        pile   : 'Taille de la pile :',
+        statut : 'Statut de la tortue : '
+    }
 
     /* Messages d'erreurs */
     this.les_messages = {  
-      crochet       : 'Caractères "[" et "]" non appariés.', 
-      inconnu       : 'Caractère non inconnu par le langage',  
+      crochet       : 'Caracteres "[" et "]" non apparies.', 
+      inconnu       : 'Caractere non inconnu par le langage',  
       nombre        : 'Ne peux pas interpreter ce nombre',
       type          : 'Type inconnu'
     };
@@ -32,6 +41,7 @@ function Reference() { /******************************************************/
       BRUN : {std:['brun']},
       CACHETORTUE : {std:['cachetortue','cto']},
       CAP :{std:['cap']},
+      CHOSE : {std:['chose']},
       COMPTE:{std:['compte']},
       COMPTEUR : {std: ['compteur.r']},
       COS : {std:['cos']},
@@ -39,6 +49,7 @@ function Reference() { /******************************************************/
       DERNIER : {std:['dernier']},
       DIFFERENCE : {std:['difference']},
       DONNE : {std:['donne']},
+      DONNELOCALE : {std:['donnelocale']},
       EGALQ : {std:['egal?']},
       ET : {std:['et']},
       ETIQUETTE : {std:['etiquette']},
@@ -49,6 +60,7 @@ function Reference() { /******************************************************/
       FIXECAP : {std:['fixecap']},
       FIXEPOS : {std:['fixepos']},
       FIXEX : {std:['fixex']},
+      FIXEXY : {std:['fixexy']},
       FIXEY : {std:['fixey']},
       FTC : {std:['fixetaillecrayon','ftc']},
       HASARD : {std:['hasard']},
@@ -58,11 +70,14 @@ function Reference() { /******************************************************/
       LC : {std:['levecrayon','lc']},
       LISTE : {std:['liste']},
       LISTEQ : {std:['liste?']},
-      LOG10 : {std:['log10']},
+      LOCALE : {std:['locale']},
+      LOG10 : {std:['log10','lg']},
       MAGENTA : {std:['magenta']},
       MOINS : {std:['moins']},
+      MELANGE : {std:['melange']},
       MONTRE : {std:['montre']},
       MONTRETORTUE : {std:['montretortue','mto']},
+      MOT  : {std:['mot']},
       MOTQ : {std:['mot?']},
       NETTOIE : {std:['nettoie']},
       NOIR : {std:['noir']},
@@ -71,8 +86,9 @@ function Reference() { /******************************************************/
       ORIGINE : {std:['origine']},
       OU : {std:['ou']},
       PI : {std:['pi']},
+      POS: {std:['pos']},
       POUR: {std:['pour']},
-      PREMIER: {std:['premier']},
+      PREMIER: {std:['premier','prem']},
       PRODUIT: {std:['produit']},
       PUISSANCE: {std:['puissance']},
       QUOTIENT: {std:['quotient']},
@@ -93,28 +109,31 @@ function Reference() { /******************************************************/
       TG : {std:['gauche','tg','ga']},
       VE : {std:['videecran', 've','nettoietout','nt']},
       VERT : {std:['vert']}, 
+      VIDEQ : {std:['vide?']},
       VRAI : {std:['vrai']}          
     };
     
-    //          code,   mini_arg,   maxi_arg,   style,  ret,    priorite,   action           arguments attendus. *=nimp, n=nombre, b=booleen, l=liste, m=mot, w=mot ou liste
+    //          code,   mini_arg,   maxi_arg,   style,  ret,    priorite,   action           arguments attendus. *=nimp, n=nombre, b=booleen, l=liste, m=mot, w=mot ou liste, c=couleur
 
     this.add(   'AV',   1,          1,          'p',    1,      5,          f_tortue,       'n');
     this.add('ATTENDS', 1,          1,          'p',    1,      5,          f_tortue,       'n');
     this.add(   'BC',   0,          0,          'p',    1,      5,          f_tortue,       '*');
     this.add('CACHETORTUE',0,       0,          'p',    1,      5,          f_tortue,       '*'); 
-    this.add(  'CAP',   0,          0,          'p',    1,     10,          f_tortue,       '*'); 
+    this.add(  'CAP',   0,          0,          'p',    1,     50,          f_tortue,       '*'); 
     this.add('ETIQUETTE',1,         1,          'p',    1,      5,          f_tortue,       '*');   
     this.add( 'FCC',    1,          1,          'p',    1,      5,          f_tortue,       'l');    
     this.add( 'FTC',    1,          1,          'p',    1,      5,          f_tortue,       'n');    
     this.add( 'FIXECAP',1,          1,          'p',    1,      5,          f_tortue,       'n');
     this.add( 'FIXEPOS',1,          1,          'p',    1,      5,          f_tortue,       'l');
-    this.add(   'FIXEX',1,          1,          'p',    1,      5,          f_tortue,       'n'); 
+    this.add(   'FIXEX',1,          1,          'p',    1,      5,          f_tortue,       'n');
+    this.add(  'FIXEXY',2,          2,          'p',    1,      5,          f_tortue,       'n');     
     this.add(   'FIXEY',1,          1,          'p',    1,      5,          f_tortue,       'n'); 
     this.add(   'LC',   0,          0,          'p',    1,      5,          f_tortue,       '*');    
     this.add('MONTRE',  1,          1,          'p',    1,      5,          f_tortue,       '*');   
     this.add('MONTRETORTUE',0,      0,          'p',    1,      5,          f_tortue,       '*'); 
     this.add('NETTOIE' ,0,          0,          'p',    1,      5,          f_tortue,       '*');
     this.add( 'ORIGINE',0,          0,          'p',    1,      5,          f_tortue,       '*'); 
+    this.add(  'POS',   0,          0,          'p',    1,     50,          f_tortue,       '*'); 
     this.add(   'TD',   1,          1,          'p',    1,      5,          f_tortue,       'n');
     this.add(   'TG',   1,          1,          'p',    1,      5,          f_tortue,       'n'); 
     this.add(   'RE',   1,          1,          'p',    1,      5,          f_tortue,       'n'); 
@@ -130,11 +149,11 @@ function Reference() { /******************************************************/
     this.add('NOIR',    0,          0,          'p',    1,     50,          f_couleur,      'n');
     this.add('ROUGE',   0,          0,          'p',    1,     50,          f_couleur,      'n');
     this.add('VERT',    0,          0,          'p',    1,     50,          f_couleur,      'n');
-        
+
     this.add('HASARD',  1,          1,          'p',    1,     20,          f_math,         'n');
     this.add('SOMME',   2,      99999,          'p',    1,     10,          f_math,         'n');
-    this.add('DIFFERENCE',2,        2,          'p',    1,     10,          f_math,         'n');
-    this.add('MOINS',   1,          1,          'p',    1,     20,          f_math,         'n');
+    this.add('DIFFERENCE',2,    99999,          'p',    1,     10,          f_math,         'n');
+    this.add('MOINS',   1,          1,          'p',    1,      5,          f_math,         'n');
     this.add('PRODUIT', 2,      99999,          'p',    1,     20,          f_math,         'n');
     this.add('RESTE',   2,          2,          'p',    1,     20,          f_math,         'n');
     this.add('ARRONDI', 1,          1,          'p',    1,     20,          f_math,         'n');
@@ -145,50 +164,59 @@ function Reference() { /******************************************************/
     this.add('SIN',     1,          1,          'p',    1,     20,          f_math,         'n');
     this.add('COS',     1,          1,          'p',    1,     20,          f_math,         'n');
     this.add('QUOTIENT',2,      99999,          'p',    1,     20,          f_math,         'n');   
-    this.add('+',       2,          2,          'i',    1,     10,          f_math,         'n');
+    this.add('+',       2,          2,          'i',    1,     10,          f_math,         'n'); 
     this.add('*',       2,          2,          'i',    1,     20,          f_math,         'n');
     this.add('-',       2,          2,          'i',    1,     10,          f_math,         'n');
     this.add('/',       2,          2,          'i',    1,     20,          f_math,         'n');
+    this.add('%',       2,          2,          'i',    1,     20,          f_math,         'n');
     this.add('^',       2,          2,          'i',    1,     20,          f_math,         'n');
-    
+
     this.add('COMPTE',  1,          1,          'p',    1,     10,          f_liste,        'w');
     this.add('DERNIER', 1,          1,          'p',    1,     10,          f_liste,        'w');
     this.add('ITEM',    2,          2,          'p',    1,     10,          f_liste,       'nw');
     this.add('LISTE',   1,      99999,          'p',    1,     10,          f_liste,        '*');
+    this.add('MELANGE', 1,      99999,          'p',    1,     10,          f_liste,        'l');
+    this.add('MOT',     1,      99999,          'p',    1,     10,          f_liste,        '*');
     this.add('PREMIER', 1,          1,          'p',    1,     10,          f_liste,        'w');
     this.add('SD',      1,          1,          'p',    1,     10,          f_liste,        'w');
     this.add('SP',      1,          1,          'p',    1,     10,          f_liste,        'w');
-    
+    this.add('VIDEQ',   1,          1,          'p',    1,     10,          f_liste,        'w');
+
     this.add('VRAI',    0,          0,          'p',    1,     50,          f_logique,      'b');
     this.add('FAUX',    0,          0,          'p',    1,     50,          f_logique,      'b');
-    this.add('ET',      2,      99999,          'p',    1,     10,          f_logique,      'b');
+    this.add('ET',      2,      99999,          'p',    1,     20,          f_logique,      'b');
+    this.add('&',       2,          2,          'i',    1,     20,          f_logique,      'b');
     this.add('OU',      2,      99999,          'p',    1,     10,          f_logique,      'b');
+    this.add('|',       2,          2,          'i',    1,     20,          f_logique,      'b');    
     this.add('NON',     1,          1,          'p',    1,     10,          f_logique,      'b');
-    
+
     this.add('=',       2,          2,          'i',    1,     10,          f_compare,      '*');
     this.add('>',       2,          2,          'i',    1,     10,          f_compare,      '*');
     this.add('<',       2,          2,          'i',    1,     10,          f_compare,      '*');
     this.add('<>',      2,          2,          'i',    1,     10,          f_compare,      '*');
     this.add('<=',      2,          2,          'i',    1,     10,          f_compare,      '*');
-    this.add('>=',      2,          2,          'i',    1,     10,          f_compare,      '*'); 
-    this.add('EGALQ',   2,          2,          'p',    1,     10,          f_compare,     '**');  
-    
+    this.add('>=',      2,          2,          'i',    1,     10,          f_compare,      '*');
+    this.add('EGALQ',   2,          2,          'p',    1,     10,          f_compare,     '**'); 
+
     this.add('LISTEQ',  1,          1,          'p',    1,     20,          f_predicat,     '*'); 
-    this.add('MOTQ',    1,          1,          'p',    1,     20,          f_predicat,     '*');  
-    this.add('NOMBREQ', 1,          1,          'p',    1,     20,          f_predicat,     '*'); 
-    
-    this.add('EXECUTE', 1,          1,          'p',    0,     10,          f_exec,          'l');
+    this.add('MOTQ',    1,          1,          'p',    1,     20,          f_predicat,     '*');
+    this.add('NOMBREQ', 1,          1,          'p',    1,     20,          f_predicat,     '*');
+
+    this.add('EXECUTE', 1,          1,          'p',    1,     10,          f_exec,          'l');
     this.add('JUSQUA',  2,          2,          'p',    0,     10,          f_exec,         'll');
     this.add('TANTQUE', 2,          2,          'p',    0,     10,          f_exec,         'll');
     this.add('REPETE',  2,          2,          'p',    0,     10,          f_repete,       'nl');
     this.add('SI',      2,          2,          'p',    0,     10,          f_si,           'bl');
-    this.add('SINON',   3,          3,          'p',    0,     10,          f_si,           'bll');
-    this.add('COMPTEUR',0,          0,          'p',    1,     50,          f_compteur,     '*');
-    this.add('DONNE',   2,          2,          'p',    0,      5,          f_donne,        'm*');     
-    this.add('(',       0,          0,          'i',    0,      0,          null,           '*'); 
-    this.add( 'POUR',   0,          0,          'p',    0,     50,          null,           '*'); 
-    this.add(  'FIN',   0,          0,          'p',    0,     50,          null,           '*');
-    this.add( 'STOP',   0,          0,          'p',    0,     50,          f_stop,         '*');            
+    this.add('SINON',   3,          3,          'p',    0,     10,          f_si,          'bll');
+    this.add('COMPTEUR',0,          0,          'p',    1,     50,          f_compteur,      '*');
+    this.add('CHOSE',   1,          1,          'p',    1,     50,          f_variable,      'm');  
+    this.add('DONNE',   2,          2,          'p',    0,      5,          f_variable,     'm*');  
+    this.add('DONNELOCALE',2,       2,          'p',    0,      5,          f_variable,     'm*');  
+    this.add('LOCALE',  1,      99999,          'p',    0,      5,          f_variable,      'm');    
+    this.add('(',       0,          0,          'i',    0,      0,          null,            '*'); 
+    this.add( 'POUR',   0,          0,          'p',    0,     50,          null,            '*');
+    this.add(  'FIN',   0,          0,          'p',    0,     50,          null,            '*');
+    this.add( 'STOP',   0,          0,          'p',    0,     50,          f_stop,          '*');
 } // Reference
 
 Reference.prototype.add = function (code,mini_arg,maxi_arg,style,ret,priorite,action,type_params) {
@@ -369,25 +397,12 @@ function f_couleur(interpreteur,token,params) { /*****************************/
 } // f_compteur
 
   
-function f_donne(interpreteur,token,params) { /*******************************/
-    // Creation variable globale   
-    var i = interpreteur;
-    while (i.parent) i=i.parent;
-    if (i) {        
-        var ret = new Token('variable',':'+params[0].nom,params[0].valeur,token.ligne,token.colonne);
-        ret.valeur = params[1].valeur;  
-        ret.src =  params[1];    
-        i.contexte.ajoute(ret);    
-    }
-    return;
-} // f_donne
-
 /* Fonction exec, jusqu'a, tant que*******************************************/
 function f_exec(interpreteur,token,params) { /********************************/  
     var ret,exp,i,j,v,p,inter; 
     switch (token.procedure.code) {
-        case 'EXEC' :   interpreteur.enfant = new Interpreteur(interpreteur.ID,interpreteur.LWlogo,interpreteur);
-                        ret = interpreteur.enfant.interpreter(params[0].valeur,params[0].ligne,params[0].colonne,params[0]);   
+        case 'EXECUTE': interpreteur.enfant = new Interpreteur(interpreteur.ID,interpreteur.LWlogo,interpreteur);
+                        ret = interpreteur.enfant.interpreter(params[0].valeur,params[0].ligne,params[0].colonne,token);   
                         break;
         case 'JUSQUA' :
         case 'TANTQUE': inter = new Interpreteur(interpreteur.ID,interpreteur.LWlogo,interpreteur);
@@ -432,7 +447,7 @@ function f_exec(interpreteur,token,params) { /********************************/
 
 /* Fonctions sur les listes **************************************************/
 function f_liste(interpreteur,token,params) { /*******************************/
-    var ret,s,i,n,v,t,tr,analyseur;   
+    var ret,s,i,j,n,v,t,t1,tr,analyseur;   
     v=token.nom+' ';
     for (i=0;i<params.length;i++) {
         s = params[i].valeur;
@@ -492,7 +507,46 @@ function f_liste(interpreteur,token,params) { /*******************************/
                                     case 'variable'   : s=s+' '+params[i].valeur;break;
                                     default           : break;                                    
                                 }                                
-                                break;                                 
+                                break; 
+                case 'MELANGE':
+                              tr='liste';
+                              t=params[i].split();
+                              if (i==0) {
+                                t1=t; 
+                              } else {
+                                for (j=0;j<3;j++) {
+                                    var a = parseFloat(t1[j]);
+                                    var b = parseFloat(t[j]);
+                                    t1[j]=Math.sqrt(0.5*Math.pow(a,2)+0.5*Math.pow(b,2));
+                                    if (t1[j]<0) t1[j]=0;
+                                    if (t1[j]>255) t1[j]=255;
+                                    t1[j] = Math.round(t1[j]);
+                                }
+                              }
+                              if (i==params.length-1) {
+                                s='';
+                                for (j=0;j<3;j++) s=s+' '+t1[j];
+                                s=s.trim();
+                              }                              
+                              break;
+                case 'MOT':   tr='mot';
+                                switch(params[i].type) {
+                                    case 'cont'	      : break;
+                                    case 'eof'        : break;
+                                    case 'eol'        : break;
+                                    case 'eop'        : break;
+                                    case 'erreur'     : break;
+                                    case 'liste'      : s=s+params[i].valeur;break; 
+                                    case 'mot'        : s=s+params[i].valeur;break;     
+                                    case 'nombre'     : s=s+params[i].valeur;break; 
+                                    case 'booleen'    : if (params[i].valeur) s=s+'VRAI'; else s=s+'FAUX';break;
+                                    case 'operateur'  : s=s+params[i].nom;break; 
+                                    case 'parenthese' : s=s+params[i].nom;break; 
+                                    case 'symbole'    : s=s+params[i].valeur;break; 
+                                    case 'variable'   : s=s+params[i].valeur;break;
+                                    default           : break;                                    
+                                }                                
+                                break; 
                 case 'PREMIER': t = params[0].split();                                    
                                 if (t.length>0) {
                                     s = t[0];                                    
@@ -541,7 +595,11 @@ function f_liste(interpreteur,token,params) { /*******************************/
                                     ret.cpl = interpreteur;                                 
                                     return ret;                                        
                                 }  
-                                break;                                
+                                break;  
+                case 'VIDEQ':   t = params[0].split();                                                            
+                                s=(t.length==0);
+                                tr='booleen';                     
+                                break;
                 default     :   ret = erreur(params[i],'evaluation',new Error().stack); 
                                 ret.origine='eval'   
                                 ret.valeur=v;         
@@ -559,13 +617,13 @@ function f_liste(interpreteur,token,params) { /*******************************/
         }
         i++;
     }        
-    if ((! s) || (s=='')) {
+    /*if ((! s) || (s=='')) {
         ret = erreur(params[i],'evaluation',new Error().stack); 
         ret.origine='eval'   
         ret.valeur=v;         
         ret.cpl = interpreteur;                                 
         return ret;        
-    }           
+    }  */         
     ret = new Token(tr,s,'!');
     ret.numero = n;
     ret.origine='eval' 
@@ -600,10 +658,12 @@ function f_logique(interpreteur,token,params) { /*****************************/
             if (params[i].numero>n) n = params[i].numero;
             try {
                 switch (token.procedure.code) {
+                    case '&'    :
                     case 'ET'   :   if (i==0) s=params[0].valeur; else s = s && params[i].valeur;
                                     break;
                     case 'NON'  :   s = ! params[i].valeur;
-                                    break                                    
+                                    break
+                    case '|'    :
                     case 'OU'   :   if (i==0) s=params[0].valeur; else s = s || params[i].valeur;
                                     break;
                     default     :   ret = erreur(params[i],'evaluation',new Error().stack); 
@@ -639,12 +699,12 @@ function f_logique(interpreteur,token,params) { /*****************************/
 
 /* Fonctions mathematiques ***************************************************/
 function f_math(interpreteur,token,params) { /********************************/
-    var ret,s,i,n,v;   
+    var ret,s,i,n,v,tr;   
     v=token.nom+' ';
     for (i=0;i<params.length;i++) {
         if (params[i].numero<token.numero) v=params[i].valeur+' '+v; else v=v+params[i].valeur+' ';
     }
-    i=0;s=0;n=token.numero;
+    i=0;s=0;n=token.numero;tr='nombre';
     if (token.procedure.nbarg==0) {
         switch (token.procedure.code) {    
             case 'PI'       : s=Math.PI;
@@ -663,9 +723,9 @@ function f_math(interpreteur,token,params) { /********************************/
                                     break;  
                     case 'HASARD':  s=Math.round(params[i].valeur*Math.random())
                                     break;
-                    case 'SIN'  :   s = Math.sin(params[i].valeur);
+                    case 'SIN'  :   s = Math.sin(params[i].valeur*Math.PI/180);
                                     break;
-                    case 'COS'  :   s = Math.cos(params[i].valeur);
+                    case 'COS'  :   s = Math.cos(params[i].valeur*Math.PI/180);
                                     break;    
                     case 'LOG10':   s = Math.log10(params[i].valeur);
                                     break;
@@ -689,7 +749,7 @@ function f_math(interpreteur,token,params) { /********************************/
                     case 'RESTE':   if (i==1) s=params[0].valeur % params[1].valeur; else s=params[i].valeur;
                                     break;
                     case '+'    :
-                    case 'SOMME' :  s = s+params[i].valeur;
+                    case 'SOMME' :  s = s+params[i].valeur;                                    
                                     break;
                     default     :   ret = erreur(params[i],'evaluation',new Error().stack); 
                                     ret.origine='eval'   
@@ -706,17 +766,17 @@ function f_math(interpreteur,token,params) { /********************************/
                 ret.cpl = interpreteur;
                 return ret;
             }
-            if (isNaN(s) || (! isFinite(s))) {
-                ret = erreur(params[i],'evaluation',new Error().stack); 
-                ret.origine='eval';
-                ret.valeur = v;
-                ret.cpl = interpreteur;
-                return ret;            
-            }
             i++;
         }  
     }
-    var ret = new Token('nombre',s,'!');
+    if ( (tr=='nombre') && (isNaN(s) || (! isFinite(s)))) {
+        ret = erreur(params[i],'evaluation',new Error().stack); 
+        ret.origine='eval';
+        ret.valeur = v;
+        ret.cpl = interpreteur;
+        return ret;            
+    }    
+    var ret = new Token(tr,s,'!');
     ret.numero = n;
     ret.origine='eval' 
     return ret;
@@ -943,5 +1003,61 @@ function f_tortue(interpreteur,token,params) { /******************************/
     return;     
 } // f_tortue
 
+/* CrÃ©ation de variables globales et locales *********************************/
+function f_variable(interpreteur,token,params) { /****************************/
+    var i,j,ret;    
+    i=0;
+    while (i<params.length) {        
+        switch (token.procedure.code) {
+            case 'CHOSE':   ret=new Token('variable',':'+params[0].nom);
+                            ret = interpreteur.valorise(ret);
+                            ret.numero = token.numero;
+                            return ret;
+                            break;
+            case 'DONNE':   if (i==1) { // CrÃ©ation d'une variable globale                                                                
+                                ret=new Token('variable',':'+params[0].nom);
+                                ret = interpreteur.valorise(ret,params[1]);                                
+                                if (ret.type != 'erreur') {                                    
+                                    ret.valeur=params[1].valeur;
+                                    ret.src =  params[1]; 
+                                    ret.numero = token.numero;                                    
+                                } else {
+                                    var interp = interpreteur;
+                                    while (interp.parent) inter=interp.parent;            
+                                    if (interp) {        
+                                        ret = new Token('variable',':'+params[0].nom,params[0].valeur,token.ligne,token.colonne);
+                                        ret.valeur = params[1].valeur;  
+                                        ret.src =  params[1];    
+                                        ret.numero = token.numero;
+                                        interp.contexte.ajoute(ret);    
+                                    } 
+                                }
+                            }
+                            break;
+            case 'DONNELOCALE': 
+                            if (i==1) {
+                                ret = new Token('variable',':'+params[0].nom,params[0].valeur,token.ligne,token.colonne);
+                                ret.valeur = params[1].valeur;  
+                                ret.src =  params[1];    
+                                ret.numero = token.numero;
+                                j = interpreteur.pile_fun.length;
+                                if (j>0) {
+                                    interpreteur.pile_fun[j-1].ctx.ajoute(ret);  
+                                } else interpreteur.contexte.ajoute(ret); 
+                            }
+                            break;                            
+            case 'LOCALE':  ret = new Token('variable',':'+params[i].nom,params[i].valeur,token.ligne,token.colonne);
+                            ret.valeur = '';  
+                            ret.numero = token.numero;
+                            j = interpreteur.pile_fun.length;
+                            if (j>0) {
+                                interpreteur.pile_fun[j-1].ctx.ajoute(ret);  
+                            } else interpreteur.contexte.ajoute(ret);    
+                            break;
+        } 
+        i++;                   
+    }
+    return;
+} // f_variable
 
 

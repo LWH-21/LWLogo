@@ -74,17 +74,81 @@ Spirales
 <script src="Lexicale.js"></script>
 <script src="interpreteur.js"></script>
 <script src="reference.js"></script>
+<script src="Logo3D.js"></script>
 
-
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js" type="text/javascript"></script>
+<script src="DAT.GUI.js"></script>
+<script src="http://mrdoob.github.com/three.js/build/three.min.js"></script> 
+<script src="OrbitControls.js"></script> 
+<script src="ColladaLoader.js"></script>
 
 <script>
+
+
+function init_helper() {
+var gui = new dat.GUI();
+
+var folder = gui.addFolder('Support');
+var controller = folder.add(logo.troisD.collada.position, 'x',-400,400).name('position x');
+controller.onChange(function(value) {
+  logo.troisD.renderer.render(logo.troisD.scene,logo.troisD.camera);
+});
+var controller = folder.add(logo.troisD.collada.position, 'y',-400,400).name('position y');
+controller.onChange(function(value) {
+  logo.troisD.renderer.render(logo.troisD.scene,logo.troisD.camera);
+});
+var controller = folder.add(logo.troisD.collada.position, 'z',-400,400).name('position z');
+controller.onChange(function(value) {
+  logo.troisD.renderer.render(logo.troisD.scene,logo.troisD.camera);
+});
+
+var folder = gui.addFolder('Dessin');
+var controller = folder.add(logo.troisD.sol.position, 'x',-400,400).name('position x');
+controller.onChange(function(value) {
+  logo.troisD.renderer.render(logo.troisD.scene,logo.troisD.camera);
+});
+var controller = folder.add(logo.troisD.sol.position, 'y',-400,400).name('position y');
+controller.onChange(function(value) {
+  logo.troisD.renderer.render(logo.troisD.scene,logo.troisD.camera);
+});
+var controller = folder.add(logo.troisD.sol.position, 'z',-400,400).name('position z');
+controller.onChange(function(value) {
+  logo.troisD.renderer.render(logo.troisD.scene,logo.troisD.camera);
+});
+}
 
 var editor;
 var reader;
 
 logo = new LWLogo();
-logo.editeur = editor;
-logo.affichage(0);   
+logo.editeur = editor; 
+logo.affichage(1); 
+
+
+
+
+
+/*   var fizzyText = new FizzyText('dat.gui');
+
+   var gui = new DAT.GUI();
+
+   // Text field
+   gui.add(fizzyText, 'message');
+
+   // Sliders with min + max
+   gui.add(fizzyText, 'maxSize').min(0.5).max(7);
+   gui.add(fizzyText, 'growthSpeed').min(0.01).max(1).step(0.05);
+   gui.add(fizzyText, 'speed', 0.1, 2, 0.05); // shorthand for min/max/step
+
+   gui.add(fizzyText, 'noiseStrength', 10, 100, 5);
+
+   // Boolean checkbox
+   gui.add(fizzyText, 'displayOutline');
+
+   // Fires a function called 'explode'
+   gui.add(fizzyText, 'explode').name('Explode!'); // Specify a custom name.
+*/
+ 
 
 function play() {
     var s,i;
