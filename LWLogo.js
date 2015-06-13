@@ -10,6 +10,7 @@ function LWLogo(canvas_dessin, canvas_tortue, canvas_monde) {
     if (! canvas_dessin) canvas_dessin='dessin';
     if (! canvas_tortue) canvas_tortue='tortue';
     if (! canvas_monde) canvas_monde='monde';  
+    this.etat='';
     this.en_pause = false;    
     this.reference = new Reference();
     this.horloge = new Horloge(this);
@@ -21,6 +22,7 @@ function LWLogo(canvas_dessin, canvas_tortue, canvas_monde) {
     this.tortues[0] = new Tortue(0,canvas_tortue,canvas_dessin,this);
     this.editeur = null;
     this.vitesse(50);
+    this.nligne = -1;
     var canvas = document.getElementById(canvas_dessin);
     var ctx=canvas.getContext("2d");   
     ctx.fillStyle="rgba(255,255,255,0.1)";   
@@ -36,12 +38,15 @@ LWLogo.prototype.run = function (code) {
   var r;
   if (!code) return;
   code = code.rtrim();
-  if (code.length<1) return;  
+  if (code.length<1) return;
   this.reference.procedures_util=[];
   this.en_pause=false;
+  this.nligne = -1;
+  this.etat='encours';
   for (r=0;r<this.tortues.length;r++) {
       if (this.tortues[r]) this.tortues[r].reset();
-  }  
+  }
+  this.interpretes[0].err=null;
   r = this.interpretes[0].interpreter(code);
   if ((r) && (r.type=='erreur')) {
       this.erreur(r);
@@ -53,38 +58,56 @@ LWLogo.prototype.run = function (code) {
     }
     this.horloge.start();
   }
-}   
+   maj_him();
+}
 
 LWLogo.prototype.stop = function() {
     var i;
     this.horloge.stop();
+    this.etat='';
+    this.nligne = -1;
     for (i=0;i<this.interpretes.length;i++) {
         this.interpretes[i].pile_nb=[];
         this.interpretes[i].pile_op=[];
     }    
+    maj_him();
 } 
 
 LWLogo.prototype.ligne = function(int,elt,arg) {
-    if (this.editeur) {
-        if ((elt) && (elt.ligne)) {
-            this.editeur.scrollToLine(elt.ligne,true,true);
-            this.editeur.gotoLine(elt.ligne,0,false);            
+    if ((this.ma_vitesse<100) && (elt) && (elt.ligne) && (elt.ligne != this.nligne)) {
+		if  ((this.editeur) && (this.editeur.scrollToLine)) {
+                this.editeur.scrollToLine(elt.ligne,true,true);
+                this.editeur.gotoLine(elt.ligne,0,false); 
+                this.nligne = elt.ligne;
         }    
     }
 }
 
 LWLogo.prototype.pause = function() {
     this.en_pause = ! this.en_pause;
+    if (this.en_pause) {
+        this.etat='pause';
+    } else {
+        this.etat='encours';
+    }
+    maj_him();
 }
 
-LWLogo.prototype.vitesse = function(v) {    
+LWLogo.prototype.vitesse = function(v) {  
+    var i;  
+    v = parseFloat(v);    
     if (v>100) v=100;
     if (v<1) v=1;
-    this.ma_vitesse = v;
+    this.ma_vitesse = v;    
+    for (i=0;i<this.tortues.length;i++) {
+        if (this.tortues[i]) {
+            this.tortues[i].vitesse = v;
+        }
+    }    
 }
 
 LWLogo.prototype.draw_info = function () {
-    var canvas = document.getElementById('etat'),ntortue,i;
+    var canvas = document.getElementById('etat'),ntortue,i,c;
     if (canvas) {
         ntortue = 0;
         var w = canvas.width, h = canvas.height, ctx=canvas.getContext("2d");
@@ -142,7 +165,23 @@ LWLogo.prototype.draw_info = function () {
         ctx.textAlign="start"; 
         ctx.fillText(this.reference.libelle.statut,5,20);
         if (this.en_pause) ctx.fillText(this.reference.libelle.enpause,5,40); else ctx.fillText(this.reference.libelle.encours,5,40);
-        ctx.fillText(this.reference.libelle.pile,5,60);ctx.fillText(this.interpretes[ntortue].pile_fun.length,100,60);
+        i=0;
+        c=this.interpretes[ntortue];
+        
+        var arg=0, op = 0;
+        
+        while (c) {
+            i++;
+            arg+=c.pile_arg.length;
+            op+=c.pile_op.length;
+            c=c.enfant;
+        }
+        i--;
+        ctx.fillText(this.reference.libelle.pile,5,60);ctx.fillText(i,100,60);
+        
+        ctx.fillText("arguments : ",5,80);ctx.fillText(arg,100,80);
+        ctx.fillText("operateurs : ",5,100);ctx.fillText(op,100,100);
+        
         ctx.strokeStyle="#000000";
         if (this.tortues[ntortue].en_cours) ctx.fillStyle="#FF0000";
         else ctx.fillStyle='#00FF00';
@@ -205,16 +244,46 @@ LWLogo.prototype.commande = function(emetteur,cmd,param) {
                     if (i==0) s=s+' ';else s=s+', ';
                     s = s+param[i];
                 }
-                s=s+' ] Taille pile: '+emetteur.pile_fun.length;
-                console.log(s);
             }
         }
     }
 }
 
+LWLogo.prototype.reinitialise = function() {
+    this.horloge.stop();
+    this.etat='';
+    this.reference.procedures_util=[];
+    this.en_pause=false;    
+    for (i=0;i<this.interpretes.length;i++) {    
+        if (this.tortues[i])  {            
+            this.tortues[i].posx=0;
+            this.tortues[i].posy=0;
+            this.tortues[i].cap=0;                                    
+            this.tortues[i].crayon_baisse = true;
+            this.tortues[i].taille_crayon = 1;
+            this.tortues[i].couleur_crayon = "#000000";
+            this.tortues[i].font = "Verdana"
+            this.tortues[i].fontsize=30; 
+            this.tortues[i].reset(); 
+            this.tortues[i].draw();      
+            this.tortues[i].videecran();                  
+        }
+        if (this.interpretes[i]) {
+            this.interpretes[i].termine=true;
+            this.interpretes[i].enfant=null;
+            this.interpretes[i].pile_arg = [];                                                            
+            this.interpretes[i].ordre_tortue = false;
+            this.interpretes[i].dernier_token=null;
+        }
+           
+    }  
+    maj_him();
+    this.draw_info();
+}
+
 /* Retour d'un ordre à la tortue */
-LWLogo.prototype.retour_tortue = function(emetteur,token) { 
-    var e;
+LWLogo.prototype.retour_tortue = function(emetteur,token,etats) { 
+    var e,t,i,j=-1;
     if (emetteur) {
         if ((emetteur.ID>=0) && (emetteur.ID<this.interpretes.length)) {
             if (this.interpretes[emetteur.ID]) {
@@ -222,6 +291,23 @@ LWLogo.prototype.retour_tortue = function(emetteur,token) {
                 while (e.enfant) e =e.enfant;
                 if (debug) console.log('Retour '+token.valeur);
                 e.pile_arg.push(token);
+				if (etats) {
+					for (i=0;i<etats.length;i++) {
+						if (etats[i]) {
+							t=new Token('evenement',etats[i]);
+							if (j<0) {
+								j=this.reference.procedures.length;
+								while ((j>0) && (!t.procedure)) {
+									j--;
+									if (this.reference.procedures[j].code==='$EVT!') {
+										t.procedure = this.reference.procedures[j];
+									}
+								}
+							} else t.procedure = this.reference.procedures[j];
+							e.pile_op.push(t);
+						}
+					}
+				}
             }
         }
     }
@@ -234,7 +320,7 @@ LWLogo.prototype.tick = function (that) {
     
     if (this.en_cours) return;
     
-    this.draw_info();
+    if (this.ma_vitesse<100) this.draw_info();
     
     if (this.troidD) {
         this.troisD.render();
@@ -268,6 +354,8 @@ LWLogo.prototype.tick = function (that) {
     
     if (termine) {
         this.horloge.stop();
+        this.etat='';
+        maj_him();
     }
     
     if (this.troidD) {
@@ -367,11 +455,13 @@ LWLogo.prototype.affichage = function (n) {
 LWLogo.prototype.close_3d = function (obj) {
     if (this.troisD) {
         this.troisD.close();             
-    }    
+    }        
     this.troisD = null;
-    $('#dessin').show();
-    $('#tortue').show();
-    $('#monde').show();    
+    if (typeof jQuery != 'undefined') {
+        $('#dessin').show();
+        $('#tortue').show();
+        $('#monde').show();    
+    }
 }
 
 LWLogo.prototype.init_3d = function (obj) {

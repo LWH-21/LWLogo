@@ -5,8 +5,7 @@
 
 
 function Analyse_lexicale () { /**********************************************/
-    this.src = null;
-    this.cache = new Array();
+    this.src = null;    
     this.nligne=1;
     this.ncolonne = 0; 
     this.fin_analyse = false;   
@@ -26,17 +25,21 @@ Analyse_lexicale.prototype.creation_procs = function() { /********************/
         i=0;
         while (i<this.tokens.length) {
             t = this.tokens[i];
-            if ((t.type=='mot') && (t.procedure) && (t.procedure.code=='POUR')) {
+            if ((t.type=='mot') && (t.procedure) && (t.procedure.code==='POUR')) {
                 fin = false;
                 debut = t;                
                 f=new Fonction_utilisateur();
                 do {
-                    f.add(t);                    
+                    f.add(t); 
                     this.tokens.splice(i,1);
-                    if ((t.type == 'mot') && (t.procedure) && (t.procedure.code=='FIN')) {
+                    if ((t.type == 'mot') && (t.procedure) && (t.procedure.code==='FIN')) {
                         fin=true; 
                         i--;
                     } else t = this.tokens[i];
+					if ((t.procedure) && (t.procedure.code==='POUR')) {
+						t = this.erreur(debut,'procedure imbriquee',new Error().stack);
+						return t;
+					}
                 } while ((!fin) && (i<this.tokens.length))
                 if (!fin) {                    
                     t = this.erreur(debut,'fin fonction',new Error().stack);
@@ -44,9 +47,11 @@ Analyse_lexicale.prototype.creation_procs = function() { /********************/
                 } else {
                     j=0;trouve=false;
                     while ((!trouve) && (j<this.logo.reference.procedures_util.length)) {
-                        if (this.logo.reference.procedures_util[j].nom==f.nom) {
+                        if (this.logo.reference.procedures_util[j].code===f.code) {
                             trouve=true;
                             this.logo.reference.procedures_util[j]=f;
+							t = this.erreur(debut,'procedure dupliquee',new Error().stack);
+							return t;
                         } else j++;
                     }
                     if (! trouve) {
@@ -60,10 +65,11 @@ Analyse_lexicale.prototype.creation_procs = function() { /********************/
 } // creation_procs 
 
 Analyse_lexicale.prototype.decore = function (token) { /**********************/
-    var i,s;
-    if ((token.type=='operateur') || (token.type=='mot')) {
-        s = sans_accent(token.nom);   
-        for (i=0;i<this.logo.reference.procedures.length;i++) {
+    var i,s,j;
+    if ((token.type==='operateur') || (token.type==='mot')) {
+        s = sans_accent(token.nom); 
+		j = this.logo.reference.procedures.length;
+        for (i=0;i<j;i++) {
             if (this.logo.reference.procedures[i].noms.indexOf(s)>=0)  {
                 token.procedure = this.logo.reference.procedures[i];              
                 return;
@@ -72,6 +78,14 @@ Analyse_lexicale.prototype.decore = function (token) { /**********************/
     }
     return null;
 } // decore
+
+Analyse_lexicale.prototype.est_termine = function() { /************************/
+    var i;    
+    for (i=this.numero;i<this.tokens.length;i++) {
+        if (! this.tokens[i].est_blanc()) return false;
+    }
+    return true;
+}
 
 Analyse_lexicale.prototype.erreur = function(t,s,cpl) { /*********************/
         var err = new Token('erreur',s);
@@ -87,10 +101,13 @@ Analyse_lexicale.prototype.erreur = function(t,s,cpl) { /*********************/
 Analyse_lexicale.prototype.get = function() { /*******************************/    
     if (this.numero < this.tokens.length) {
         if (this.tokens[this.numero].type=='eof') {
-            this.fin_analyse = true;
+            this.fin_analyse = this.est_termine();
         }  
         return this.tokens[this.numero ++];
-    } else return new Token('eof','');
+    } else {
+        this.fin_analyse = true;
+        return new Token('eof','');
+    }
 } // get 
  
  Analyse_lexicale.prototype.init= function(parent,texte,dligne,dcol,token) { //
@@ -239,8 +256,7 @@ Analyse_lexicale.prototype.suivant =function() { /****************************/
                         }
                         if (c==']') p--;  
                         if (c=='[') p++; 
-                        if (p>0) {                            
-                            if (c=='\n') c=' ';
+                        if (p>0) {                                                        
                             result+=c;
                         }
                         i++;
@@ -376,7 +392,8 @@ Analyse_lexicale.prototype.suivant =function() { /****************************/
             token = this.erreur(null,'caractere non reconnu',new Error().stack);
             token.ligne = this.nligne;
             token.colonne = this.ncolonne;            
-            token.origine = 'analyse';            
+            token.origine = 'analyse';   
+			token.valeur=c;
             return token;
         }
         
@@ -390,6 +407,15 @@ Analyse_lexicale.prototype.suivant =function() { /****************************/
     return token;
 
 } // Suivant 
+
+Analyse_lexicale.prototype.reset = function() { /*****************************/
+    this.src = null;
+    this.nligne=1;
+    this.ncolonne = 0; 
+    this.fin_analyse = true;   
+    this.tokens=[];
+    this.numero = 0;    
+} // reset
  
 /* Tests sur l'analyse lexicale **********************************************/ 
 Analyse_lexicale.prototype.tests = function() { /*****************************/

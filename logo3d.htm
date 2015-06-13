@@ -122,8 +122,11 @@ var reader;
 
 logo = new LWLogo();
 logo.editeur = editor; 
-logo.affichage(1); 
-
+if (window.WebGLRenderingContext) {
+	logo.affichage(1); 
+} else  {
+	logo.affichage(0); 
+}
 
 
 
@@ -165,7 +168,9 @@ function pause() {
     logo.pause();
 }
         
-
+function maj_him() {
+}     
+		
 </script>
 
 </body>

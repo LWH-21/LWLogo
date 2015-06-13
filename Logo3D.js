@@ -1,3 +1,6 @@
+/* ***************************************************************************/
+/* Affichage 3d avec three.js ************************************************/
+/* ***************************************************************************/
 "use strict";
 
 function Logo3D(parent,nom) {   
@@ -12,8 +15,6 @@ function Logo3D(parent,nom) {
 
     $('#'+this.nom).show();         
    
-    
-    
     this.tortues=[];    
     this.sol = null;
     this.dessin = null;
@@ -53,28 +54,45 @@ Logo3D.prototype.start = function() {
     this.renderer = new THREE.WebGLRenderer({antialias:true});
     this.renderer.setSize( this.WIDTH, this.HEIGHT );
     this.renderer.setClearColor( 0xFFFFFF,0.5 );
+	this.renderer.shadowMapEnabled=true;
     $('#'+this.nom).append(this.renderer.domElement);         
         
     this.dessin = new THREE.Texture(canvas); 
     this.dessin.magFilter = THREE.NearestFilter;
-    this.dessin.minFilter = THREE.LinearFilter;       
+    this.dessin.minFilter = THREE.LinearFilter;    
+    this.dessin.receiveShadow=true;	
     var geometry = new THREE.PlaneGeometry( WIDTH, HEIGHT);    
     var material = new THREE.MeshBasicMaterial( {
         map: this.dessin, side:THREE.DoubleSide,color: 0xEDE5E4, 
         shading:THREE.SmoothShading,
         lightMap: this.dessin,
         specularMap:this.dessin,
+        alphaTest:0.13,
         fog:false
     } );
-    /*var that = this;
-    var material = THREE.MeshBasicMaterial( {
-    map: that.dessin, side:THREE.DoubleSide
-    } );   */     
+    
+   
 	this.sol = new THREE.Mesh( geometry, material );
 	this.collada.add( this.sol );
     this.sol.position.x = 0;
     this.sol.position.y = 0;    
     this.sol.position.z = 15;
+    
+    
+    var canvas = document.getElementById('monde');  
+    this.fond = new THREE.Texture(canvas); 
+    this.fond.magFilter = THREE.NearestFilter;
+    this.fond.minFilter = THREE.LinearFilter;     
+    var geometry = new THREE.PlaneGeometry( WIDTH, HEIGHT);    
+    var material = new THREE.MeshBasicMaterial( {
+        map: this.fond, side:THREE.DoubleSide,color: 0xEDE5E4, 
+        shading:THREE.SmoothShading        
+    } );
+	this.monde = new THREE.Mesh( geometry, material );
+	this.collada.add( this.monde );
+    this.monde.position.x = 0;
+    this.monde.position.y = 0;    
+    this.monde.position.z = 14.8;    
     
   
     var geometry = new  THREE.SphereGeometry( this.WIDTH*2, 32, 32 ); 
@@ -96,6 +114,7 @@ Logo3D.prototype.start = function() {
         j = i+1;
         this.tortues[i]=this.collada.getObjectByName( "Tortue"+j);
         this.tortues[i].position.set(0,0,0);       
+		this.tortues[i].castShadow=true;
     }
     
          
@@ -112,7 +131,8 @@ Logo3D.prototype.start = function() {
     controls.maxPolarAngle = 19*Math.PI /20;
          
     init_helper();
-    this.dessin.needsUpdate = true;    
+    this.dessin.needsUpdate = true;   
+    this.fond.needsUpdate = true;    
     animate();
     
 }
@@ -148,5 +168,6 @@ Logo3D.prototype.render = function() {
 Logo3D.prototype.update = function() {
     if (this.dessin) {
        this.dessin.needsUpdate=true; 
+       //this.fond.needsUpdate=true;
     }
 }

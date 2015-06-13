@@ -12,43 +12,34 @@ var LogoFRpHighlightRules = function() {
         "keyword": 
             " ARRONDI ATTENDS AVANCE AV " +
             " BAISSECRAYON BC BLANC BLEU BRUN"+
-            " CACHETORTUE CAP CHOSE COMPTE COMPTEUR.R COS CTO CYAN " +
+            " CACHETORTUE CAP CHOIX CHOSE COMPTE COMPTEUR.R COS CTO CYAN " +
             " DERNIER DESQUE DIFFERENCE DONNE DONNELOCALE DR DROITE " +
-            " EGAL? ET ETIQUETTE EXEC EXECUTE " +
+            " EGAL? ENLEVE ET ETIQUETTE EXEC EXECUTE " +
             " FAUX FCC FTC FIXECAP FIXECOULEURCRAYON FIXEPOS FIXETAILLECRAYON FIXEX FIXEXY FIXEY " +
             " GA GAUCHE GRIS" +
             " HASARD " +
-            " ITEM " +
+            " INVERSE ITEM " +
             " JAUNE " +
             " " +
             " LC LEVECRAYON LISTE LISTE? LOCALE LOG10 " +
-            " MAGENTA MELANGE MOINS MONTRE MONTRETORTUE MOT MOT? MTO " +
+            " MAGENTA MELANGE MD METSDERNIER METSPREMIER MOINS MONTRE MONTRETORTUE MOT MOT? MP MTO " +
             " NETTOIE NETTOIETOUT NOIR NOMBRE? NON NT " +
             " ORIGINE OU "+
-            " PI PREMIER PRODUIT PUISSANCE "+
+            " PI PHRASE PREMIER PRODUIT PUISSANCE "+
             " QUOTIENT " +
-            " RACINE RE RECULE REPETE RESTE ROUGE " +
+            " RACINE RAPPORTE RE RECULE REPETE REPETEPOUR RESTE RENDS RETOURNE ROUGE " +
             " SAUFDERNIER SAUFPREMIER SD SI SIN SINON SP SOMME STOP STOPPE " +
             " TANTQUE TD TG "+
             " " +
             " VE VERT VIDE? VIDEECRAN VRAI" +
             " " +
-            " " +
-            " " +
-            " " +
-            " " +
-            " " +
-            " " +
-            " " +
             " ",
         "constant.language": 
             "POUR FIN VRAI FAUX",
         "support.type": 
-            "c n i p f d t x string xstring decfloat16 decfloat34",
+            "",
         "keyword.operator":
-            "abs sign ceil floor trunc frac acos asin atan cos sin tan" +
-            " logofrOperator cosh sinh tanh exp log log10 sqrt" +
-            " strlen xstrlen charlen numofchar dbmaxlen lines" 
+            "ARRONDI COS DIFFERENCE LOG10 MOINS PI PUISSANCE QUOTIENT RACINE SIN "
     }, "text", true, " ");
 
     var compoundKeywords = "WITH\\W+(?:HEADER\\W+LINE|FRAME|KEY)|NO\\W+STANDARD\\W+PAGE\\W+HEADING|"+

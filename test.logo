@@ -39,13 +39,13 @@ NettoieTout
 SI CAP = 0 [ DROITE 90 ]
 MONTRE CAP
 MONTRE POS
-SINON PREMIER POS < 10 [ AVANCE 10 ] [ DROITE 90 RECULE 10 ]
+SINON (PREMIER POS) < 10 [ AVANCE 10 ] [ DROITE 90 RECULE 10 ]
 BaisseCrayon
 DONNE "etat BC
 FixeCouleurCrayon [255 0 255]
 FCC vert
 fcc (liste hasard 256  hasard 256  hasard 256)
-Fcc melange rouge vert blanc
+Fcc (melange rouge vert blanc)
 FCC MELANGE ROUGE [255 255 0] [64 64 64]
 FixeTailleCrayon 10
 FTC 5 * 3
@@ -113,7 +113,7 @@ REPETE (2+1) [av 5 droite 90]
 repete (3*(1+1)) [ve repete (1+1) [av 5 ]] AV 10
 ve
 REPETE (2+1) [av 5]
-REPETE 2+1 [AV 5] ;
+REPETE 2+1 [AV 5] 
 repete 3+1 [ve repete 2+1 [av 5 repete 2*1 [ lc bc] TD 90 ] ] 
 ve
 repete 2+2 [av compteur.r*2 repete 2 [td compteur.r*4 tg compteur.r]] ;utilisation de compteur.r
@@ -136,6 +136,13 @@ repete 3600 [avance 10 droite compteur.r + 0.2]
 ve
 repete 12 [repete 30 [av 100 td 168] td 30]
 
+pour coulhasard
+retourne liste (hasard 255) (hasard 255) (hasard 255)
+fin
+
+ve
+repetepour [cpt 1 200 1] [fcc coulhasard av :cpt td :cpt re :cpt]
+
 # fonction hasard
 repete 20 [av (hasard 10) * 2 td hasard 180*2]
 
@@ -145,6 +152,38 @@ lc
 fcc rouge
 ftc 3
 repete 360 [fixex (150*sin compteur.r) fixey (60*cos compteur.r) bc ]
+
+; union jack
+
+pour rectangle :longueur :largeur :couleur
+fixecouleurcrayon :couleur
+fixetaillecrayon 1
+baissecrayon
+repete :largeur/2 [av :longueur droite 90 av 1 droite 90 av :longueur gauche 90 av 1 gauche 90 ]
+fin
+
+ve
+levecrayon
+fixepos [-200 100]
+;dessin du fond
+fixecap 90
+rectangle 400 200 bleu
+levecrayon
+gauche 90
+avance 120
+droite 90
+rectangle 400 50 blanc
+levecrayon
+gauche 90
+av 130
+droite 90 av 175
+rectangle 50 200 blanc
+avance 10
+gauche 90 avance 200 droite 90
+rectangle 30 200 rouge
+levecrayon
+gauche 90 avance 110 gauche 90 avance 185 fixecap 90
+rectangle 400 30 rouge
 
 ; test exec
 
@@ -184,14 +223,14 @@ fixecap 0
 hexagone
 
 # Procedure avec arguments
-pour rectangle :longueur :largeur
+pour rectangle1 :longueur :largeur
 av :longueur td 90
 av :largeur td 90
 av :longueur td 90
 av :largeur td 90
 fin
 
-rectangle 20 10 
+rectangle1 20 10 
 
 pour carre :c
 repete 4 [av :c td  90]
@@ -459,7 +498,13 @@ test01
 attends 100
 montre :essai
 
+; fonctions récursives
+pour factorielle  :n
+si :n=0 [rends 1]
+rends (factorielle :n - 1) * :n
+fin
 
+montre factorielle 20
 
 
 
@@ -629,6 +674,15 @@ fin
 ve
 repete 6 [maniv 80 td 60]
 
+VE
+REPETE 4 [AV 100 GA 120 AV 100 GA 120 AV 100 GA 120 AV 100 DR 90 ]
+VE
+repete 30 [av hasard 200 dr 90]
+ve
+ftc 2
+donne "angle 0
+repete 500 [av 10 td :angle donne "angle :angle + 7]
+
 ve
 donne "l [2 4 14 4 13 2 4 2 2 4 ]
 donne "cpt compte :l
@@ -743,3 +797,60 @@ FIN
 
 VE
 TAPIS 80 3
+
+ve
+donne "size 10
+repete 60 [  av :size dr 120  donne "size :size + 7 ]
+
+pour SQUARE :SIZE
+    REPETE 4 [AV :SIZE DR 90]
+FIN
+
+VE
+REPETE 20 [SQUARE 100 DR 20]
+VE
+repetE 36 [square 100 DR 10]
+VE
+DONNE "size 200
+repete 36 [  square :size dr 10  donne "size :size - 5 ]
+VE
+DONNE "size 200
+FTC 2
+REPETE 36 [ FCC LISTE (HASARD 255) (HASARD 255) (HASARD 255)
+square :size  DR 10 DONNE "size :size - 5 ]
+VE
+DONNE "size 180
+FTC 2
+FCC LISTE HASARD 128 HASARD 255 HASARD 64
+TANTQUE [:size > 0] [ square :size DR 10  DONNE "size :size - 2 ]
+POUR star1 :size
+  repetE 5 [AV :size DR 144]     
+FIN
+VE
+ORIGINE
+DONNE "size 40
+TANTQUE [:size > 1] [LC FIXEPOS LISTE ((HASARD 700)-350) ((HASARD 400)-200)
+BC
+  FCC LISTE HASARD 255 HASARD 255 HASARD 255
+  star1 :size
+  DONNE "size :size - 0.5
+]
+
+; D'après TER Interpréteur Logo (ALLIER Simon – GROLLEMUND Naïtan – LALLUQUE Renaud - DELFOUR Kevin )
+; http://naitan.free.fr/logo/
+
+pour ccurve :long :profondeur
+sinon :profondeur< -1 [ av arrondi :long] [
+ga 45 ccurve :long/1.41421 :profondeur-1
+dr 45 ccurve :long/1.41421 :profondeur-1
+ga 45]
+fin
+
+pour ro :x
+fcc bleu
+lc fixexY -50 50 bc
+repete :x [ccurve 100 8 dr 360/:x]
+fin
+
+nettoietout
+ro 6

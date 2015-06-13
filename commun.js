@@ -4,15 +4,26 @@
 /* ***************************************************************************/
 "use strict";
 
-function erreur (t,s,cpl) { /*************************************************/
-        var err = new Token('erreur',s);
+function erreur (t,s,cpl,params) { /*******************************************/
+        var err = new Token('erreur',s),i=0,v,s1;
         err.origine = '?'; 
         if (t) {
             err.valeur = t.nom;
+            v = t.nom+' ';
             err.ligne = t.ligne;
             err.colonne = t.colonne;  
+        } else err.valeur = '?';
+        if (cpl) err.exdata=cpl; else err.exdata = t;    
+        if (params) {
+            for (i=0;i<params.length;i++) {
+                if (params[i]) {
+                    s1 = params[i].toString();
+                    if (params[i].numero<t.numero) v=s1+' '+v; 
+                    else v=v+s1+' ';                    
+                } else v=v+'? ';
+            }
         }
-        if (cpl) err.exdata=cpl; else err.exdata = t;                                              
+        err.valeur = v;
         return err;
 } // erreur
 
@@ -95,28 +106,24 @@ function sans_accent(entree) { /**********************************************/
 
 /* Teste si la paramètres sont acceptables par le token **********************/
 function test_params(interpreteur,token,params) { /* *************************/      
-    var ret,exp,i,j,s; 
+    var ret,exp,i,j; 
+	if (token.type==='evenement') { return true; }
     if ((!token) || (!token.procedure)) {
-        ret = erreur(token,'inconnu',new Error().stack);   
+        ret = erreur(token,'inconnu',new Error().stack,params);   
         ret.origine='eval';
         return ret;
-    }
-    s=token.valeur+' ';
+    }    
     if (params.length<token.procedure.nbarg) {
-        ret= erreur(token,'nombre_parametres',new Error().stack);
+        ret= erreur(token,'nombre_parametres',new Error().stack,params);
         ret.origine = 'eval';
-        ret.valeur = s; 
         return s;
     }
     for (i=0;i<token.procedure.nbarg;i++) {
-        if (! params[i]) {
-             s=s+' nul';
-             ret = erreur(token,'null',new Error().stack); 
+        if (! params[i]) {            
+             ret = erreur(token,'null',new Error().stack,params); 
              ret.origine = 'eval';
-             ret.valeur = s;
              return ret;
-        }
-        s=s+params[i].valeur+' ';
+        }        
         exp = token.procedure.type_params;
         if (exp) {
             j = exp.length - 1;        
@@ -125,30 +132,26 @@ function test_params(interpreteur,token,params) { /* *************************/
                 switch (exp.charAt(j)) {
                     case '*'    : break;
                     case 'b'    : if (! params[i].est_booleen()) {
-                                    ret = erreur(token,'booleen',new Error().stack);
-                                    ret.origine='eval';
-                                    ret.valeur = s;
+                                    ret = erreur(token,'booleen',new Error().stack,params);
+                                    ret.origine='eval';                                    
                                     return ret;
                                   }
                                   break;                     
                     case 'c'    : if (! params[i].est_couleur())  {
-                                    ret = erreur(token,'couleur',new Error().stack);
-                                    ret.origine='eval';
-                                    ret.valeur = s;
+                                    ret = erreur(token,'couleur',new Error().stack,params);
+                                    ret.origine='eval';                                    
                                     return ret;
                                   }
                                   break;
                     case 'l'    : if (! params[i].est_liste()) {
-                                    ret = erreur(token,'liste',new Error().stack);
-                                    ret.origine='eval';
-                                    ret.valeur = s;
+                                    ret = erreur(token,'liste',new Error().stack,params);
+                                    ret.origine='eval';                                   
                                     return ret;
                                   }
                                   break;  
                     case 'n'    : if (! params[i].est_nombre()) {
-                                    ret = erreur(token,'nombre',new Error().stack);
-                                    ret.origine='eval';
-                                    ret.valeur = s;
+                                    ret = erreur(token,'nombre',new Error().stack,params);
+                                    ret.origine='eval';                                    
                                     return ret;
                                   }
                                   break;                            
@@ -195,20 +198,25 @@ function Token(type,nom,exdata,l,c) {
         case 'eol'        : this.valeur = null;break;
         case 'eop'        : this.valeur = null;break;
         case 'erreur'     : this.valeur = '';break;
-        case 'liste'      : this.valeur='';
-                            var t=nom.trim().split(/[\s,]+/);
-                            for (var i=0;i<t.length;i++) {
+		case 'evenement'  : this.valeur=this.nom;break;
+        case 'liste'      : /*this.valeur='';
+                            var lignes=nom.trim().split(/[\n,]+/);
+                            for (var i=0;i<lignes.length;i++) {
+                                var t = lignes[i].split(
                                 this.valeur = this.valeur+t[i]+' ';
-                            }
-                            this.valeur = this.valeur.trim();
+                            }*/
+                            this.valeur = this.nom.trim();
                             break; 
         case 'mot'        : this.valeur = nom;nom = nom.toLowerCase();nom = sans_accent(nom);break;       
         case 'nombre'     : this.valeur = this.nom;break;
         case 'booleen'    : this.valeur = this.nom;break;
         case 'operateur'  : this.valeur = null;break;
         case 'parenthese' : this.valeur = null;break;
-        case 'symbole'    : this.valeur = this.nom;this.nom = this.nom.substr(1); this.nom=this.nom.toLowerCase();this.nom = sans_accent(this.nom);break;
-        case 'variable'   : this.valeur = '';this.nom = this.nom.substr(1); this.nom=this.nom.toLowerCase();this.nom = sans_accent(this.nom);break;
+        case 'symbole'    : this.valeur = this.nom;
+                            // Les majuscules évitent la confusion avec un mot-clé de Javascript
+							if (this.nom[0]==='"') { this.nom = this.nom.substr(1); } this.nom = sans_accent(this.nom);this.nom=this.nom.toUpperCase();break;
+        case 'variable'   : this.valeur = '';
+							if (this.nom[0]===':') { this.nom = this.nom.substr(1); } this.nom = sans_accent(this.nom);this.nom=this.nom.toUpperCase();break;
         default           : console.log('type '+type+' non traite');
     }
     if (! this.exdata) this.exdata='!';
@@ -220,6 +228,11 @@ Token.prototype.clone = function() { /****************************************/
     c.procedure = this.procedure;    
     c.origine = 'clone';          
     c.numero = this.numero;
+	
+	c.type = this.type;      
+    c.exdata = this.exdata;  
+	c.valeur = this.valeur;
+	
     if (this.src) c.src = this.src;
     return c;
 } // clone
@@ -304,6 +317,7 @@ Token.prototype.longueur = function () { /************************************/
         case 'eol'        :
         case 'eop'        : 
         case 'erreur'     : break;
+		case 'evenement'  : lg=0;break;
         case 'liste'      : lg=this.valeur.length+2;break;
         case 'mot'        : lg=this.valeur.length;break;    
         case 'nombre'     : s=this.valeur+' ';lg = s.length - 1;break;
@@ -325,6 +339,7 @@ Token.prototype.split = function () { /***************************************/
         case 'eol'        : break;
         case 'eop'        : break;
         case 'erreur'     : break;
+		case 'evenement'  : break;
         case 'liste'      : s=this.valeur.trim();
                             s=s+' ';
                             var i=0,j=0,s1='',blancs=/\s/,c;
@@ -381,6 +396,7 @@ Token.prototype.toString = function () { /************************************/
         case 'eol'        : return this.type;break;
         case 'eop'        : return this.type;break;
         case 'erreur'     : return this.type+' '+this.exdata;break;
+		case 'evenement'  : return this.nom;break;
         case 'liste'      : return '['+this.valeur+']';break; 
         case 'mot'        : return this.nom;break;     
         case 'nombre'     : return this.valeur;break;
@@ -391,6 +407,29 @@ Token.prototype.toString = function () { /************************************/
         case 'parenthese' : return this.nom;break;
         case 'symbole'    : return '"'+this.valeur;break;
         case 'variable'   : return ':'+this.nom;break;
+        default           : return 'type '+this.type+' inconnu';
+    }            
+} // toString
+
+Token.prototype.toText = function () { /**************************************/
+    switch (this.type) {
+	case 'cont'	  : return this.type;break;
+        case 'eof'        : return this.type;break;
+        case 'eol'        : return this.type;break;
+        case 'eop'        : return this.type;break;
+        case 'erreur'     : return this.type+' '+this.exdata;break;
+		case 'evenement'  : return this.nom;break;
+        case 'liste'      : return this.valeur;break;
+        case 'mot'        : return this.nom;break;     
+        case 'nombre'     : return this.valeur;break;
+        case 'booleen'    : if (this.valeur) return logo.reference.les_fonctions['VRAI'].std[0]; else
+                            return logo.reference.les_fonctions['FAUX'].std[0];
+                            break;
+        case 'operateur'  : return this.nom;break;
+        case 'parenthese' : return this.nom;break;
+        case 'symbole'    : return this.valeur.slice(1);break;
+        case 'variable'   : if (this.src) return this.src.toText();
+                            return this.valeur;break;
         default           : return 'type '+this.type+' inconnu';
     }            
 } // toString
@@ -406,88 +445,31 @@ function Contexte(parent) { /*************************************************/
 } // Contexte
 
 Contexte.prototype.ajoute = function(t) { /***********************************/
-    if (t) {
-        var i;
-        for (i=0;i<this.data.length;i++) {
-            if ((this.data[i].type == t.type) && (this.data[i].nom == t.nom)) {
-                this.data[i] = t;
-            }
-        }
-        this.data.push(t);
+    if (t) {            
+        this.data[t.nom] = t;           
     }
 } // ajoute
 
 Contexte.prototype.delete =function(t) { /************************************/
     if (t) {
-        var i;
-        for (i=0;i<this.data.length;i++) {
-            if ((this.data[i].type == t.type) && (this.data[i].nom == t.nom)) {
-                this.data[i] = null;
-                this.data.splice(i,1);
-                return true;
-            }
-        }        
+        this.data[t.nom] = null;
     }
     return false;
 } // delete
 
 Contexte.prototype.get = function(t) { /**************************************/
     if (t) {
-        var i;
-        for (i=0;i<this.data.length;i++) {
-            if ((this.data[i].type == t.type) && (this.data[i].nom == t.nom)) {
-                return this.data[i];
-            }
-        }        
+        if (this.data[t.nom]) return this.data[t.nom]; 
     }
     return erreur(t,'non trouve',new Error().stack);
 } // get
 
 Contexte.prototype.maj = function(t) { /**************************************/
     if (t) {
-        var i;
-        for (i=0;i<this.data.length;i++) {
-            if ((this.data[i].type == t.type) && (this.data[i].nom == t.nom)) {
-                this.data[i] = t;
-                return true;
-            }
-        }        
+        this.data[t.nom] = t;  
     }
     return false;
 } // maj
-
-/* ***************************************************************************/
-/* Classe FunContexte * ******************************************************/
-/* Pile d'appel des fonctions ************************************************/
-/* ***************************************************************************/
-
-function FunContexte(token,params) { /****************************************/
-    var i;
-    this.index = 0;   
-    this.token=token;
-    this.ctx = new Contexte(this);
-    for (i=0;i<token.procedure.maxiarg;i++) {
-        var v = token.procedure.args[i].clone();        
-        if (i<params.length) {
-            if (params[i]) {
-                v.valeur = params[i].valeur;
-                v.src = params[i];                
-            } 
-        }
-        this.ctx.ajoute(v);        
-    }
-} // FunContexte
-
-FunContexte.prototype.get = function() { /************************************/
-    var t=this.token.procedure.tokens[this.index];
-    this.index++;
-    //t.numero = numero_ordre ++;
-    return t;
-} // get
-
-FunContexte.prototype.termine = function() { /********************************/   
-    return (this.index>=this.token.procedure.tokens.length);
-} // termine
 
 /* ***************************************************************************/
 /* Classe Fonction_utilisateur * *********************************************/
@@ -545,7 +527,10 @@ Fonction_utilisateur.prototype.add = function(t) { /**************************/
                         // Le token 'eop' force la finalisation de la procedure
                         this.tokens.push(new Token('eop',''));
                         this.phase = 5;                        
-                     } else this.tokens.push(t);
+                     } else {
+                        this.tokens.push(t);
+                        if ((t.procedure) && (t.procedure.code=='RETOURNE')) {this.ret=1;}
+                     }
                      break;                     
         }
 } // add
