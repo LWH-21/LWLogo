@@ -1,7 +1,7 @@
 "use strict";
 
 var numero_ordre = 0;
-var debug=true;   
+var debug=false;   
 
 
 
@@ -18,7 +18,7 @@ function LWLogo(canvas_dessin, canvas_tortue, canvas_monde) {
     this.interpretes[0] = new Interpreteur(0,this,null);
     this.en_cours = false;
     this.tortues = [];    
-    this.monde = new Monde(canvas_monde);
+    this.monde = new Monde(this,canvas_monde);
     this.tortues[0] = new Tortue(0,canvas_tortue,canvas_dessin,this);
     this.editeur = null;
     this.vitesse(50);
@@ -35,8 +35,9 @@ function LWLogo(canvas_dessin, canvas_tortue, canvas_monde) {
 /* Lancement ****************************************************************/
 
 LWLogo.prototype.run = function (code) {
-  var r;
-  if (!code) return;
+  var r,t,j;
+  this.monde.reset();
+  if (!code) return;  
   code = code.rtrim();
   if (code.length<1) return;
   this.reference.procedures_util=[];
@@ -56,6 +57,20 @@ LWLogo.prototype.run = function (code) {
             this.tortues[r].vitesse = (this.ma_vitesse + 1);
         }
     }
+    
+    // Ajout de l'événement init
+    t = this.reference.les_fonctions['INIT'].std[0];
+    if (t) {
+        t=new Token('evenement',t);
+        j=this.reference.procedures.length;
+        while ((j>0) && (!t.procedure)) {
+            j--;
+            if (this.reference.procedures[j].code==='$EVT!') {
+                t.procedure = this.reference.procedures[j];
+            }
+        }
+    }
+	this.interpretes[0].pile_op.push(t);        
     this.horloge.start();
   }
    maj_him();
@@ -114,6 +129,8 @@ LWLogo.prototype.draw_info = function () {
         var x,y,j,a,sin,cos;
         x = 400;y=120;
         ctx.clearRect(0,0,w,h);
+        
+        // Orientation de la tortue
         ctx.beginPath();
         ctx.strokeStyle="#0000FF";
         ctx.moveTo(x,y-90);
@@ -138,8 +155,9 @@ LWLogo.prototype.draw_info = function () {
             ctx.fillText(j+'°',x + 70*cos - 70*sin, y+ 70*sin +70*cos);
         }
         ctx.stroke();
-        ctx.fillText(Math.round(this.tortues[ntortue].cap)+'°',x,y+120);       
-        
+        ctx.fillText(Math.round(this.tortues[ntortue].cap)+'°',x,y+120);    
+         
+        // Position de la tortue
         ctx.beginPath();
         ctx.strokeStyle="#0000FF";
         ctx.fillText('0',x+255,y-5);
@@ -161,15 +179,37 @@ LWLogo.prototype.draw_info = function () {
         ctx.moveTo(x+250-100,a);ctx.lineTo(x+250+100,a)  
         ctx.fillText(Math.round(this.tortues[ntortue].posy),x+360,a);        
         ctx.stroke();
+        
+        // Etat tortue (occupée, libre )
         ctx.fillStyle="#000000";
         ctx.textAlign="start"; 
         ctx.fillText(this.reference.libelle.statut,5,20);
-        if (this.en_pause) ctx.fillText(this.reference.libelle.enpause,5,40); else ctx.fillText(this.reference.libelle.encours,5,40);
-        i=0;
-        c=this.interpretes[ntortue];
+        //if (this.en_pause) ctx.fillText(this.reference.libelle.enpause,5,40); else ctx.fillText(this.reference.libelle.encours,5,40);
+        ctx.strokeStyle="#000000";
+        if (this.tortues[ntortue].en_cours) ctx.fillStyle="#FF0000";
+        else ctx.fillStyle='#00FF00';
+        ctx.beginPath();
+        ctx.arc(120,15,10,0,2*Math.PI);
+        ctx.fill();
+        ctx.stroke();                  
+        // Etat du crayon
+        ctx.fillStyle="#000000";
+        ctx.fillText(this.reference.libelle.crayon,5,50); 
+        ctx.strokeStyle="#000000";
+        ctx.fillStyle=this.tortues[ntortue].couleur_crayon;
+        ctx.beginPath();
+        ctx.moveTo(110,55);ctx.lineTo(130,55);
+        ctx.stroke();
+        if (this.tortues[ntortue].crayon_baisse) { a = 55; } else {a = 50;}
+        ctx.beginPath();
+        ctx.moveTo(120,a);ctx.lineTo(115,a-5);ctx.lineTo(115,a-20);ctx.lineTo(125,a-20);ctx.lineTo(125,a-5);ctx.lineTo(120,a);
+        ctx.stroke();
+        ctx.fill();
         
-        var arg=0, op = 0;
         
+        ctx.fillStyle="#000000";
+        var arg=0, op = 0;i=0;
+        c=this.interpretes[ntortue];        
         while (c) {
             i++;
             arg+=c.pile_arg.length;
@@ -177,31 +217,26 @@ LWLogo.prototype.draw_info = function () {
             c=c.enfant;
         }
         i--;
-        ctx.fillText(this.reference.libelle.pile,5,60);ctx.fillText(i,100,60);
-        
-        ctx.fillText("arguments : ",5,80);ctx.fillText(arg,100,80);
-        ctx.fillText("operateurs : ",5,100);ctx.fillText(op,100,100);
-        
-        ctx.strokeStyle="#000000";
-        if (this.tortues[ntortue].en_cours) ctx.fillStyle="#FF0000";
-        else ctx.fillStyle='#00FF00';
-        ctx.beginPath();
-        ctx.arc(120,15,10,0,2*Math.PI);
-        ctx.fill();
-        ctx.stroke();
-        
-        
+        ctx.fillText(this.reference.libelle.pile,5,210);ctx.fillText(i,100,210);       
+        ctx.fillText("arguments : ",5,230);ctx.fillText(arg,100,230);
+        ctx.fillText("operateurs : ",5,250);ctx.fillText(op,100,250);
+               
         ctx.save();
         ctx.translate(x,y);
         ctx.rotate(this.tortues[ntortue].cap*Math.PI/180);          
         this.tortues[ntortue].dessin_tortue(ctx);              
         ctx.fillStyle="#ff0000"; 
-       /* for (i=0;i<this.tortues[ntortue].points.length;i++) {           
+        for (i=0;i<this.tortues[ntortue].points.length;i++) {           
             ctx.fillRect(this.tortues[ntortue].points[i].x-2,this.tortues[ntortue].points[i].y-2,4,4);
-        }*/                 
+        }
         ctx.rotate(-this.tortues[ntortue].cap*Math.PI/180);
-        ctx.translate(-x,-y);        
+        
+        ctx.translate(-x,-y);                                
         ctx.restore();        
+        
+        // Rectangle pour les collisions
+
+        
     }
 }
 
@@ -368,12 +403,20 @@ LWLogo.prototype.tick = function (that) {
 
 
 LWLogo.prototype.sel_tortue = function(nr) {
-    var i;
+    var i;    
     for (i=0;i<this.tortues.length;i++) {
         if (this.tortues[i]) {
             this.tortues[i].set_tortue(nr);
+            if (this.troisD) {                
+                this.troisD.change_tortue(nr);};
         }
     }
+}
+
+LWLogo.prototype.sel_fond = function(nr) {
+    this.monde.quadrillage=nr;
+    this.monde.draw();
+    if (this.troisD) { this.troisD.update_fond(); }
 }
 
 LWLogo.prototype.erreur = function(token) {
@@ -473,7 +516,8 @@ LWLogo.prototype.init_3d = function (obj) {
     $('#monde').hide();
 
     this.troisD = new Logo3D(this,obj);
-    this.troisD.init();     
+    this.troisD.init();  
+    this.troisD.change_tortue(this.tortues[0].style)   
 }
 
  

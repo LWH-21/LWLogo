@@ -172,7 +172,7 @@ Analyse_lexicale.prototype.suivant =function() { /****************************/
     
     var result,i,j,token,c,fin;           
 
-    var mot = /[\w\u00C0-\u017F\.\?]/;
+    var mot = /[\w\u00C0-\u017F\.\?\!&]/;
     var blancs = ' \t\f\r';    
     
     while (this.src.length>0) {
@@ -358,8 +358,8 @@ Analyse_lexicale.prototype.suivant =function() { /****************************/
                     fin=true;
                 } else if ((c==' ') || (c=='\t') || (c=='\f') || (c=='\r')) {
                     fin=true;
-                } else if (! mot.test(c)) {
-                    fin=true;
+                /*} else if (! mot.test(c)) {
+                    fin=true;*/
                 }  else {
                     result = result+c;
                     i++;                    
@@ -370,7 +370,7 @@ Analyse_lexicale.prototype.suivant =function() { /****************************/
             token.colonne = this.ncolonne;
             token.origine = 'analyse';
             this.src = this.src.slice(i); 
-            this.ncolonne+=i;           
+            this.ncolonne+=i;                  
             return token; 
         } else if (blancs.indexOf(c)>=0) {                              // Caractères blancs
             i=0;j=0;

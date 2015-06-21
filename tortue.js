@@ -42,6 +42,7 @@ function Tortue(id,nom_canvas, dessin, logo) { /******************************/
     this.temps_affichage = 10000; // affichage des bulles : 10s. par défaut (en milliemes de secondes)
     this.timer=null;
     
+    this.style=0;
     this.set_tortue(1);
     
     var ctx=this.dessin.getContext("2d");
@@ -54,15 +55,15 @@ function Tortue(id,nom_canvas, dessin, logo) { /******************************/
 Tortue.prototype.convert = function (x,y) { /*********************************/
     var w = this.canvas.width, h = this.canvas.height;
     x = x + (w / 2);
-    y = h - y - (h / 2);
+    y = (h/2) - y ;
     return new Point(x,y);
 }; // convert
 
 /* Conversion des points "marquants de la tortue *****************************/
 /* Ces points servent à la gestion des collisions                            */
-Tortue.prototype.convert_pts = function (pts,xr,yr) { /*************************/    
+Tortue.prototype.convert_pts = function (pts,xr,yr) { /***********************/    
     var ret = [],i=0,x,y,sin,cos,p,j=pts.length;
-    var direction = ((this.cap) * (Math.PI / 180));
+    var direction = ((this.cap) * (Math.PI / -180));
     if (!xr) {xr=this.posx;}
     if (!yr) {yr=this.posy;}
     sin = Math.sin(direction);
@@ -76,7 +77,101 @@ Tortue.prototype.convert_pts = function (pts,xr,yr) { /*************************
     return ret;
 }; // convert_pts
 
-Tortue.prototype.dessin_simple = function(ctx) { /****************************/
+Tortue.prototype.dessin_robot = function(ctx,points) { /**********************/
+
+    var i;
+    ctx.save();
+
+    ctx.lineWidth=1;
+    ctx.strokeStyle="#000000";
+    ctx.fillStyle="#000000";
+    if (this.visible) { ctx.fillRect(-17,-10,7,20); } else { ctx.strokeRect(-17,-10,7,20); }
+    if (this.visible) { ctx.fillRect( 10,-10,7,20); } else { ctx.strokeRect( 10,-10,7,20); }
+ 
+    ctx.fillStyle="#0000FF";
+    ctx.beginPath();
+    ctx.arc(-5,-10,5,0,2*Math.PI); 
+    ctx.arc( 5,-10,5,0,2*Math.PI);      
+    ctx.fill();
+    if (this.visible) { ctx.fillStyle="#FFFF00"; } else
+    { ctx.fillStyle="#FFFFFF"; }
+    
+    ctx.strokeStyle="#FF9900";    
+    ctx.beginPath();
+    ctx.arc(0,0,15,0,2*Math.PI);
+    ctx.stroke();
+    ctx.fill();
+    ctx.beginPath();
+    if (this.crayon_baisse) { i = 1 ; } { i = 6; }
+    if (this.visible) {ctx.strokeStyle="#0000FF"; } else { ctx.strokeStyle=this.couleur_crayon; }
+    ctx.fillStyle=this.couleur_crayon;
+    ctx.arc( 0,0,i,0,2*Math.PI);
+    if (this.visible) { ctx.fill(); }    
+    ctx.stroke();
+    
+    /*if (this.visible) ctx.fill(); */
+    if (points) {  
+        ctx.fillStyle="#ff0000"; 
+        for (i=0;i<this.points.length;i++) {           
+            ctx.fillRect(this.points[i].x-2,this.points[i].y-2,4,4);
+        }                
+    }        
+    ctx.restore();     
+} // dessin_robot
+
+Tortue.prototype.dessin_probot = function(ctx,points) { /**********************/
+
+    var i;
+    ctx.save();
+
+    ctx.lineWidth=1;
+    ctx.strokeStyle="#000000";
+        
+ 
+    ctx.fillStyle="#f0001a";
+    //carrosserie
+    ctx.beginPath();
+    ctx.moveTo(-15,-28);
+    ctx.arcTo(0,-32,15,-28,60);   
+    ctx.lineTo(15,28);
+    ctx.arcTo(0,32,-15,28,60);
+    ctx.lineTo(-15,-28);  
+    ctx.fill();
+    ctx.stroke(); 
+    
+   // ctx.strokeRect(-15,-30,30,60);
+    
+    //roues
+    ctx.fillStyle="#000000";
+    ctx.fillRect(-19,-18,4,15);ctx.fillRect(-19,5,4,15);
+    ctx.fillRect( 15,-18,4,15);ctx.fillRect( 15,5,4,15);
+    //parebrise
+    ctx.beginPath();
+    ctx.fillStyle="#00abe6";
+    ctx.moveTo(-10,-7);
+    ctx.arcTo(0,-10,10,-7,40);   
+    //ctx.lineTo(10,-7);
+    ctx.lineTo(7,0);
+    ctx.lineTo(-7,0);
+    ctx.fill();
+    
+    if (this.visible) { ctx.fillStyle="#FFFF00"; } else
+    { ctx.fillStyle="#FFFFFF"; }
+    
+    ctx.strokeStyle="#FF9900";    
+    ctx.beginPath();
+    
+    /*if (this.visible) ctx.fill(); */
+    if (points) {  
+        ctx.fillStyle="#ff0000"; 
+        for (i=0;i<this.points.length;i++) {           
+            ctx.fillRect(this.points[i].x-2,this.points[i].y-2,4,4);
+        }                
+    }        
+    ctx.restore();     
+} // dessin_probot
+
+Tortue.prototype.dessin_simple = function(ctx,points) { /*********************/
     ctx.save();  
     ctx.fillStyle="#009933";
     ctx.strokeStyle="#000000";
@@ -91,7 +186,7 @@ Tortue.prototype.dessin_simple = function(ctx) { /****************************/
     for (i=0;i<x.length;i++) {
         if (i===0) {ctx.moveTo(x[i]*tx,y[i]*ty);} else {ctx.lineTo(x[i]*tx ,y[i]*ty);}
     }
-    ctx.stroke();ctx.fill();    
+    ctx.stroke();if (this.visible) { ctx.fill(); }    
     // Patte AVD   
     ctx.beginPath();
     x = [7.5, 10, 10,  8.5, 5.5];
@@ -99,25 +194,25 @@ Tortue.prototype.dessin_simple = function(ctx) { /****************************/
     for (i=0;i<x.length;i++) {
         if (i===0) {ctx.moveTo(x[i]*tx ,y[i]*ty);} else {ctx.lineTo(x[i]*tx ,y[i]*ty);}
     }
-    ctx.stroke();ctx.fill(); 
+    ctx.stroke();if (this.visible) { ctx.fill(); }   
     // Patte AVG   
     ctx.beginPath();      
     for (i=0;i<x.length;i++) {
         if (i===0) {ctx.moveTo(-x[i]*tx ,y[i]*ty);} else {ctx.lineTo(-x[i]*tx ,y[i]*ty);}
     }
-    ctx.stroke();ctx.fill();
+    ctx.stroke();if (this.visible) { ctx.fill(); }   
     // Patte ARD   
     ctx.beginPath();      
     for (i=0;i<x.length;i++) {
         if (i===0) { ctx.moveTo(x[i]*tx ,-y[i]*ty); } else { ctx.lineTo(x[i]*tx ,-y[i]*ty);}
     }
-    ctx.stroke();ctx.fill();   
+    ctx.stroke();if (this.visible) { ctx.fill(); }   
     // Patte ARG   
     ctx.beginPath();      
     for (i=0;i<x.length;i++) {
         if (i===0) {ctx.moveTo(-x[i]*tx ,-y[i]*ty); } else { ctx.lineTo(-x[i]*tx ,-y[i]*ty);}
     }
-    ctx.stroke();ctx.fill(); 
+    ctx.stroke();if (this.visible) { ctx.fill(); }   
     // Corps    
     ctx.beginPath();
     x = [7.5, 7.5, 5.5,   2, -2, -5.5, -7.5, -7.5, -7.5, -5.5, -2,  2, 5.5,  7.5, 7.5   ];
@@ -125,19 +220,20 @@ Tortue.prototype.dessin_simple = function(ctx) { /****************************/
     for (i=0;i<x.length;i++) {
         if (i===0) { ctx.moveTo(x[i]*tx ,y[i]*ty); } else { ctx.lineTo(x[i]*tx ,y[i]*ty); }
     }
-    ctx.stroke();ctx.fill();
+    ctx.stroke();if (this.visible) { ctx.fill(); }   
     tx=tx/1.5;ty=ty/1.5;    
     ctx.beginPath();      
     for (i=0;i<x.length;i++) {
         if (i===0) { ctx.moveTo(-x[i]*tx ,-y[i]*ty); } else  { ctx.lineTo(-x[i]*tx ,-y[i]*ty); }
     }
-    ctx.stroke();ctx.fill();   
+    ctx.stroke();if (this.visible) { ctx.fill(); }   
     ctx.strokeRect(-4,-5,8,10); 
    
     ctx.restore();  
 }; // dessin_simple
 
-Tortue.prototype.dessin_std = function(ctx) { /*******************************/
+Tortue.prototype.dessin_std = function(ctx,points) { /************************/
+    var i;
     ctx.save();
     ctx.fillStyle="#FFFF00";
     ctx.strokeStyle="#FF9900";
@@ -149,8 +245,14 @@ Tortue.prototype.dessin_std = function(ctx) { /*******************************/
     ctx.lineTo(7,5);
     ctx.lineTo(0,-10);
     ctx.stroke();
-    ctx.fill();   
-    ctx.restore();
+    if (this.visible) ctx.fill(); 
+    if (points) {  
+        ctx.fillStyle="#ff0000"; 
+        for (i=0;i<this.points.length;i++) {           
+            ctx.fillRect(this.points[i].x-2,this.points[i].y-2,4,4);
+        }                
+    }        
+    ctx.restore();    
 }; // dessin_std
 
 Tortue.prototype.dessin_3d = function() {
@@ -158,6 +260,32 @@ Tortue.prototype.dessin_3d = function() {
         this.LWlogo.troisD.update();                
     }
 };
+
+// Renvoie un rectangle encadrant la tortue **********************************/
+Tortue.prototype.getAAB = function(xr,yr) { /********************************/
+    var i=0,x,y,sin,cos,p,j=this.points.length;
+    var x1,x2,y1,y2;
+    var direction = ((this.cap) * (Math.PI / -180));
+    if (!xr) {xr=this.posx;}
+    if (!yr) {yr=this.posy;}
+    sin = Math.sin(direction);
+    cos = Math.cos(direction);
+    for (i=0;i<j;i++) {
+        x = this.points[i].x * cos - this.points[i].y*sin ;
+        y = this.points[i].x * sin + this.points[i].y*cos;
+        p = this.convert(x+xr, y+yr);
+        if (i===0) {
+            x1=p.x;x2=p.x;
+            y1=p.y;y2=p.y;
+        } else {
+            x1 = Math.min(x1,p.x);x2=Math.max(x2,p.x);
+            y1 = Math.min(y1,p.y);y2=Math.max(y2,p.y);
+        }
+        
+    }
+    p = new AAB(x1,y1,x2-x1,y2-y1);
+    return p;
+} // getAAB
 
 Tortue.prototype.montre = function( ctx,p) {
     ctx.font="15px Georgia";            
@@ -220,18 +348,15 @@ Tortue.prototype.draw = function() { /****************************************/
             ctx.shadowBlur=0;        
             ctx.translate(p.x,p.y);
             ctx.rotate(this.cap*Math.PI/180);        
-            this.dessin_tortue(ctx);
+            this.dessin_tortue(ctx,(this.montre_points || debug) );
             ctx.rotate(-this.cap*Math.PI/180);
             ctx.translate(-p.x,-p.y);
-            if (this.montre_points) {
-                var p1,i;    
-                p1 = this.convert_pts(this.points);    
-                ctx.fillStyle="#ff0000"; 
-                for (i=0;i<p1.length;i++) {           
-                    ctx.fillRect(p1[i].x-2,p1[i].y-2,4,4);
-                }        
-            }
             ctx.restore();
+             if (debug) {
+             var p1 = this.getAAB(this.posx,this.posy);
+             ctx.strokeRect(p1.x,p1.y,p1.w,p1.h); 
+             }
+             
         }  else if (this.bulle>0) {
                 ctx.save();
                 nt = new Date().getTime();
@@ -283,17 +408,36 @@ Tortue.prototype.reset = function() { /***************************************/
 }; // reset
 
 Tortue.prototype.set_tortue = function(t) { /*********************************/
+    this.style=t;
     switch (t) {
-        case 1        : this.dessin_tortue = this.dessin_simple;
+        case 1        : this.dessin_tortue = this.dessin_robot; // Robot
                         this.points=[];
-                        this.points.push(new Point(0,0));
+                        this.points.push(new Point(-15,-15));
+                        this.points.push(new Point( 15,-15));
+                        this.points.push(new Point( 15, 15));
+                        this.points.push(new Point(-15, 15));
                         break;
+        case 2        : this.dessin_tortue = this.dessin_simple; // Tortue
+                        this.points=[];
+                        this.points.push(new Point(-17,-25));
+                        this.points.push(new Point( 17,-25));
+                        this.points.push(new Point( 17, 17));
+                        this.points.push(new Point(-17, 17));
+                        break;       
+        case 3        : this.dessin_tortue = this.dessin_probot; // Probot
+                        this.points=[];
+                        this.points.push(new Point(-15,-30));
+                        this.points.push(new Point( 15,-30));
+                        this.points.push(new Point( 15, 30));
+                        this.points.push(new Point(-15, 30));                                        
+                        break; 
         default       : this.dessin_tortue = this.dessin_std; 
                         this.points=[];
-                        this.points.push(new Point(0,0));
-                       /* this.points.push(new Point(-10,-15));
                         this.points.push(new Point(0,-10));
-                        this.points.push(new Point(10,-15));*/
+                        this.points.push(new Point(-7,5));
+                        //this.points.push(new Point(0,0));
+                        this.points.push(new Point(7,5));
+                        this.points.push(new Point(0,-10))
                         break;
     }  
     this.draw();  
@@ -317,9 +461,9 @@ Tortue.prototype.commande= function(cmd,param) {
 
 Tortue.prototype.collision = function(x,y) {
     var p,ret;    
-    p = this.convert_pts(this.points,x,y);     	
+    p = this.getAAB(x,y);
     ret =  this.LWlogo.monde.collision(p);
-	if (ret) this.etats.push('COLLISION');
+	if (ret) this.etats.push('collision!');
 	return ret;
 };
 

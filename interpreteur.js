@@ -113,10 +113,10 @@ Interpreteur.prototype.evaluation_necessaire = function(t) { /*****************/
         case 'mot' :    if (! t.procedure) { return this.erreur(t,'non trouve',new Error().stack); }
                         if (t.procedure.ret===0) { return true; } // L'instruction ne renvoie pas de valeur => evaluer ce qui précède
                         i = this.pile_op.length -1;
-						if (this.pile_op[i].type==='evenement') { return true; }
+                        if (this.pile_op[i].type==='evenement') { return true; }
                         if (this.pile_op[i].type!=='parenthese') {
                             if (this.pile_op[i].procedure.priorite>t.procedure.priorite) {
-                                // L'instruction précèdente a une priorité supérieure => evaluer si elle a tous ses arguments								
+                                // L'instruction précèdente a une priorité supérieure => evaluer si elle a tous ses arguments                                
                                 if (this.est_complet(i,'maxi')) {return true;}
                                 return false;
                             }
@@ -155,7 +155,7 @@ Interpreteur.prototype.evaluer = function () { /*******************************/
             return this.erreur(null,'pile vide',new Error().stack);
         }
         var elt = this.pile_op.pop();
-		
+        
         if (! elt) {
             return this.erreur(null,'element vide',new Error().stack);
         }
@@ -202,6 +202,20 @@ Interpreteur.prototype.evaluer = function () { /*******************************/
                 if (this.pile_arg[i].exdata=='ignore') {
                     this.pile_arg.splice(i,1);
                 } else { i++; }
+            }
+        }
+        if ((this.pile_op.length==0) && (this.pile_arg.length>0)) {
+            i=0;
+            while (i<this.pile_arg.length) {
+                if (this.pile_arg[i].exdata=='ignore') {
+                    this.pile_arg.splice(i,1);
+                } else { i++; }
+            }
+            if (this.pile_arg.length>0) {
+                var t = this.pile_arg[this.pile_arg.length-1];
+                if (t.numero < elt.numero) {                   
+                    return this.erreur(t,'que faire',new Error().stack);
+                }
             }
         }
         return token;
@@ -355,7 +369,7 @@ Interpreteur.prototype.traite_token = function() { /***************************/
                             this.dernier_token = null;
                         }
                         break;
-	case 'evenement':
+    case 'evenement':
     case 'mot'      :
     case 'operateur':  if (this.evaluation_necessaire(this.dernier_token)) {
                             return this.evaluer();
@@ -402,7 +416,7 @@ Interpreteur.prototype.valorise= function(token,ctx,maj) { /*******************/
                         token.valeur = ret.valeur;
                         if (maj) { ret.valeur = maj.valeur; }
                         if (ret.src) { token.src = ret.src; }
-						return token.clone();
+                        return token.clone();
                         trouve=true;
                 }
             }

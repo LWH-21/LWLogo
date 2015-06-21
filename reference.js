@@ -17,6 +17,7 @@ function Reference() { /******************************************************/
     /* Libellés */
 
     this.libelle = {
+        crayon: 'Crayon :',
         encours: 'En cours',
         enpause: 'En pause.',
         pile   : 'Taille de la pile :',
@@ -42,7 +43,7 @@ function Reference() { /******************************************************/
       BRUN : {std:['brun']},
       CACHETORTUE : {std:['cachetortue','cto']},
       CAP :{std:['cap']},
-	  CHOIX : {std:['choix']},
+      CHOIX : {std:['choix']},
       CHOSE : {std:['chose']},
       COMPTE:{std:['compte']},
       COMPTEUR : {std: ['compteur.r']},
@@ -67,7 +68,8 @@ function Reference() { /******************************************************/
       FIXEY : {std:['fixey']},
       FTC : {std:['fixetaillecrayon','ftc']},
       HASARD : {std:['hasard']},
-	  INVERSE : {std:['inverse']},
+      INIT : {std:['init!']},
+      INVERSE : {std:['inverse']},
       ITEM : {std:['item']},
       JAUNE : {std:['jaune']},
       JUSQUA : {std:['desque']},
@@ -79,12 +81,13 @@ function Reference() { /******************************************************/
       MAGENTA : {std:['magenta']},
       MOINS : {std:['moins']},
       MELANGE : {std:['melange']},
-	  METSDERNIER : {std : ['metsdernier','md']},
-	  METSPREMIER : {std : ['metspremier','mp']},
+      METSDERNIER : {std : ['metsdernier','md']},
+      METSPREMIER : {std : ['metspremier','mp']},
       MONTRE : {std:['montre']},
       MONTRETORTUE : {std:['montretortue','mto']},
       MOT  : {std:['mot']},
       MOTQ : {std:['mot?']},
+      MUR : {std:['mur&']},
       NETTOIE : {std:['nettoie']},
       NOIR : {std:['noir']},
       NOMBREQ : {std:['nombre?']},
@@ -92,7 +95,7 @@ function Reference() { /******************************************************/
       ORIGINE : {std:['origine']},
       OU : {std:['ou']},
       PI : {std:['pi']},
-	  PHRASE : {std:['phrase']},
+      PHRASE : {std:['phrase']},
       POS: {std:['pos']},
       POUR: {std:['pour']},
       PREMIER: {std:['premier','prem']},
@@ -180,18 +183,18 @@ function Reference() { /******************************************************/
     this.add('%',       2,          2,          'i',    1,     20,          f_math,         'n');
     this.add('^',       2,          2,          'i',    1,     20,          f_math,         'n');
 
-	this.add('CHOIX',   1,          1,          'p',    1,      5,          f_liste,        'w');
+    this.add('CHOIX',   1,          1,          'p',    1,      5,          f_liste,        'w');
     this.add('COMPTE',  1,          1,          'p',    1,     10,          f_liste,        'w');
     this.add('DERNIER', 1,          1,          'p',    1,     10,          f_liste,        'w');
     this.add('ENLEVE',  2,          2,          'p',    1,      5,          f_liste,       '*l');
-	this.add('INVERSE', 1,          1,          'p',    1,      5,          f_liste,        'w');
+    this.add('INVERSE', 1,          1,          'p',    1,      5,          f_liste,        'w');
     this.add('ITEM',    2,          2,          'p',    1,      5,          f_liste,       'nw');
     this.add('LISTE',   1,      99999,          'p',    1,     10,          f_liste,        '*');
-	this.add('METSDERNIER', 2,      2,          'p',    1,     10,          f_liste,       '*l');
-	this.add('METSPREMIER', 2,      2,          'p',    1,     10,          f_liste,       '*l');
+    this.add('METSDERNIER', 2,      2,          'p',    1,     10,          f_liste,       '*l');
+    this.add('METSPREMIER', 2,      2,          'p',    1,     10,          f_liste,       '*l');
     this.add('MELANGE', 1,      99999,          'p',    1,     10,          f_liste,        'l');
     this.add('MOT',     1,      99999,          'p',    1,     10,          f_liste,        '*');
-	this.add('PHRASE',  1,      99999,          'p',    1,     10,          f_liste,        '*');
+    this.add('PHRASE',  1,      99999,          'p',    1,     10,          f_liste,        '*');
     this.add('PREMIER', 1,          1,          'p',    1,     10,          f_liste,        'w');
     this.add('SD',      1,          1,          'p',    1,     10,          f_liste,        'w');
     this.add('SP',      1,          1,          'p',    1,     10,          f_liste,        'w');
@@ -235,7 +238,8 @@ function Reference() { /******************************************************/
     this.add( 'STOP',   0,          0,          'p',    0,     50,          f_stop,          '*');
     this.add('RETOURNE',1,          1,          'p',    0,      5,          f_stop,          '*');
     
-	this.add('$EVT!',   0,          0,          'p',    0,     50,          f_evenement,     '*');
+    this.add('$EVT!',   0,          0,          'p',    0,     50,          f_evenement,     '*'); 
+    this.add('MUR',    1,          1,          'p',    0,     50,          f_evenement,     'l');        
 } // Reference
 
 Reference.prototype.add = function (code,mini_arg,maxi_arg,style,ret,priorite,action,type_params) {
@@ -280,25 +284,26 @@ Reference.prototype.erreur = function(token) { /******************************/
             if (token.ligne) {s=s+'Ligne: '+token.ligne+' ';}
             if (token.colonne) {s=s+'Colonne: '+token.colonne+'<br>';}
             switch (token.nom) {
-				case 'analyse'		: s=s+'Code impossible à analyser.';break;
+                case 'analyse'        : s=s+'Code impossible à analyser.';break;
                 case 'argument'     : s=s+'Les arguments ne correspondent pas pour la commande <span class="valencia">'+token.valeur+'</span>';break;
-				case 'caractere non reconnu' : s=s+'Caractère <span class="valencia">'+token.valeur+'</span> non reconnu';break;
+                case 'caractere non reconnu' : s=s+'Caractère <span class="valencia">'+token.valeur+'</span> non reconnu';break;
                 case 'crochet'      : s=s+'Les crochets ([ - ]) ne correspondent pas';break;
                 case 'element vide' : s=s+'Erreur système : Token à nul';break;
                 case 'evaluation'   : s=s+'Probleme lors de l evaluation de <span class="valencia">'+token.valeur+'</span>';
                                       if (token.err) {s=s+'<br>'+token.err+'</br>';}
                                       break;
-				case 'fin fonction' : s=s+'La fin de la fonction <span class="valencia">'+token.valeur+'</span> n est pas indiquée.';break;
+                case 'fin fonction' : s=s+'La fin de la fonction <span class="valencia">'+token.valeur+'</span> n est pas indiquée.';break;
                 case 'format numerique' : s=s+'Mauvais format pour le nombre <span class="valencia">'+token.valeur+'</span>';break;
                 case 'inconnu'      : s=s+'Je ne connais pas <span class="valencia">'+token.valeur+'</span>';break;
+                case 'init'         : s=s+'L appel à  <span class="valencia">'+token.valeur+'</span> doit se faire dans une fonction d initialisation.';
                 case 'nombre'       : s=s+'Nombre attendu dans l expression <span class="valencia">'+token.valeur+'</span>';break;
                 case 'non trouve'   : s=s+'Je ne connais pas <em>'+token.valeur+'</em>';break;
-				case 'nul'			: s=s+'Erreur système. Token à nul';break;
+                case 'nul'            : s=s+'Erreur système. Token à nul';break;
                 case 'parenthese'   : s=s+'Probleme de parentheses';break;
                 case 'pile vide'    : s=s+'Erreur système : La pile des opérateurs est vide';break;
-				case 'procedure dupliquee' : s=s+'La procédure <span class="valencia">'+token.valeur+'</span> a déjà été définie';break;
-				case 'procedure imbriquee' : s=s+'Définition imbriquée de procédure';break;
-                case 'que faire'    : s=s+'Que faire avec <em>'+token.valeur+'</em>';break;
+                case 'procedure dupliquee' : s=s+'La procédure <span class="valencia">'+token.valeur+'</span> a déjà été définie';break;
+                case 'procedure imbriquee' : s=s+'Définition imbriquée de procédure';break;
+                case 'que faire'    : s=s+'Que faire avec <em>'+token.valeur+'</em> ?';break;
                 case 'variable non trouve' : s=s+'Variable <em>'+token.valeur+'</em> non trouvee';break;
                 default             : s=s+token.nom;break;
             }
@@ -314,18 +319,6 @@ Reference.prototype.erreur = function(token) { /******************************/
 /* Fonctions de comparaison **************************************************/
 function f_compare(interpreteur,token,params) { /*****************************/
     var ret,s,i,n;
-    if ((!token) || (!token.procedure)) {
-        ret = erreur(token,'inconnu',new Error().stack);
-        ret.origine='eval';
-        ret.cpl = interpreteur;
-        return ret;
-    }
-    if ((params.length<token.procedure.nbarg) || (params.length>token.procedure.maxiarg)) {
-        ret = erreur(token,'nombre_parametres',new Error().stack);
-        ret.origine='eval';
-        ret.cpl = interpreteur;
-        return ret;
-    }
     s=false;
     if (token.procedure.nbarg===0) {
         n = token.numero;
@@ -425,27 +418,77 @@ function f_couleur(interpreteur,token,params) { /*****************************/
 } // f_compteur
 
 // Réponse aux évenements survenus à la tortue *******************************/
+// Fonctions liées aux évenements ********************************************/
 function f_evenement(interpreteur,token,params) { /***************************/
-	var i,j,t,e;
-	
-	
-	j=interpreteur.LWlogo.reference.procedures_util.length;
-    for (i=0;i<j;i++) {
-        if (interpreteur.LWlogo.reference.procedures_util[i].code === 'collision')  {
-			t=new Token('mot','collision');
-            t.procedure = interpreteur.LWlogo.reference.procedures_util[i];
-            break;
-        }
+    var i,j,t,e;
+    
+    
+    switch (token.procedure.code) {
+    
+    case '$EVT!' :  j=interpreteur.LWlogo.reference.procedures_util.length;
+                    for (i=0;i<j;i++) {
+                        if (interpreteur.LWlogo.reference.procedures_util[i].code === token.nom)  {
+                            t=new Token('mot',token.nom);
+                            t.procedure = interpreteur.LWlogo.reference.procedures_util[i];
+                            break;
+                        }
+                    }
+                    if (t) {
+                        e = interpreteur;
+                        while (e) { // Pas d'appel récursif pour les événements.
+                            if ((e.fonction) && (e.fonction.procedure.code===t.nom)) { return null; }
+                            e = e.parent;
+                        }
+                        return f_procedure(interpreteur,t,params);
+                    }
+                    return null;
+                    break;
+    case 'MUR' :    e = interpreteur;
+                    var v=[];
+                    // L'appel doit obligatoirement se faire depuis une fonction "init!"
+                    while ((e.parent) && (! e.fonction)) e=e.parent;
+                    t = interpreteur.LWlogo.reference.les_fonctions['INIT'].std[0];
+                    if ((! t) || (!e.fonction) || (t!==e.fonction.procedure.code)) {
+                        t = erreur(token,'init',new Error().stack);
+                        t.origine='eval';
+                        t.cpl = interpreteur;
+                        return t;                   
+                    }
+                    // Seule la première tortue peut appeler cette fonction
+                    while (e.parent) e=e.parent;
+                    if (e.ID !== 0) { return; }
+                    e = new Interpreteur(interpreteur.ID,interpreteur.LWlogo,interpreteur);
+                    t = e.interpreter(params[0].valeur,params[0].ligne,params[0].colonne);
+                    if ((t) && (t.type=='erreur')) {
+                        return ret;
+                    }                    
+                    while (! e.termine) {
+                        t = e.interprete();
+                        if ((t) && (t.type=='erreur')) {
+                            return t;
+                        }
+                    }
+                    i = 0;
+                    while ((i<4) && (e.pile_arg.length>0)) {
+                        t = e.pile_arg.pop();
+                        if (t) {
+                            if (t.type=='erreur') {return t;}
+                            if (t.est_nombre()) {
+                                v[3-i] = t.valeur;
+                                i++;
+                            }
+                        }
+                    }
+                    if  (i<4) {
+                            r = erreur(token,'evaluation',new Error().stack,params);
+                            r.origine='eval';
+                            r.cpl = interpreteur;
+                            return r;
+                    }                                         
+                    interpreteur.LWlogo.monde.mur(v);  
+                    break;
+                    
     }
-	if (t) {
-        e = interpreteur;
-        while (e) { // Pas d'appel récursif pour les événements.
-            if ((e.fonction) && (e.fonction.procedure.code==='collision')) { return null; }
-            e = e.parent;
-        }
-		return f_procedure(interpreteur,t,params);
-	}
-	return null;
 } // f_evenement
 
 /* Fonction exec, jusqu'a, tant que*******************************************/
@@ -455,31 +498,32 @@ function f_exec(interpreteur,token,params) { /********************************/
         case 'EXECUTE': interpreteur.enfant = new Interpreteur(interpreteur.ID,interpreteur.LWlogo,interpreteur);
                         ret = interpreteur.enfant.interpreter(params[0].valeur,params[0].ligne,params[0].colonne,token);
                         break;
-		case 'REPETE' : p=params[0].clone();
-						p.valeur = Math.floor(params[0].valeur);
-						if ((! p.exdata) || (p.exdata=='!')) {p.exdata=0;}
-						if (p.valeur>0) {
-							p.exdata++;
-							interpreteur.enfant = new Interpreteur(interpreteur.ID,interpreteur.LWlogo,interpreteur);
-							v = new Token('variable',':$-compteur');
-							v.valeur = p.exdata;
-							ret = interpreteur.enfant.interpreter(params[1].valeur,params[1].ligne,params[1].colonne,params[1]);
-							if ((ret) && (ret.type=='erreur')) {
-								return ret;
-							}
-							interpreteur.enfant.contexte.ajoute(v);
-							if (p.valeur>1) {
-									p.valeur = p.valeur - 1;
-									if (interpreteur.dernier_token.type!=='eop') {
-										if (! interpreteur.analyseur_lexical.fin_analyse) {interpreteur.analyseur_lexical.back(1);}
-									}
-									interpreteur.dernier_token = new Token('eop','');
-									interpreteur.pile_op.push(token);
-									interpreteur.pile_arg.push(p);
-									interpreteur.pile_arg.push(params[1]);
-							}
-						}
-						break;
+        case 'REPETE' : p=params[0].clone();
+                        p.valeur = Math.floor(params[0].valeur);
+                        if ((! p.exdata) || (p.exdata=='!')) {p.exdata=0;}
+                        if (p.valeur>0) {
+                            p.exdata++;
+                            interpreteur.enfant = new Interpreteur(interpreteur.ID,interpreteur.LWlogo,interpreteur);
+                            v = new Token('variable',':$-compteur');
+                            v.valeur = p.exdata;
+                            v.exdata=='ignore';
+                            ret = interpreteur.enfant.interpreter(params[1].valeur,params[1].ligne,params[1].colonne,params[1]);
+                            if ((ret) && (ret.type=='erreur')) {
+                                return ret;
+                            }
+                            interpreteur.enfant.contexte.ajoute(v);
+                            if (p.valeur>1) {
+                                    p.valeur = p.valeur - 1;
+                                    if (interpreteur.dernier_token.type!=='eop') {
+                                        if (! interpreteur.analyseur_lexical.fin_analyse) {interpreteur.analyseur_lexical.back(1);}
+                                    }
+                                    interpreteur.dernier_token = new Token('eop','');
+                                    interpreteur.pile_op.push(token);
+                                    interpreteur.pile_arg.push(p);
+                                    interpreteur.pile_arg.push(params[1]);
+                            }
+                        }
+                        break;
         case 'REPETEPOUR':
                         p = params[0].split();
                         if ((p.length>=3) && (p.length<5)) {
@@ -506,7 +550,7 @@ function f_exec(interpreteur,token,params) { /********************************/
                                     }  else {
                                         p[1] = p[1] + 1;
                                     }
-									v = params[0].clone();
+                                    v = params[0].clone();
                                     v.valeur = ' ';
                                     for (i=0;i<p.length;i++) {
                                         v.valeur=v.valeur+p[i]+' ';
@@ -574,14 +618,14 @@ function f_liste(interpreteur,token,params) { /*******************************/
         try {
             switch (token.procedure.code) {
                 case 'CHOIX':   t = params[0].split();
-								if (t.length>0) {
-									j = Math.floor(Math.random()*t.length);
-									s = t[j];
-								} else {
-									ret = erreur(token,'evaluation',new Error().stack,params);
-									ret.origine='eval';
-									ret.cpl = interpreteur;
-									return ret;
+                                if (t.length>0) {
+                                    j = Math.floor(Math.random()*t.length);
+                                    s = t[j];
+                                } else {
+                                    ret = erreur(token,'evaluation',new Error().stack,params);
+                                    ret.origine='eval';
+                                    ret.cpl = interpreteur;
+                                    return ret;
                                 }
                                 break;
                 case 'COMPTE':  t = params[0].split();
@@ -620,14 +664,14 @@ function f_liste(interpreteur,token,params) { /*******************************/
                                     }
                                 }
                                 break;
-				case 'INVERSE': t = params[0].split();
-								tr=params[0].type;
-								s=''								
-								for (i=t.length;i>0;i--) {
-									s=s+t[i - 1];
-									if (tr==='liste') {s=s+' ';}
-								}
-								s=s.trim(); 
+                case 'INVERSE': t = params[0].split();
+                                tr=params[0].type;
+                                s=''                                
+                                for (i=t.length;i>0;i--) {
+                                    s=s+t[i - 1];
+                                    if (tr==='liste') {s=s+' ';}
+                                }
+                                s=s.trim(); 
                                 break;
                 case 'ITEM':    if (i==1) {
                                     t = params[1].split();
@@ -642,7 +686,7 @@ function f_liste(interpreteur,token,params) { /*******************************/
                                     }
                                 }
                                 break;
-				case 'PHRASE':
+                case 'PHRASE':
                 case 'LISTE':   tr='liste';
                                 switch(params[i].type) {
                                     case 'cont'       : break;
@@ -651,11 +695,11 @@ function f_liste(interpreteur,token,params) { /*******************************/
                                     case 'eop'        : break;
                                     case 'erreur'     : break;
                                     case 'liste'      : if (token.procedure.code==='LISTE') {
-															s=s+' ['+params[i].valeur+']';
-														} else {
-															s=s+' '+params[i].valeur;
-														}
-														break;
+                                                            s=s+' ['+params[i].valeur+']';
+                                                        } else {
+                                                            s=s+' '+params[i].valeur;
+                                                        }
+                                                        break;
                                     case 'mot'        : s=s+' '+params[i].toText();break;
                                     case 'nombre'     : s=s+' '+params[i].toText();break;
                                     case 'booleen'    : if (params[i].valeur) {s=s+' VRAI';} else {s=s+' FAUX';} break;
@@ -687,18 +731,18 @@ function f_liste(interpreteur,token,params) { /*******************************/
                                 s=s.trim();
                               }
                               break;
-				case 'METSPREMIER' :
-								if (i==1) {
-									s=params[0].toText()+' '+params[1].valeur;
-									tr='liste';
-								}
-								break;
-				case 'METSDERNIER' :
-								if (i==1) {
-									s=params[1].valeur+' '+params[0].toText();
-									tr='liste';
-								}
-								break;
+                case 'METSPREMIER' :
+                                if (i==1) {
+                                    s=params[0].toText()+' '+params[1].valeur;
+                                    tr='liste';
+                                }
+                                break;
+                case 'METSDERNIER' :
+                                if (i==1) {
+                                    s=params[1].valeur+' '+params[0].toText();
+                                    tr='liste';
+                                }
+                                break;
                 case 'MOT':   tr='mot';
                                 switch(params[i].type) {
                                     case 'cont'       : break;
@@ -853,7 +897,7 @@ function f_logique(interpreteur,token,params) { /*****************************/
 function f_math(interpreteur,token,params) { /********************************/
     var ret,s,i,n,tr;
     i=0;s=0;n=token.numero;tr='nombre';
-	
+    
     if (token.procedure.nbarg===0) {
         switch (token.procedure.code) {
             case 'PI'       : s=Math.PI;
@@ -959,7 +1003,7 @@ function f_procedure(interpreteur,token,params) { /***************************/
         interpreteur.analyseur_lexical.fin_analyse=false;
         interpreteur.pile_arg = [];
         interpreteur.fonction = token;
-		interpreteur.contexte = new Contexte(interpreteur); 
+        interpreteur.contexte = new Contexte(interpreteur); 
         it = interpreteur;
     } else {
         interpreteur.enfant = new Interpreteur(interpreteur.ID,interpreteur.LWlogo,interpreteur);
@@ -1021,13 +1065,13 @@ function f_stop(interpreteur,token,params) { /********************************/
     if (e) {
         e.enfant = null;
         e.dernier_token = null;
-		e.contexte=null;
+        e.contexte=null;
         e.analyseur_lexical.reset();
         if (e.fonction) {c=e.fonction.numero;} else {c=token.numero;}
         if (token.procedure.code==='RETOURNE') {
-			if (e.fonction) {
-				if (e.fonction.procedure.code[0]==='$') return
-			}
+            if (e.fonction) {
+                if (e.fonction.procedure.code[0]==='$') return
+            }
             if (e.parent) {e=e.parent;}
             if ((params.length>0) && (params[0])) {
                 params[0].numero = c;

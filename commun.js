@@ -47,6 +47,12 @@ if (!String.rtrim){ /*********************************************************/
     };
 } // String.rtrim
 
+if (!Math.log10) { /**********************************************************/
+    Math.log10 = function(x) {
+        return Math.log(x) / Math.LN10;
+    }
+} // Math.log10
+
 function sans_accent(entree) { /**********************************************/
         var sortie = "";        
         var car="";
@@ -207,7 +213,7 @@ function Token(type,nom,exdata,l,c) {
                             }*/
                             this.valeur = this.nom.trim();
                             break; 
-        case 'mot'        : this.valeur = nom;nom = nom.toLowerCase();nom = sans_accent(nom);break;       
+        case 'mot'        : this.valeur = this.nom;this.nom = this.nom.toLowerCase();this.nom = sans_accent(this.nom);break;       
         case 'nombre'     : this.valeur = this.nom;break;
         case 'booleen'    : this.valeur = this.nom;break;
         case 'operateur'  : this.valeur = null;break;
@@ -215,7 +221,7 @@ function Token(type,nom,exdata,l,c) {
         case 'symbole'    : this.valeur = this.nom;
                             // Les majuscules évitent la confusion avec un mot-clé de Javascript
 							if (this.nom[0]==='"') { this.nom = this.nom.substr(1); } this.nom = sans_accent(this.nom);this.nom=this.nom.toUpperCase();break;
-        case 'variable'   : this.valeur = '';
+        case 'variable'   : //this.valeur = '';
 							if (this.nom[0]===':') { this.nom = this.nom.substr(1); } this.nom = sans_accent(this.nom);this.nom=this.nom.toUpperCase();break;
         default           : console.log('type '+type+' non traite');
     }
@@ -590,8 +596,18 @@ function Point(x,y) { /*******************************************************/
     this.y = y;
 } // Point
 
+/* ***************************************************************************/
+/* Classe AAB * **************************************************************/
+/* ***************************************************************************/
 
-
+function AAB(x,y,w,h) { /*****************************************************/
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.x1=x+w;
+    this.y1=y+h;
+} // Point
 
 
 
