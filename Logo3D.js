@@ -6,7 +6,7 @@
 function Logo3D(parent,nom) {
     this.logo = parent;
     this.nom = nom;
-
+    
     $('#'+this.nom).show();
 
     this.WIDTH = 800;
@@ -20,6 +20,18 @@ function Logo3D(parent,nom) {
     this.dessin = null;
     this.style = 0;
 
+}
+
+function webglAvailable() { 
+    try {
+        var canvas = document.createElement("canvas");
+        return !!
+            window.WebGLRenderingContext && 
+            (canvas.getContext("webgl") || 
+                canvas.getContext("experimental-webgl"));
+    } catch(e) { 
+        return false;
+    } 
 }
 
 function animate() {
@@ -60,9 +72,6 @@ Logo3D.prototype.change_tortue = function(n) {
         }
         
     }
-    
-   
-    
 }
 
 Logo3D.prototype.close = function() {
@@ -109,14 +118,15 @@ Logo3D.prototype.start = function() {
     this.camera.up = new THREE.Vector3(0,1,0);
     this.camera.lookAt(this.scene.position);
 
-    this.renderer = new THREE.WebGLRenderer({antialias:true, preserveDrawingBuffer: true});
+    this.renderer = webglAvailable() ? new THREE.WebGLRenderer({antialias:true, preserveDrawingBuffer: true}) : new THREE.CanvasRenderer({antialias:true, preserveDrawingBuffer: true});
+
     this.renderer.setSize( this.WIDTH, this.HEIGHT );
     this.renderer.setClearColor( 0xFFFFFF,0.5 );
     this.renderer.shadowMapEnabled=true;
     this.renderer.shadowMapType = THREE.PCFSoftShadowMap;
         
     this.scene.add(this.collada);
-    
+
     $('#'+this.nom).append(this.renderer.domElement);
 
     this.dessin = new THREE.Texture(canvas);
@@ -128,8 +138,8 @@ Logo3D.prototype.start = function() {
         map: this.dessin, side:THREE.FrontSide,color: 0xEDE5E4,
         shading: THREE.SmoothShading,
         shininess:10,
-        lightMap: this.dessin,
-        specularMap:this.dessin,
+        //lightMap: this.dessin,
+        //specularMap:this.dessin,
         alphaTest:0.13,
         fog:false
     } );
@@ -160,43 +170,42 @@ Logo3D.prototype.start = function() {
     this.monde.position.z = 14.8;
 
 
-    var geometry = new  THREE.SphereGeometry( this.WIDTH*2, 32, 32 );
+    var skyBoxGeometry = new THREE.BoxGeometry( 1000, 1000, 1000 );
+	var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
+	var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
+	this.scene.add(skyBox);
+    
+    /*var geometry = new  THREE.SphereGeometry( this.WIDTH*2, 32, 32 );
     var material = new THREE.MeshPhongMaterial( {
         side:THREE.DoubleSide,color: 0xEDE5E4
     } );
     var ciel = new THREE.Mesh( geometry, material );
-    this.collada.add( ciel );
+    this.collada.add( ciel );*/
 
-     var ambientLight = new THREE.AmbientLight(0xD1ECED);
-     this.scene.add(ambientLight);
+    this.ambientLight = new THREE.AmbientLight(0xD1ECED);
+    this.scene.add(this.ambientLight);
 
-     this.Light = new THREE.DirectionalLight(0x0000FF,1);
-    // this.Light.position.set(0, 0, 10).normalize();
-     this.Light.position.z = 2000;
-     this.Light.position.x = 1500;
-     this.Light.position.y = 1500;
+    this.spriteTexture = new THREE.Texture(this.logo.tortues[0].textCanvas) 
+    this.spriteTexture.magFilter = THREE.NearestFilter;
+    this.spriteTexture.minFilter = THREE.LinearFilter;    
+    this.spriteTexture.needsUpdate = true;
+
+	var spriteMaterial = new THREE.SpriteMaterial( 
+		{ map:  this.spriteTexture, useScreenCoordinates: false/*, alignment: spriteAlignment*/ } );
+	this.textSprite = new THREE.Sprite( spriteMaterial );
+	this.textSprite.scale.set(100,50,2.0);
+    this.scene.add(this.textSprite);
+        
+    this.Light = new THREE.DirectionalLight(0x0000FF,0.5);
+    this.Light.position.z = 2000;
+    this.Light.position.x = 1500;
+    this.Light.position.y = 1500;
      
-    // this.collada.add( new THREE.DirectionalLightHelper(this.Light, 50) );
-     
-     //directionalLight.position.set(0, 100, 0);
-     this.collada.add(this.Light);
-     this.Light.castShadow=true;
-     this.Light.shadowDarkness = 0.1;
-     //this.Light.shadowCameraVisible  = true;
-   /*  directionalLight.shadowCameraRight    =  200;
-     directionalLight.shadowCameraLeft     = -200;
-     directionalLight.shadowCameraTop      =  200;
-     directionalLight.shadowCameraBottom   = 0;*/
-     
-    
+    this.collada.add(this.Light);
+    this.Light.castShadow=true;
+    this.Light.shadowDarkness = 0.1;
 
-/*this.Light.shadowMapWidth = 1024;
-this.Light.shadowMapHeight = 1024;
-
-this.Light.shadowCameraNear = 500;
-this.Light.shadowCameraFar = 4000;
-this.Light.shadowCameraFov = 30;*/
- this.Light.target = this.sol;  
+    this.Light.target = this.sol;  
 
     var controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
     controls.target = this.collada.position;
@@ -216,8 +225,69 @@ this.Light.shadowCameraFov = 30;*/
     this.change_tortue(this.style);
     this.maj_monde();
     animate();
-    
 
+
+}
+
+Logo3D.prototype.makeTextSprite = function( message, parameters )
+{
+	if ( parameters === undefined ) parameters = {};
+	
+	var fontface = parameters.hasOwnProperty("fontface") ? 
+		parameters["fontface"] : "Arial";
+	
+	var fontsize = parameters.hasOwnProperty("fontsize") ? 
+		parameters["fontsize"] : 18;
+	
+	var borderThickness = parameters.hasOwnProperty("borderThickness") ? 
+		parameters["borderThickness"] : 4;
+	
+	var borderColor = parameters.hasOwnProperty("borderColor") ?
+		parameters["borderColor"] : { r:0, g:0, b:0, a:1.0 };
+	
+	var backgroundColor = parameters.hasOwnProperty("backgroundColor") ?
+		parameters["backgroundColor"] : { r:255, g:255, b:255, a:1.0 };
+
+	var context = this.textCanvas.getContext('2d');
+	context.font = "Bold " + fontsize + "px " + fontface;
+    
+	// get size data (height depends only on font size)
+	var metrics = context.measureText( message );
+	var textWidth = metrics.width;
+	
+	// background color
+	context.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + ","
+								  + backgroundColor.b + "," + backgroundColor.a + ")";
+	// border color
+	context.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + ","
+								  + borderColor.b + "," + borderColor.a + ")";
+
+	context.lineWidth = borderThickness;
+	roundRect(context, borderThickness/2, borderThickness/2, textWidth + borderThickness, fontsize * 1.4 + borderThickness, 6);
+	// 1.4 is extra height factor for text below baseline: g,j,p,q.
+	
+	// text color
+	context.fillStyle = "rgba(0, 0, 0, 1.0)";
+
+	context.fillText( message, borderThickness, fontsize + borderThickness);
+	this.spriteTexture.needsUpdate = true;
+}
+
+function roundRect(ctx, x, y, w, h, r) 
+{
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.lineTo(x+w-r, y);
+    ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+    ctx.lineTo(x+w, y+h-r);
+    ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+    ctx.lineTo(x+r, y+h);
+    ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+    ctx.lineTo(x, y+r);
+    ctx.quadraticCurveTo(x, y, x+r, y);
+    ctx.closePath();
+    ctx.fill();
+	ctx.stroke();   
 }
 
 Logo3D.prototype.update_fond = function() {
@@ -225,7 +295,6 @@ Logo3D.prototype.update_fond = function() {
 }
 
 Logo3D.prototype.init = function() {
-
     var loader = new THREE.ColladaLoader();
     var that = this;
     this.pret=false;
@@ -241,13 +310,22 @@ Logo3D.prototype.render = function() {
     var i;
     requestAnimationFrame(animate);
     for (i=0;i<this.tortues.length;i++) {
-        if ((this.tortues[i]) && (this.logo.tortues[i])) {
-            //if (this.logo.tortues[i].crayon_baisse) this.tortues[i].position.z=0;else this.tortues[i].position.z=10;
+        if ((this.tortues[i]) && (this.logo.tortues[i])) {           
             this.tortues[i].position.z=0;
             this.tortues[i].visible = this.logo.tortues[i].visible;
             this.tortues[i].position.x = this.logo.tortues[i].posx;
             this.tortues[i].position.y = this.logo.tortues[i].posy;
-            this.tortues[i].rotation.z = this.logo.tortues[i].cap*(-Math.PI/180);            
+            this.tortues[i].rotation.z = this.logo.tortues[i].cap*(-Math.PI/180);             
+            if (this.logo.tortues[i].bulle>0) {                
+                this.textSprite.visible = true;
+                this.textSprite.position.x = this.logo.tortues[i].posx;
+                this.textSprite.position.y = this.logo.tortues[i].posy;
+                this.textSprite.position.z = 30 + this.logo.tortues[i].textCanvas.height ;
+                this.textSprite.scale.set(this.logo.tortues[i].textCanvas.width,this.logo.tortues[i].textCanvas.height,1.0); 
+                this.spriteTexture.needsUpdate = true;                
+            } else {
+                this.textSprite.visible = false;
+            }
         }
     }
 

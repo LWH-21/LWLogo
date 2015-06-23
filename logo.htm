@@ -22,7 +22,8 @@
 <p>
 <button id="play" style="vertical-align: top;margin-top:2px;" onclick="play()">Lancer</button>
 <button id="stop" style="vertical-align: top;margin-top:2px;" onclick="stop()">Stop</button>
-<button id="pause" style="vertical-align: top;margin-top:2px;" onclick="pause()">Pause</button>  
+<button id="pause" style="vertical-align: top;margin-top:2px;" onclick="pause()">Pause</button> 
+<button id="export" style="vertical-align: top;margin-top:2px;" onclick="reformate()">Reformate</button>  
 <select id="seltortue">
   <option value="0">1 Pointeur</option>
   <option value="1">2 Robot</option>
@@ -71,6 +72,7 @@ Spirales
 <script src="commun.js"></script>
 <script src="LWLogo.js"></script>
 <script src="monde.js"></script>
+<script src="dessin.js"></script>
 <script src="tortue.js"></script>
 <script src="Lexicale.js"></script>
 <script src="interpreteur.js"></script>
@@ -101,7 +103,14 @@ function stop() {
 function pause() {
     logo.pause();
 }
-     
+    
+function reformate() {
+    var s = document.getElementById('editor').value;
+    s = logo.exporte(s);    
+    s = logo.importe(s);
+    document.getElementById('editor').value=s;
+}
+    
 function maj_him() {
 }     
 

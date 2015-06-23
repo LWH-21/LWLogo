@@ -7,14 +7,17 @@ function Tortue(id,nom_canvas, dessin, logo) { /******************************/
     this.ID = id;
     this.LWlogo = logo;
     
-    this.canvas = document.getElementById(nom_canvas);    
-    this.dessin = document.getElementById(dessin);   
+    this.canvas = document.getElementById(nom_canvas); 
+    this.textCanvas = document.createElement('canvas');    
+    
+    this.dessin = new Dessin(logo,dessin);
     
     this.cap = 0;
     this.posx = 0;
     this.posy = 0;
        
     this.ordre='';      // Dernier ordre envoye ala tortue
+    this.num_ordre = 0;
     this.debut=true;    // Indique que le traitement de l'ordre n'a pas encore commence
     this.param=[];      // Parametres de l'ordre
     this.param_trv=[];  // Copie de travail des parametres
@@ -37,7 +40,7 @@ function Tortue(id,nom_canvas, dessin, logo) { /******************************/
     this.vitesse = 100;
     this.dessin_tortue = this.dessin_std;
     
-    this.bulle = 0;
+    this.bulle = 0;this.oldbulle = 0;
     this.text=[];
     this.temps_affichage = 10000; // affichage des bulles : 10s. par défaut (en milliemes de secondes)
     this.timer=null;
@@ -45,9 +48,7 @@ function Tortue(id,nom_canvas, dessin, logo) { /******************************/
     this.style=0;
     this.set_tortue(1);
     
-    var ctx=this.dessin.getContext("2d");
-    ctx.fillStyle="rgba(0,0,64,0.8)";
-    ctx.clearRect ( 0 , 0 , this.dessin.width,this.dessin.height); 
+    this.dessin.vide();
     this.draw(); 
 } // Tortue
 
@@ -287,37 +288,43 @@ Tortue.prototype.getAAB = function(xr,yr) { /********************************/
     return p;
 } // getAAB
 
-Tortue.prototype.montre = function( ctx,p) {
-    ctx.font="15px Georgia";            
-    var i,x1,y1,y2,mwt,wt,w,h;
-    w = this.canvas.width-50;
-    h = this.canvas.height;
-    mwt = 0;
-    for (i=0;i<this.text.length;i++) {
-            wt = ctx.measureText(this.text[i]).width+10;
-            mwt = Math.max(wt,mwt);
-    } 
-    wt = mwt;
-    if (wt<50) { wt = 50; }
-    if (wt>w)  { wt = w; }
-    if (p.x > w/2)  { x1 = p.x - wt - 20; } else { x1 = p.x + 20;}
-    if (p.y > h/2) { y1 = p.y - 50;} else {y1 = p.y + 20;y2 = p.y + 25;}
-    ctx.fillStyle="#FFFFFF";
-    ctx.strokeStyle="#000000";
-    ctx.shadowBlur=10;
-    ctx.shadowColor="black";             
-    ctx.beginPath();
-    ctx.rect(x1,y1,wt,25*this.text.length);
-    ctx.fill();
-    ctx.stroke(); 
-    ctx.clip();
-    ctx.shadowBlur=0;
-
-    ctx.fillStyle="#000000"; 
-    for (i=0;i<this.text.length;i++) {
-            ctx.fillText(this.text[i],x1+5,y1+15);
-            y1+=25;
-    }     
+Tortue.prototype.montre = function( nctx,p,aff) {
+    var mwt,h;
+    if (this.oldbulle !== this.bulle) {
+        var i,x1,y1,y2,wt,w,ctx;
+        this.oldbulle = this.bulle;   
+        h = 20 + this.text.length * 15;
+        
+        this.textCanvas.width = this.canvas.width;
+        this.textCanvas.height = h;                        
+        ctx = this.textCanvas.getContext("2d");
+        ctx.font="Bold 15px Georgia"; 
+        mwt = 10;
+        for (i=0;i<this.text.length;i++) {
+            wt = ctx.measureText(this.text[i]).width+5;
+            mwt = Math.max(wt+20,mwt);
+        }   
+        this.textCanvas.width = mwt; 
+        ctx.font="Bold 15px Georgia";         
+        ctx.fillStyle='rgba(255,255,255,1)';
+        ctx.fillRect(0,0,mwt,h);
+        
+        ctx.fillStyle="#FFFFFF";
+        ctx.strokeStyle="#000066";
+        ctx.shadowBlur=10;
+        ctx.shadowColor="black";             
+        ctx.beginPath();
+        ctx.roundRect(2,2,mwt - 4,h - 4,5);        
+        ctx.fill();ctx.stroke();ctx.clip();
+        y1=20;
+        ctx.fillStyle="#000000";
+        for (i=0;i<this.text.length;i++) {
+            ctx.fillText(this.text[i],6,y1);
+            y1+=15;
+        }                      
+    }
+    
+    if (aff) { nctx.drawImage(this.textCanvas,p.x,p.y); }
 };
 
 Tortue.prototype.draw = function() { /****************************************/
@@ -326,6 +333,16 @@ Tortue.prototype.draw = function() { /****************************************/
 	
     if (this.LWlogo.troisD) {
         this.dessine();  
+        if (this.bulle>0) {
+            this.montre(ctx,p,false);
+            nt = new Date().getTime();
+            nt = this.temps_affichage - (nt - this.bulle);
+            if (nt<=0) {
+                if (this.timer) { clearInterval(this.timer);}
+                this.timer = null;
+                this.bulle=0;                
+            }              
+        }
         this.dessin_3d();       
     } else {
         var w = this.canvas.width, h = this.canvas.height, ctx=this.canvas.getContext("2d");
@@ -342,7 +359,7 @@ Tortue.prototype.draw = function() { /****************************************/
                 if (nt<2000) {
                     ctx.globalAlpha=nt/2000;
                 }
-                this.montre(ctx,p);
+                this.montre(ctx,p,true);
                 ctx.restore();            
             }
             ctx.shadowBlur=0;        
@@ -360,7 +377,7 @@ Tortue.prototype.draw = function() { /****************************************/
         }  else if (this.bulle>0) {
                 ctx.save();
                 nt = new Date().getTime();
-                this.montre(ctx,p);
+                this.montre(ctx,p,true);
                 nt = this.temps_affichage - (nt - this.bulle);
                 if (nt<2000) {
                     ctx.globalAlpha=nt/2000;
@@ -380,16 +397,9 @@ Tortue.prototype.draw = function() { /****************************************/
 Tortue.prototype.dessine = function() { /**************************************/
     if ((this.posx!=this.oldx) || (this.posy != this.oldy)) {
         if (this.crayon_baisse) {
-            var old = this.convert(this.oldx,this.oldy);
-            var ctx=this.dessin.getContext("2d");
+            var old = this.convert(this.oldx,this.oldy);            
             var p = this.convert(this.posx,this.posy);
-            ctx.lineWidth=this.taille_crayon;
-            ctx.strokeStyle=this.couleur_crayon;
-            ctx.lineCap="round";
-            ctx.beginPath();
-            ctx.moveTo(old.x,old.y);
-            ctx.lineTo(p.x,p.y);
-            ctx.stroke();
+            this.dessin.ligne(this.num_ordre,old,p,this.couleur_crayon,this.taille_crayon);
         }
     }
 }; // dessine
@@ -405,6 +415,7 @@ Tortue.prototype.reset = function() { /***************************************/
     this.draw();
     this.bulle=0;
     this.text=[];
+    this.num_ordre=0;
 }; // reset
 
 Tortue.prototype.set_tortue = function(t) { /*********************************/
@@ -448,6 +459,7 @@ Tortue.prototype.set_tortue = function(t) { /*********************************/
 
 Tortue.prototype.commande= function(cmd,param) {
     this.ordre=cmd;
+    this.num_ordre ++;
     this.debut = true;
     switch (cmd.procedure.code) {
         case 'FIXECAP'  : param[0] = param[0] % 360;break;
@@ -481,7 +493,7 @@ Tortue.prototype.retour = function(token) {
 };
 
 Tortue.prototype.texte = function(text) {
-    var p,w,h,ctx;
+   /* var p,w,h,ctx;
     p = this.convert(this.posx,this.posy); 
     this.draw();
     ctx=this.dessin.getContext("2d");
@@ -493,16 +505,12 @@ Tortue.prototype.texte = function(text) {
     ctx.rotate(-this.cap*Math.PI/180);        
     ctx.fillText(text,-w,-h);
     ctx.rotate(+this.cap*Math.PI/180);
-    ctx.translate(-(p.x-w),-(p.y+h));            
+    ctx.translate(-(p.x-w),-(p.y+h));    */        
 };
 
 Tortue.prototype.videecran =function() {
     this.draw();
-    var ctx=this.dessin.getContext("2d");
-    var w = this.dessin.width, h = this.dessin.height;
-    ctx.fillStyle="rgba(255,255,255,0.1)";   
-    ctx.clearRect ( 0 , 0 , w,h );
-    ctx.fillRect(0,0,w,h);
+    this.dessin.vide();
     this.bulle=0;
     this.text='';
 };
@@ -534,7 +542,7 @@ Tortue.prototype.tick = function() {
                                 dx = this.posx + dx;
                                 dy = this.posy + dy;  
                                 if (this.collision(dx,dy)) { // Deplacement incomplet on renvoie la difference
-                                    this.retour(new Token('nombre',this.param[0]-this.param_tr[0],'ignore'));
+                                    this.retour(new Token('nombre',this.param[0]-this.param_tr[0],'ignore'));                                    
                                     rep=0;
                                 } else {
                                     this.posx = dx;
@@ -687,7 +695,7 @@ Tortue.prototype.tick = function() {
                                 this.text[i] = this.param_tr[i]+' ';
                                 this.text[i] = this.text[i].trim();
                             }
-                            if (this.text.length<1) { this.bulle = 0; }                           
+                            if (this.text.length<1) { this.bulle = 0; }                            
                             this.retour(new Token('booleen',true,'ignore'));                  
                             break;                            
         case 'MONTRETORTUE': chg = ! this.visible; // La commande renvoie VRAI si l'état de la tortue a changé

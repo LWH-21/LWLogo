@@ -125,124 +125,124 @@ function Reference() { /******************************************************/
       VRAI : {std:['vrai']}
     };
 
-    //          code,   mini_arg,   maxi_arg,   style,  ret,    priorite,   action           arguments attendus. *=nimp, n=nombre, b=booleen, l=liste, m=mot, w=mot ou liste, c=couleur
+    //   num       code,   mini_arg,   maxi_arg,   style,  ret,    priorite,   action           arguments attendus. *=nimp, n=nombre, b=booleen, l=liste, m=mot, w=mot ou liste, c=couleur
 
-    this.add(   'AV',   1,          1,          'p',    1,      5,          f_tortue,       'n');
-    this.add('ATTENDS', 1,          1,          'p',    1,      5,          f_tortue,       'n');
-    this.add(   'BC',   0,          0,          'p',    1,      5,          f_tortue,       '*');
-    this.add('CACHETORTUE',0,       0,          'p',    1,      5,          f_tortue,       '*');
-    this.add(  'CAP',   0,          0,          'p',    1,     50,          f_tortue,       '*');
-    this.add('ETIQUETTE',1,         1,          'p',    1,      5,          f_tortue,       '*');
-    this.add( 'FCC',    1,          1,          'p',    1,      5,          f_tortue,       'l');
-    this.add( 'FTC',    1,          1,          'p',    1,      5,          f_tortue,       'n');
-    this.add( 'FIXECAP',1,          1,          'p',    1,      5,          f_tortue,       'n');
-    this.add( 'FIXEPOS',1,          1,          'p',    1,      5,          f_tortue,       'l');
-    this.add(   'FIXEX',1,          1,          'p',    1,      5,          f_tortue,       'n');
-    this.add(  'FIXEXY',2,          2,          'p',    1,      5,          f_tortue,       'n');
-    this.add(   'FIXEY',1,          1,          'p',    1,      5,          f_tortue,       'n');
-    this.add(   'LC',   0,          0,          'p',    1,      5,          f_tortue,       '*');
-    this.add('MONTRE',  1,      99999,          'p',    1,      5,          f_tortue,       '*');
-    this.add('MONTRETORTUE',0,      0,          'p',    1,      5,          f_tortue,       '*');
-    this.add('NETTOIE' ,0,          0,          'p',    1,      5,          f_tortue,       '*');
-    this.add( 'ORIGINE',0,          0,          'p',    1,      5,          f_tortue,       '*');
-    this.add(  'POS',   0,          0,          'p',    1,     50,          f_tortue,       '*');
-    this.add(   'TD',   1,          1,          'p',    1,      5,          f_tortue,       'n');
-    this.add(   'TG',   1,          1,          'p',    1,      5,          f_tortue,       'n');
-    this.add(   'RE',   1,          1,          'p',    1,      5,          f_tortue,       'n');
-    this.add(   'VE',   0,          0,          'p',    1,      5,          f_tortue,       '*');
+    this.add('t01',   'AV',   1,          1,          'p',    1,      5,          f_tortue,       'n');
+    this.add('t02','ATTENDS', 1,          1,          'p',    1,      5,          f_tortue,       'n');
+    this.add('t03',   'BC',   0,          0,          'p',    1,      5,          f_tortue,       '*');
+    this.add('t04','CACHETORTUE',0,       0,          'p',    1,      5,          f_tortue,       '*');
+    this.add('t05',  'CAP',   0,          0,          'p',    1,     50,          f_tortue,       '*');
+    this.add('t06','ETIQUETTE',1,         1,          'p',    1,      5,          f_tortue,       '*');
+    this.add('t07', 'FCC',    1,          1,          'p',    1,      5,          f_tortue,       'l');
+    this.add('t08', 'FTC',    1,          1,          'p',    1,      5,          f_tortue,       'n');
+    this.add('t09', 'FIXECAP',1,          1,          'p',    1,      5,          f_tortue,       'n');
+    this.add('t10', 'FIXEPOS',1,          1,          'p',    1,      5,          f_tortue,       'l');
+    this.add('t11',   'FIXEX',1,          1,          'p',    1,      5,          f_tortue,       'n');
+    this.add('t12',  'FIXEXY',2,          2,          'p',    1,      5,          f_tortue,       'n');
+    this.add('t13',   'FIXEY',1,          1,          'p',    1,      5,          f_tortue,       'n');
+    this.add('t14',   'LC',   0,          0,          'p',    1,      5,          f_tortue,       '*');
+    this.add('t15','MONTRE',  1,      99999,          'p',    1,      5,          f_tortue,       '*');
+    this.add('t16','MONTRETORTUE',0,      0,          'p',    1,      5,          f_tortue,       '*');
+    this.add('t17','NETTOIE' ,0,          0,          'p',    1,      5,          f_tortue,       '*');
+    this.add('t18', 'ORIGINE',0,          0,          'p',    1,      5,          f_tortue,       '*');
+    this.add('t19',  'POS',   0,          0,          'p',    1,     50,          f_tortue,       '*');
+    this.add('t20',   'TD',   1,          1,          'p',    1,      5,          f_tortue,       'n');
+    this.add('t21',   'TG',   1,          1,          'p',    1,      5,          f_tortue,       'n');
+    this.add('t22',   'RE',   1,          1,          'p',    1,      5,          f_tortue,       'n');
+    this.add('t23',   'VE',   0,          0,          'p',    1,      5,          f_tortue,       '*');
 
-    this.add('BLANC',   0,          0,          'p',    1,     50,          f_couleur,      'n');
-    this.add('BLEU',    0,          0,          'p',    1,     50,          f_couleur,      'n');
-    this.add('BRUN',    0,          0,          'p',    1,     50,          f_couleur,      'n');
-    this.add('CYAN',    0,          0,          'p',    1,     50,          f_couleur,      'n');
-    this.add('GRIS',    0,          0,          'p',    1,     50,          f_couleur,      'n');
-    this.add('JAUNE',   0,          0,          'p',    1,     50,          f_couleur,      'n');
-    this.add('MAGENTA', 0,          0,          'p',    1,     50,          f_couleur,      'n');
-    this.add('NOIR',    0,          0,          'p',    1,     50,          f_couleur,      'n');
-    this.add('ROUGE',   0,          0,          'p',    1,     50,          f_couleur,      'n');
-    this.add('VERT',    0,          0,          'p',    1,     50,          f_couleur,      'n');
+    this.add('c01','BLANC',   0,          0,          'p',    1,     50,          f_couleur,      'n');
+    this.add('c02','BLEU',    0,          0,          'p',    1,     50,          f_couleur,      'n');
+    this.add('c03','BRUN',    0,          0,          'p',    1,     50,          f_couleur,      'n');
+    this.add('c04','CYAN',    0,          0,          'p',    1,     50,          f_couleur,      'n');
+    this.add('c05','GRIS',    0,          0,          'p',    1,     50,          f_couleur,      'n');
+    this.add('c06','JAUNE',   0,          0,          'p',    1,     50,          f_couleur,      'n');
+    this.add('c07','MAGENTA', 0,          0,          'p',    1,     50,          f_couleur,      'n');
+    this.add('c08','NOIR',    0,          0,          'p',    1,     50,          f_couleur,      'n');
+    this.add('c09','ROUGE',   0,          0,          'p',    1,     50,          f_couleur,      'n');
+    this.add('c10','VERT',    0,          0,          'p',    1,     50,          f_couleur,      'n');
 
-    this.add('HASARD',  1,          1,          'p',    1,     20,          f_math,         'n');
-    this.add('SOMME',   2,      99999,          'p',    1,     20,          f_math,         'n');
-    this.add('DIFFERENCE',2,    99999,          'p',    1,     10,          f_math,         'n');
-    this.add('MOINS',   1,          1,          'p',    1,     20,          f_math,         'n');
-    this.add('PRODUIT', 2,      99999,          'p',    1,     20,          f_math,         'n');
-    this.add('RESTE',   2,          2,          'p',    1,     20,          f_math,         'n');
-    this.add('ARRONDI', 1,          1,          'p',    1,     20,          f_math,         'n');
-    this.add('RACINE',  1,          1,          'p',    1,     20,          f_math,         'n');
-    this.add('PI',      0,          0,          'p',    1,     50,          f_math,         'n');
-    this.add('PUISSANCE',2,     99999,          'p',    1,     20,          f_math,         'n');
-    this.add('LOG10',   1,          1,          'p',    1,     20,          f_math,         'n');
-    this.add('SIN',     1,          1,          'p',    1,     20,          f_math,         'n');
-    this.add('COS',     1,          1,          'p',    1,     20,          f_math,         'n');
-    this.add('QUOTIENT',2,      99999,          'p',    1,     20,          f_math,         'n');
-    this.add('+',       2,          2,          'i',    1,     10,          f_math,         'n');
-    this.add('*',       2,          2,          'i',    1,     20,          f_math,         'n');
-    this.add('-',       2,          2,          'i',    1,     10,          f_math,         'n');
-    this.add('/',       2,          2,          'i',    1,     20,          f_math,         'n');
-    this.add('%',       2,          2,          'i',    1,     20,          f_math,         'n');
-    this.add('^',       2,          2,          'i',    1,     20,          f_math,         'n');
+    this.add('m01','HASARD',  1,          1,          'p',    1,     20,          f_math,         'n');
+    this.add('m02','SOMME',   2,      99999,          'p',    1,     20,          f_math,         'n');
+    this.add('m03','DIFFERENCE',2,    99999,          'p',    1,     10,          f_math,         'n');
+    this.add('m04','MOINS',   1,          1,          'p',    1,     20,          f_math,         'n');
+    this.add('m05','PRODUIT', 2,      99999,          'p',    1,     20,          f_math,         'n');
+    this.add('m06','RESTE',   2,          2,          'p',    1,     20,          f_math,         'n');
+    this.add('m07','ARRONDI', 1,          1,          'p',    1,     20,          f_math,         'n');
+    this.add('m08','RACINE',  1,          1,          'p',    1,     20,          f_math,         'n');
+    this.add('m09','PI',      0,          0,          'p',    1,     50,          f_math,         'n');
+    this.add('m10','PUISSANCE',2,     99999,          'p',    1,     20,          f_math,         'n');
+    this.add('m11','LOG10',   1,          1,          'p',    1,     20,          f_math,         'n');
+    this.add('m12','SIN',     1,          1,          'p',    1,     20,          f_math,         'n');
+    this.add('m13','COS',     1,          1,          'p',    1,     20,          f_math,         'n');
+    this.add('m14','QUOTIENT',2,      99999,          'p',    1,     20,          f_math,         'n');
+    this.add('m15','+',       2,          2,          'i',    1,     10,          f_math,         'n');
+    this.add('m16','*',       2,          2,          'i',    1,     20,          f_math,         'n');
+    this.add('m17','-',       2,          2,          'i',    1,     10,          f_math,         'n');
+    this.add('m18','/',       2,          2,          'i',    1,     20,          f_math,         'n');
+    this.add('m19','%',       2,          2,          'i',    1,     20,          f_math,         'n');
+    this.add('m20','^',       2,          2,          'i',    1,     20,          f_math,         'n');
 
-    this.add('CHOIX',   1,          1,          'p',    1,      5,          f_liste,        'w');
-    this.add('COMPTE',  1,          1,          'p',    1,     10,          f_liste,        'w');
-    this.add('DERNIER', 1,          1,          'p',    1,     10,          f_liste,        'w');
-    this.add('ENLEVE',  2,          2,          'p',    1,      5,          f_liste,       '*l');
-    this.add('INVERSE', 1,          1,          'p',    1,      5,          f_liste,        'w');
-    this.add('ITEM',    2,          2,          'p',    1,      5,          f_liste,       'nw');
-    this.add('LISTE',   1,      99999,          'p',    1,     10,          f_liste,        '*');
-    this.add('METSDERNIER', 2,      2,          'p',    1,     10,          f_liste,       '*l');
-    this.add('METSPREMIER', 2,      2,          'p',    1,     10,          f_liste,       '*l');
-    this.add('MELANGE', 1,      99999,          'p',    1,     10,          f_liste,        'l');
-    this.add('MOT',     1,      99999,          'p',    1,     10,          f_liste,        '*');
-    this.add('PHRASE',  1,      99999,          'p',    1,     10,          f_liste,        '*');
-    this.add('PREMIER', 1,          1,          'p',    1,     10,          f_liste,        'w');
-    this.add('SD',      1,          1,          'p',    1,     10,          f_liste,        'w');
-    this.add('SP',      1,          1,          'p',    1,     10,          f_liste,        'w');
-    this.add('VIDEQ',   1,          1,          'p',    1,     10,          f_liste,        'w');
+    this.add('l01','CHOIX',   1,          1,          'p',    1,      5,          f_liste,        'w');
+    this.add('l02','COMPTE',  1,          1,          'p',    1,     10,          f_liste,        'w');
+    this.add('l03','DERNIER', 1,          1,          'p',    1,     10,          f_liste,        'w');
+    this.add('l04','ENLEVE',  2,          2,          'p',    1,      5,          f_liste,       '*l');
+    this.add('l05','INVERSE', 1,          1,          'p',    1,      5,          f_liste,        'w');
+    this.add('l06','ITEM',    2,          2,          'p',    1,      5,          f_liste,       'nw');
+    this.add('l07','LISTE',   1,      99999,          'p',    1,     10,          f_liste,        '*');
+    this.add('l08','METSDERNIER', 2,      2,          'p',    1,     10,          f_liste,       '*l');
+    this.add('l09','METSPREMIER', 2,      2,          'p',    1,     10,          f_liste,       '*l');
+    this.add('l10','MELANGE', 1,      99999,          'p',    1,     10,          f_liste,        'l');
+    this.add('l11','MOT',     1,      99999,          'p',    1,     10,          f_liste,        '*');
+    this.add('l12','PHRASE',  1,      99999,          'p',    1,     10,          f_liste,        '*');
+    this.add('l13','PREMIER', 1,          1,          'p',    1,     10,          f_liste,        'w');
+    this.add('l14','SD',      1,          1,          'p',    1,     10,          f_liste,        'w');
+    this.add('l15','SP',      1,          1,          'p',    1,     10,          f_liste,        'w');
+    this.add('l16','VIDEQ',   1,          1,          'p',    1,     10,          f_liste,        'w');
 
-    this.add('VRAI',    0,          0,          'p',    1,     50,          f_logique,      'b');
-    this.add('FAUX',    0,          0,          'p',    1,     50,          f_logique,      'b');
-    this.add('ET',      2,      99999,          'p',    1,     20,          f_logique,      'b');
-    this.add('&',       2,          2,          'i',    1,     20,          f_logique,      'b');
-    this.add('OU',      2,      99999,          'p',    1,     10,          f_logique,      'b');
-    this.add('|',       2,          2,          'i',    1,     20,          f_logique,      'b');
-    this.add('NON',     1,          1,          'p',    1,     10,          f_logique,      'b');
+    this.add('L01','VRAI',    0,          0,          'p',    1,     50,          f_logique,      'b');
+    this.add('L02','FAUX',    0,          0,          'p',    1,     50,          f_logique,      'b');
+    this.add('L03','ET',      2,      99999,          'p',    1,     20,          f_logique,      'b');
+    this.add('L04','&',       2,          2,          'i',    1,     20,          f_logique,      'b');
+    this.add('L05','OU',      2,      99999,          'p',    1,     10,          f_logique,      'b');
+    this.add('L06','|',       2,          2,          'i',    1,     20,          f_logique,      'b');
+    this.add('L07','NON',     1,          1,          'p',    1,     10,          f_logique,      'b');
 
-    this.add('=',       2,          2,          'i',    1,     10,          f_compare,      '*');
-    this.add('>',       2,          2,          'i',    1,     10,          f_compare,      '*');
-    this.add('<',       2,          2,          'i',    1,     10,          f_compare,      '*');
-    this.add('<>',      2,          2,          'i',    1,     10,          f_compare,      '*');
-    this.add('<=',      2,          2,          'i',    1,     10,          f_compare,      '*');
-    this.add('>=',      2,          2,          'i',    1,     10,          f_compare,      '*');
-    this.add('EGALQ',   2,          2,          'p',    1,     10,          f_compare,     '**');
+    this.add('O01','=',       2,          2,          'i',    1,     10,          f_compare,      '*');
+    this.add('O02','>',       2,          2,          'i',    1,     10,          f_compare,      '*');
+    this.add('O03','<',       2,          2,          'i',    1,     10,          f_compare,      '*');
+    this.add('O04','<>',      2,          2,          'i',    1,     10,          f_compare,      '*');
+    this.add('O05','<=',      2,          2,          'i',    1,     10,          f_compare,      '*');
+    this.add('O06','>=',      2,          2,          'i',    1,     10,          f_compare,      '*');
+    this.add('O07','EGALQ',   2,          2,          'p',    1,     10,          f_compare,     '**');
 
-    this.add('LISTEQ',  1,          1,          'p',    1,     20,          f_predicat,     '*');
-    this.add('MOTQ',    1,          1,          'p',    1,     20,          f_predicat,     '*');
-    this.add('NOMBREQ', 1,          1,          'p',    1,     20,          f_predicat,     '*');
+    this.add('Q01','LISTEQ',  1,          1,          'p',    1,     20,          f_predicat,     '*');
+    this.add('Q02','MOTQ',    1,          1,          'p',    1,     20,          f_predicat,     '*');
+    this.add('Q03','NOMBREQ', 1,          1,          'p',    1,     20,          f_predicat,     '*');
 
-    this.add('EXECUTE', 1,          1,          'p',    1,     10,          f_exec,          'l');
-    this.add('JUSQUA',  2,          2,          'p',    0,     10,          f_exec,         'll');
-    this.add('TANTQUE', 2,          2,          'p',    0,     10,          f_exec,         'll');
-    this.add('REPETE',  2,          2,          'p',    0,     10,          f_exec,         'nl');
-    this.add('REPETEPOUR', 2,       2,          'p',    0,     10,          f_exec,         'll');
-    this.add('SI',      2,          2,          'p',    0,     10,          f_si,           'bl');
-    this.add('SINON',   3,          3,          'p',    0,     10,          f_si,          'bll');
-    this.add('COMPTEUR',0,          0,          'p',    1,     50,          f_compteur,      '*');
-    this.add('CHOSE',   1,          1,          'p',    1,     50,          f_variable,      'm');
-    this.add('DONNE',   2,          2,          'p',    0,      5,          f_variable,     'm*');
-    this.add('DONNELOCALE',2,       2,          'p',    0,      5,          f_variable,     'm*');
-    this.add('LOCALE',  1,      99999,          'p',    0,      5,          f_variable,      'm');
-    this.add('(',       0,          0,          'i',    0,      0,          null,            '*');
-    this.add( 'POUR',   0,          0,          'p',    0,     50,          null,            '*');
-    this.add(  'FIN',   0,          0,          'p',    0,     50,          null,            '*');
-    this.add( 'STOP',   0,          0,          'p',    0,     50,          f_stop,          '*');
-    this.add('RETOURNE',1,          1,          'p',    0,      5,          f_stop,          '*');
+    this.add('D01','EXECUTE', 1,          1,          'p',    1,     10,          f_exec,          'l');
+    this.add('D02','JUSQUA',  2,          2,          'p',    0,     10,          f_exec,         'll');
+    this.add('D03','TANTQUE', 2,          2,          'p',    0,     10,          f_exec,         'll');
+    this.add('D04','REPETE',  2,          2,          'p',    0,     10,          f_exec,         'nl');
+    this.add('D05','REPETEPOUR', 2,       2,          'p',    0,     10,          f_exec,         'll');
+    this.add('D06','SI',      2,          2,          'p',    0,     10,          f_si,           'bl');
+    this.add('D07','SINON',   3,          3,          'p',    0,     10,          f_si,          'bll');
+    this.add('D08','COMPTEUR',0,          0,          'p',    1,     50,          f_compteur,      '*');
+    this.add('D09','CHOSE',   1,          1,          'p',    1,     50,          f_variable,      'm');
+    this.add('D10','DONNE',   2,          2,          'p',    0,      5,          f_variable,     'm*');
+    this.add('D11','DONNELOCALE',2,       2,          'p',    0,      5,          f_variable,     'm*');
+    this.add('D12','LOCALE',  1,      99999,          'p',    0,      5,          f_variable,      'm');
+    this.add('D13','(',       0,          0,          'i',    0,      0,          null,            '*');
+    this.add('D14', 'POUR',   0,          0,          'p',    0,     50,          null,            '*');
+    this.add('D15',  'FIN',   0,          0,          'p',    0,     50,          null,            '*');
+    this.add('D16', 'STOP',   0,          0,          'p',    0,     50,          f_stop,          '*');
+    this.add('D17','RETOURNE',1,          1,          'p',    0,      5,          f_stop,          '*');
     
-    this.add('$EVT!',   0,          0,          'p',    0,     50,          f_evenement,     '*'); 
-    this.add('MUR',    1,          1,          'p',    0,     50,          f_evenement,     'l');        
+    this.add('E01','$EVT!',   0,          0,          'p',    0,     50,          f_evenement,     '*'); 
+    this.add('E02','MUR',     1,          1,          'p',    0,     50,          f_evenement,     'l');        
 } // Reference
 
-Reference.prototype.add = function (code,mini_arg,maxi_arg,style,ret,priorite,action,type_params) {
+Reference.prototype.add = function (num,code,mini_arg,maxi_arg,style,ret,priorite,action,type_params) {
     var p;
     if (this.les_fonctions[code]) {
         p = new Procedure(code,
@@ -263,6 +263,7 @@ Reference.prototype.add = function (code,mini_arg,maxi_arg,style,ret,priorite,ac
                           priorite,
                           action);
     }
+    p.num = num;
     p.code=code;
     p.type_params = type_params;
     this.procedures.push(p);
@@ -286,7 +287,9 @@ Reference.prototype.erreur = function(token) { /******************************/
             switch (token.nom) {
                 case 'analyse'        : s=s+'Code impossible à analyser.';break;
                 case 'argument'     : s=s+'Les arguments ne correspondent pas pour la commande <span class="valencia">'+token.valeur+'</span>';break;
+                case 'booleen'      : s=s+'Paramètre de type <booleen> attendu après <span class="valencia">'+token.valeur+'</span>';break;
                 case 'caractere non reconnu' : s=s+'Caractère <span class="valencia">'+token.valeur+'</span> non reconnu';break;
+                case 'couleur'      :  s=s+'Paramètre de type <couleur> (liste de 3 nombres) attendu après <span class="valencia">'+token.valeur+'</span>';break;
                 case 'crochet'      : s=s+'Les crochets ([ - ]) ne correspondent pas';break;
                 case 'element vide' : s=s+'Erreur système : Token à nul';break;
                 case 'evaluation'   : s=s+'Probleme lors de l evaluation de <span class="valencia">'+token.valeur+'</span>';
@@ -296,6 +299,7 @@ Reference.prototype.erreur = function(token) { /******************************/
                 case 'format numerique' : s=s+'Mauvais format pour le nombre <span class="valencia">'+token.valeur+'</span>';break;
                 case 'inconnu'      : s=s+'Je ne connais pas <span class="valencia">'+token.valeur+'</span>';break;
                 case 'init'         : s=s+'L appel à  <span class="valencia">'+token.valeur+'</span> doit se faire dans une fonction d initialisation.';
+                case 'liste'        : s=s+'Paramètre de type <liste> attendu après <span class="valencia">'+token.valeur+'</span>';break;
                 case 'nombre'       : s=s+'Nombre attendu dans l expression <span class="valencia">'+token.valeur+'</span>';break;
                 case 'non trouve'   : s=s+'Je ne connais pas <em>'+token.valeur+'</em>';break;
                 case 'nul'            : s=s+'Erreur système. Token à nul';break;

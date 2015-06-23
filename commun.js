@@ -53,6 +53,19 @@ if (!Math.log10) { /**********************************************************/
     }
 } // Math.log10
 
+CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) { /***/
+  if (w < 2 * r) r = w / 2;
+  if (h < 2 * r) r = h / 2;
+  this.beginPath();
+  this.moveTo(x+r, y);
+  this.arcTo(x+w, y,   x+w, y+h, r);
+  this.arcTo(x+w, y+h, x,   y+h, r);
+  this.arcTo(x,   y+h, x,   y,   r);
+  this.arcTo(x,   y,   x+w, y,   r);
+  this.closePath();
+  return this;
+} // roundRect
+
 function sans_accent(entree) { /**********************************************/
         var sortie = "";        
         var car="";
@@ -314,6 +327,32 @@ Token.prototype.est_nombre = function () { /**********************************/
         default : return false;
     }
 } // est_nombre
+
+Token.prototype.exporte = function (logo) { /*************************************/
+    var sep = String.fromCharCode(254)+String.fromCharCode(255);
+    switch (this.type) {
+        case 'cont'	      : return '';break;
+        case 'eof'        : return '\n';break;
+        case 'eol'        : return '\n';break;
+        case 'eop'        : return ' ';break;
+        case 'erreur'     : return '';break;
+		case 'evenement'  : return this.nom;break;
+        case 'liste'      : var lex = new Analyse_lexicale(this.LWlogo);    
+                            var s = lex.exporte(logo,this.valeur);
+                            return '[ '+s+' ]';break; 
+        case 'mot'        : if (this.procedure) {
+                                return sep+this.procedure.num;break;     
+                            } else return this.nom;break;
+        case 'nombre'     : return this.valeur;break;
+        case 'booleen'    : if (this.valeur) return sep+'L01'; else return sep+'L02';
+                            break;
+        case 'operateur'  : return this.nom;break;
+        case 'parenthese' : return this.nom;break;
+        case 'symbole'    : return ''+this.valeur;break;
+        case 'variable'   : return ':'+this.nom;break;
+        default           : return '';
+    }            
+} // toString
 
 Token.prototype.longueur = function () { /************************************/
     var lg = 0,s;

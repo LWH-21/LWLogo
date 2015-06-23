@@ -30,7 +30,23 @@ function LWLogo(canvas_dessin, canvas_tortue, canvas_monde) {
     ctx.fillRect ( 0 , 0 , canvas.width,canvas.height );   
     this.troisD=null;
     this.draw_info();
-}
+} // LWLogo(canvas_dessin, canvas_tortue, canvas_monde)
+
+LWLogo.prototype.exporte = function (code) { /********************************/
+    if (!code) return;  
+    code = code.rtrim();
+    if (code.length<1) return;
+    var s = this.interpretes[0].exporte(code);
+    return s;
+} // LWLogo.exporte()
+
+LWLogo.prototype.importe = function (code) { /********************************/
+    if (!code) return;  
+    code = code.rtrim();
+    if (code.length<1) return;
+    var s = this.interpretes[0].importe(code);
+    return s;
+} // LWLogo.importe()
 
 /* Lancement ****************************************************************/
 
@@ -390,7 +406,7 @@ LWLogo.prototype.tick = function (that) {
     if (termine) {
         this.horloge.stop();
         this.etat='';
-        maj_him();
+        maj_him();                
     }
     
     if (this.troidD) {

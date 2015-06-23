@@ -71,6 +71,7 @@ Spirales
 <script src="commun.js"></script>
 <script src="LWLogo.js"></script>
 <script src="monde.js"></script>
+<script src="dessin.js"></script>
 <script src="tortue.js"></script>
 <script src="Lexicale.js"></script>
 <script src="interpreteur.js"></script>
@@ -87,20 +88,32 @@ Spirales
 
 
 function init_helper() {
-var gui = new dat.GUI();
 
-var folder = gui.addFolder('Support');
-var controller = folder.add(logo.troisD.collada.position, 'x',-400,400).name('position x');
+var gui = new dat.GUI();
+var Configuracion=function(){
+      this.color = "#ffffff";
+}
+var conf = new Configuracion();
+conf.color = '#'+logo.troisD.Light.color.getHexString();
+var conf1 = new Configuracion();
+conf1.color = '#'+logo.troisD.ambientLight.color.getHexString();
+
+var folder = gui.addFolder('Eclairage');
+var controller = folder.add(logo.troisD.Light, 'intensity',0,1).name('Intensité');
 controller.onChange(function(value) {
-  logo.troisD.renderer.render(logo.troisD.scene,logo.troisD.camera);
+    logo.troisD.renderer.render(logo.troisD.scene,logo.troisD.camera);
 });
-var controller = folder.add(logo.troisD.collada.position, 'y',-400,400).name('position y');
-controller.onChange(function(value) {
-  logo.troisD.renderer.render(logo.troisD.scene,logo.troisD.camera);
+var controller = folder.addColor(conf, 'color').name('Couleur spot');
+controller.onChange(function(colorValue) {
+    colorValue=colorValue.replace( '#','0x' );          
+    logo.troisD.Light.color.setHex(colorValue);
+    logo.troisD.renderer.render(logo.troisD.scene,logo.troisD.camera);
 });
-var controller = folder.add(logo.troisD.collada.position, 'z',-400,400).name('position z');
-controller.onChange(function(value) {
-  logo.troisD.renderer.render(logo.troisD.scene,logo.troisD.camera);
+var controller = folder.addColor(conf1, 'color').name('Couleur ambiance');
+controller.onChange(function(colorValue) {
+    colorValue=colorValue.replace( '#','0x' );         
+    logo.troisD.ambientLight.color.setHex(colorValue);
+    logo.troisD.renderer.render(logo.troisD.scene,logo.troisD.camera);
 });
 
 var folder = gui.addFolder('Dessin');

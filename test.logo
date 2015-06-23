@@ -1,0 +1,922 @@
+; Test des instructions de base
+
+VE
+AV 10
+RE 10
+TD 90
+TG 20
+BC
+LC
+AVANCE 10
+AVANCE (10+3)*(2+1)
+DONNE "longueur AVANCE 10
+DROITE 90
+TD 360/2
+DONNE "rotation DROITE 180
+FIXECAP  90
+DONNE "rotation FIXECAP  180
+FIXEPOS [ 30 20 ]
+DONNE "Deplacement FIXEPOS [ 0 0 ]
+FIXEX  90
+DONNE "Deplacement FIXEX  10
+FIXEXY  0 0
+DONNE "Deplacement FIXEXY  10*3 50+2
+FIXEY  90
+DONNE "Deplacement FIXEY  10
+GAUCHE 30
+TG 360/60
+DONNE "rotation GAUCHE 120
+ORIGINE
+RECULE 30
+RE 60/10
+DONNE "rotation RE 120
+CacheTortue
+DONNE "etat CTO
+MontreTortue
+DONNE "etat MTO
+Nettoie
+NettoieTout
+SI CAP = 0 [ DROITE 90 ]
+MONTRE CAP
+MONTRE POS
+SINON (PREMIER POS) < 10 [ AVANCE 10 ] [ DROITE 90 RECULE 10 ]
+BaisseCrayon
+DONNE "etat BC
+FixeCouleurCrayon [255 0 255]
+FCC vert
+fcc (liste hasard 256  hasard 256  hasard 256)
+Fcc (melange rouge vert blanc)
+FCC MELANGE ROUGE [255 255 0] [64 64 64]
+FixeTailleCrayon 10
+FTC 5 * 3
+LèveCrayon
+DONNE "etat LC
+RECULE ARRONDI 10.3
+RECULE ARRONDI 10.6
+DROITE COS 60
+AVANCE DIFFERENCE 100 20 30
+TD (DIFFERENCE 10 2 3 4 )     
+AV 100-20-30
+AVANCE LOG10 1000
+AVANCE MOINS 100
+TD -90
+TD MOINS somme 1 2 3 4
+TD (- somme 1 2 3 4)
+AVANCE PRODUIT 10 2 2 3
+RECULE 10*2
+AVANCE PUISSANCE 10 2
+RECULE 10^2                                                              
+RECULE PUISSANCE 0.5 -1
+AVANCE 25^0.5
+AVANCE QUOTIENT 100 2
+TD (QUOTIENT 100 2 2 )
+TD 100/2/2
+AVANCE RACINE 100
+DR RACINE MOINS -9
+DR RACINE 5*5
+DROITE RESTE 10 3
+Droite 100%30
+DROITE SIN 90  
+AVANCE SOMME 10 20 30
+TD (SOMME 1 2 3 4 5)       
+AV 10+20+30
+SI (OU (1<2) VRAI (5<2*3)) [av 100]
+SI ((1<10) | (5<2)) [droite 120]
+SI (ET (1<2) VRAI (5<2*3)) [av 100]
+SI ((1<10) & (5>2)) [avance 10]
+
+# Test caractères accentuées + formes longues
+
+Videécran
+AvAñçe 10
+RECULE 10
+Droitê 90
+gAÜCHE 20
+lèvecràyôn
+baîssecrayön
+
+# Test expressions arithmétiques
+
+AV (5+3)*(6+4)/(2+2)
+TD 90/3+2
+GAUCHE (40+50)*( (1+1) * 2 + 1) ;commentaire fin de ligne
+RECULE 1*2*3*4*5*6*7*8*9*10
+AV (somme 1 2 3 4 5 6 7 8 9 10)
+TD (produit 1 2 3 4 5)
+ 
+
+VE
+
+# Test repete
+BC
+REPETE (2+1) [av 5 droite 90]
+repete (3*(1+1)) [ve repete (1+1) [av 5 ]] AV 10
+ve
+REPETE (2+1) [av 5]
+REPETE 2+1 [AV 5] 
+repete 3+1 [ve repete 2+1 [av 5 repete 2*1 [ lc bc] TD 90 ] ] 
+ve
+repete 2+2 [av compteur.r*2 repete 2 [td compteur.r*4 tg compteur.r]] ;utilisation de compteur.r
+ve
+repete 215 [avance compteur.r droite 70]
+ve
+repete 20 [repete 4 [avance 120 droite 90] droite 18]
+ve
+repete 5 [av 150 td 360/2.5]
+
+ve
+repete 4 [repete 8 [repete 4 [droite 90 avance 70.7] recule 70.7 gauche 45] gauche 90]
+
+ve
+repete 100 [ gauche hasard 360 avance hasard 160 gauche hasard 40  avance hasard 60 origine] 
+
+ve
+repete 3600 [avance 10 droite compteur.r + 0.2] 
+
+ve
+repete 12 [repete 30 [av 100 td 168] td 30]
+
+pour coulhasard
+retourne liste (hasard 255) (hasard 255) (hasard 255)
+fin
+
+ve
+repetepour [cpt 1 200 1] [fcc coulhasard av :cpt td :cpt re :cpt]
+
+# fonction hasard
+repete 20 [av (hasard 10) * 2 td hasard 180*2]
+
+#sin et cos
+ve
+lc
+fcc rouge
+ftc 3
+repete 360 [fixex (150*sin compteur.r) fixey (60*cos compteur.r) bc ]
+
+; union jack
+
+pour rectangle :longueur :largeur :couleur
+fixecouleurcrayon :couleur
+fixetaillecrayon 1
+baissecrayon
+repete :largeur/2 [av :longueur droite 90 av 1 droite 90 av :longueur gauche 90 av 1 gauche 90 ]
+fin
+
+ve
+levecrayon
+fixepos [-200 100]
+;dessin du fond
+fixecap 90
+rectangle 400 200 bleu
+levecrayon
+gauche 90
+avance 120
+droite 90
+rectangle 400 50 blanc
+levecrayon
+gauche 90
+av 130
+droite 90 av 175
+rectangle 50 200 blanc
+avance 10
+gauche 90 avance 200 droite 90
+rectangle 30 200 rouge
+levecrayon
+gauche 90 avance 110 gauche 90 avance 185 fixecap 90
+rectangle 400 30 rouge
+
+; test exec
+
+ve
+donne "M [av 10 td 90 av 10 td 90 av 10 tg 90]
+repete 4 [exec :M]
+ve
+exec [repete 4 :M]
+ve
+repete 4 :M
+cto
+
+# Procedures sans arguments
+pour lettre
+av 8 td 90 av 24 tg 90
+av 8 tg 90 av 32 tg 90
+av 16 tg 90 av 8
+fin
+pour motif
+lettre
+lettre
+lettre
+lettre
+fin
+ve
+motif
+
+pour hexagone 
+av 10 td 60
+sinon cap=0 [stop] [hexagone]
+fin
+
+VE
+bc
+mto
+fixecap 0
+hexagone
+
+# Procedure avec arguments
+pour rectangle1 :longueur :largeur
+av :longueur td 90
+av :largeur td 90
+av :longueur td 90
+av :largeur td 90
+fin
+
+rectangle1 20 10 
+
+pour carre :c
+repete 4 [av :c td  90]
+fin
+
+ve
+carre  100   carre  50 carre 30  carre 20  carre 1
+
+pour  rec  :lo  :la
+repete  2 [av :lo  td   90   av  :la    td  90]
+fin
+
+ve
+rec 200 100 rec 100 300  rec    50 150 rec 1 20  rec  100  2
+
+pour forme :nb :long
+repete :nb [av :long tg 360/:nb]
+fin
+
+pour dessine :nb :long
+forme :nb :long
+si :nb<12 [dessine :nb+1 :long]
+fin
+
+ve
+fixecap 90
+lc
+fixepos [-50 -200]
+bc
+dessine 3 100
+
+ve
+pour DoWhile :cond :seq
+sinon (exec :cond) [exec :seq] [stop]
+DoWhile :cond :seq
+fin
+donne "cpt 1
+DoWhile [:cpt < 100] [av 10 td :cpt donne :cpt :cpt+1]
+
+pour RepeatUntil :cond :seq
+exec :seq
+si exec :cond [stop]
+RepeatUntil :cond :seq
+fin
+ve
+donne "cpt 1
+RepeatUntil [:cpt > 50] [av 10 tg :cpt donne :cpt :cpt+1]
+
+pour bras :lon
+sinon :lon < 10 [stop] [av :lon td 90 bras :lon - 2]
+fcc rouge av :lon tg 90
+fin
+
+ve
+fcc vert
+bras 200
+
+pour stopper :emo
+si vide? :emo [stop]
+si egal? premier :emo "A [av 100 stopper sp :emo]
+td 45 stopper sp :emo
+tg 90 av 200
+fin
+
+ve
+stopper "ALMA
+
+; spirales récursives et conditionnelles
+
+pour spire1 :cote :angle
+av :cote td :angle
+si :cote < 100 [spire1 :cote+2 :angle]
+fin
+
+ve
+spire1 2 185
+ve
+spire1 2 90
+
+pour spire2 :cote :angle :inc
+av :cote td :angle
+si :cote < 100 [spire2 :cote +:inc :angle :inc]
+fin
+
+ve
+spire2 2 45 1
+ve
+spire2 2 120 4
+ve
+spire2 1 150 4
+
+pour spire3 :cote :angle :inc :etape
+av :cote td :angle
+si :etape<400 [spire3 :cote :angle + :inc :inc :etape+1]
+fin
+
+ve
+spire3 10 10 2 0
+
+; rose
+
+POUR starmove :SIZE
+ AV :SIZE * 1.618
+ TD 36
+ AV :SIZE * 1.618
+ TD 180
+FIN
+
+
+POUR rt_dart :SIDE
+ AV :SIDE * 1.616
+ TD 108 AV :SIDE * 1.618
+ TD 144 AV :SIDE
+ TG 36 AV :SIDE
+ TD 144
+FIN
+
+POUR lt_kite :SIDE
+ AV :SIDE * 1.618 TG 108
+ AV :SIDE * 1.618 TG 108
+ AV :SIDE TG 36
+ AV :SIDE TG 108
+FIN
+
+POUR rt_kite :SIDE
+ AV :SIDE * 1.618 TD 108
+ AV :SIDE * 1.618 TD 108
+ AV :SIDE TD 36
+ AV :SIDE TD 108
+FIN
+
+
+POUR big_kite :SIZE
+ AV :SIZE * 1.618
+ TD 144 AV :SIZE TG 108
+ lt_kite :SIZE
+ rt_kite :SIZE
+ TD 72 AV :SIZE TD 144
+ rt_dart :SIZE
+ AV :SIZE * 1.618
+ TD 108
+FIN
+
+POUR star :SIZE :SEGMENTS
+ REPETE :SEGMENTS [big_kite :SIZE TD 72]
+FIN
+
+POUR expand :SIZE
+ star :SIZE 5
+ AV :SIZE + :SIZE * 1.618 TG 108
+ REPETE 5 [star :SIZE 3 starmove :SIZE]
+FIN
+
+VE
+MTO
+expand 25
+CTo
+
+POUR CARREM :T
+REPETE 4 [AV :T TD 90]
+FIN
+
+POUR CARREPG :T 
+SI :T <= 200 [CARREM :T CARREPG :T + 10 ]
+FIN 
+
+POUR CARREPP :T 
+SI  (:T > 10) [CARREM :T CARREPP (:T - 10)]
+FIN 
+
+ve
+carrepp 200
+carrepg 10
+
+;escargot
+ve
+DONNE "CPT 1
+REPETE 550 [ AV 0.01 * :CPT  TD 3 DONNE "CPT :CPT+1] 
+tg 120 av 70
+tg 20 av 20
+repete 3 [
+td 30 av 10
+td 30 av 10 ]
+td 20
+av 170
+lc
+re 175
+td 90
+av 37
+bc
+td 30 av 30 re 30
+td 15 av 30
+cto
+
+; arbre
+
+POUR arbre1 :l :a :o :f1 :f2
+  SINON :o=0 [STOP] 
+    [ GAUCHE :a AVANCE :l
+      arbre1 :l*:f1 :a :o-1 :f1 :f2
+      LC RECULE :l DROITE 2*:a BC
+      AVANCE :l * :f2
+      arbre1 :l * :f1 :a :o-1 :f1 :f2
+      LC RECULE :l * :f2 GAUCHE :a BC
+    ]
+FIN
+VE
+FCC [128 0 0]
+arbre1 15 15 8 1 2
+
+pour arbre2 :g :l
+si egal? :g 0 [stop]
+av :l
+td 35 arbre2 :g-1 :l/1.3
+tg 95 arbre2 :g-1 :l/1.1
+td 60 re :l
+fin
+ve
+mto
+arbre2 6 40
+
+pour losange :cote :angle
+fcc [hasard 256 hasard 256 hasard 256]
+repete 2 [av :cote td :angle av :cote td 180- :angle]
+fin
+pour spirelo :cote :angle
+losange :cote :angle
+td :angle /5
+si egal? cap 0 [stop]
+spirelo (:cote+1) :angle
+fin
+
+VE
+bc
+mto
+spirelo 10 60
+
+;variables locales
+pour ellipses
+locale "a "b 
+donne "a 20 donne "b 60
+ftc 5
+repete 8 [ lc  
+     fcc liste (hasard 255) (hasard 255) (hasard 255)
+     repete 360 [ fixexy(:a*sin compteur.r) (:b*cos compteur.r) bc ]
+     donnelocale "c :a
+     donne "a chose "b + 20
+     donne "b :c + 10
+]
+fin
+
+ve
+ellipses
+
+pour test01 
+donnelocale "essai 100
+montre :essai
+fin
+
+ve
+donne "essai 0
+montre :essai
+attends 100
+test01
+attends 100
+montre :essai
+
+; fonctions récursives
+pour factorielle  :n
+si :n=0 [rends 1]
+rends (factorielle :n - 1) * :n
+fin
+
+montre factorielle 20
+
+
+
+ ; Le dessin d'un chateau-fort
+; Le dessin de la tour
+POUR TOUR
+  fixecap 0
+  BAISSECRAYON
+  AVANCE 200
+  REPETE 4 [td 90 AV 10 td 90 AV 20 tg 90 AV 10 tg 90 AV 20]
+  td 90 AV 10 tg 90 RECULE 200
+FIN
+
+;Le dessin des créneaux
+POUR CRENEAUX
+  REPETE 4 [td 90 AV 10 td 90 AV 20 tg 90 AV 10 tg 90 AV 20]
+FIN
+
+; Le dessin du chateau
+VIDEECRAN
+LEVECRAYON
+origine
+tg 90 av 200 td 90 re 100
+BAISSECRAYON
+fcc [0 0 128]
+tour
+av 100
+repete 2 [creneaux]
+re 100
+tour
+tg 90
+av 340
+cto
+
+pour sommer :n :res
+si :n=0 [montre :res stop]
+sommer :n-1 :res+:n
+fin
+
+sommer 20 0
+
+pour feston
+sinon egal? cap 0 [repete 60 [av 1 td 3]] [repete 60 [av 1 tg 3]]
+td 270 
+donne "d av 10
+si :d <> 0 [stop]
+feston
+fin
+
+
+ve
+fixecap 360
+;feston
+
+; dessin village
+POUR MUR :T 
+REPETE 4 [AV :T TD 90 ]
+FIN
+
+POUR TOIT :T 
+REPETE 3 [AV :T TD 120]
+TD 30 LC AV 10 BC  LC RE 10 TG 30 BC
+FIN
+
+POUR MAISON :T
+MUR :T AV :T TD 30 FCC [255 0 0] TOIT :T
+LC TG 30 RE :T TD 90 AV :T TG 90 BC
+FIN
+
+POUR RUE 
+LC TD 90 AV 10 TG 90 BC
+FIN
+
+POUR TRONC
+REPETE 15 [AV 200 RE 200 TD 90 AV 1 TG 90]
+FIN
+
+POUR FEUIL
+REPETE 360 [AV 50 RE 50 TD 1]
+FIN
+
+POUR ARBRE
+FCC [153 151 0] TRONC AV 180 TG 90 AV 8 TD 45 FCC [0 153 0] FEUIL
+LC FixeCAP 0 RE 180 TD 90 AV 8 TG 90 BC 
+FIN
+
+POUR SOLEIL 
+FCC [255 255 0]
+REPETE 360 [BC AV 40 BC AV 1 LC RE 41 TD 1 BC]
+REPETE 60 [LC AV 40 BC AV 35 LC RE 75 TD 6 BC]
+FIN
+
+POUR VILAG 
+TG 90 AV 318 RE 637 TD 45 LC AV 15 FCC [204 153 32] BC 
+LC RE 15 TG 45 BC LC TG 45 AV 15 FCC [64 128 64] RE 15 
+TD 45 BC LC FixePOS [0 0] FixeCAP 0 TG 90 AV 260 TD 90 RE 140 BC 
+FCC [64 64 64] MAISON 65 RUE FCC [10 11 12] MAISON 45 RUE RUE 
+FCC [64 64 64] MAISON 55 RUE FCC [11 12 13] MAISON 35 RUE 
+FCC [64 64 64] MAISON 75 REPETE 6 [RUE] ARBRE 
+REPETE 11 [RUE] ARBRE
+LC FixePOS [0 0] FixeCAP 0 TG 90 AV 160 TD 90 AV 90 BC SOLEIL
+FIN
+
+VE 
+MTo
+VILAG
+CTo
+
+;Quart de cercle
+POUR QCERCLE
+  REPETE   45  [  AV  2  TD   2  ] 
+FIN 
+
+; Pétale = 2 quarts de cercle
+POUR PETALE
+ REPETE 2  [  QCERCLE   TD   90 ] 
+FIN 
+
+;Fleur = 10 pétales 
+POUR FLEUR
+  REPETE   10  [  PETALE TD 360/10  ] 
+FIN 
+
+; Plante = fleur + tige + pétale + tige
+POUR PLANTE
+  FCC [128 0 0]  ; Rouge
+   FLEUR
+   FCC [0 64 0]  ; Vert
+  RECULE 130
+   PETALE
+  RECULE 70
+FIN
+
+VE
+LC
+FIXECAP 0
+fixepos [(0-250) (0-40) ]
+BC
+REPETE 4 [
+PLANTE LC AV 200 TD 90 AV 150 TG 90 BC]
+CTo
+
+
+pour khor :l :g
+fcc [hasard 255 hasard 255 hasard 255]
+si egal? :g 0 [av :l stop]
+khor :l/3 :g-1 tg 60
+khor :l/3 :g-1 td 120
+khor :l/3 :g-1 tg 60
+khor :l/3 :g-1
+fin
+
+ve
+repete 3 [khor 120 3 td 120]
+cto
+
+pour maniv :l
+si :l<5 [av :l stop]
+maniv :l/4 tg 90
+repete 2 [maniv :l/4 td 90]
+maniv :l / 4
+repete 2 [maniv :l/4 tg 90]
+maniv :l/4 td 90
+maniv :l/4
+fin
+
+ve
+repete 6 [maniv 80 td 60]
+
+VE
+REPETE 4 [AV 100 GA 120 AV 100 GA 120 AV 100 GA 120 AV 100 DR 90 ]
+VE
+repete 30 [av hasard 200 dr 90]
+ve
+ftc 2
+donne "angle 0
+repete 500 [av 10 td :angle donne "angle :angle + 7]
+
+ve
+donne "l [2 4 14 4 13 2 4 2 2 4 ]
+donne "cpt compte :l
+donne "i 1
+lc
+tantque [:i < :cpt] [
+    donne "a item :i :l 
+    donne "b item :i+1 :l
+    fixepos [:a*10 :b*10]
+    donne :i :i+2
+    bc
+]
+donne "l [7 4 7 13 11 11 14 5 2 5 7 13]
+donne "cpt compte :l
+donne "i 1
+lc
+tantque [:i < :cpt] [
+    donne "a item :i :l 
+    donne "b item :i+1 :l
+    fixepos [:a*10 :b*10]
+    donne :i :i+2
+    bc
+]
+
+
+
+POUR corner :SIZE
+ DRoite 45
+ AV :SIZE
+ DRoite 45
+FIN
+
+POUR one_side :SIZE :DIAG :LEVEL
+ SI :LEVEL = 0 [stop]
+ one_side :SIZE :DIAG :LEVEL - 1
+ DRoite 45 AV :DIAG DRoite 45
+ one_side :SIZE :DIAG :LEVEL - 1
+ GAuche 90 AV :SIZE GAuche 90
+ one_side :SIZE :DIAG :LEVEL - 1
+ DRoite 45 AV :DIAG DRoite 45
+ one_side :SIZE :DIAG :LEVEL - 1
+FIN
+
+POUR sierp :SIZE :LEVEL
+ DONNE "DIAG :SIZE / (racine 2)
+ repete 4 [one_side :SIZE :DIAG :LEVEL corner :DIAG]
+FIN
+
+VE
+sierp 5 4
+
+
+pour randomwalk 
+repete 100 [ 
+  donne "r hasard 3 
+  si :r = 0 [av 20] 
+  si :r = 1 [td 90 av 20] 
+  si :r = 2 [tg 90 av 20] ]
+fin
+
+randomwalk
+
+pour spiralR :n 
+        si :n < 1 [stop] 
+        av :n 
+        droite 20 
+        spiralR 0.95 * :n 
+     fin
+     
+     ve
+     spiralR 50
+
+
+pour Spiral :d :s :a
+  ve cto bc
+  donne "x :d
+  REPETe arrondi 350 / :s [av :x td :a donne "x :x + :s]
+  attends 100
+fin
+
+pour Spirals
+  ;setpensize [3 3]
+  fcc [255 000 000] Spiral 0 1.2 53
+  fcc [000 255 000] Spiral 0 4 90
+  fcc [000 000 255] Spiral 0 3 178
+  fcc [0 0 0] 
+  ;SETPENSIZE [1 1] 
+  lc 
+  origine
+  bc 
+fin
+
+Spirals
+
+POUR TAP :L :G
+  SInon :G=0 [AVANCE :L STOP]
+  [ TAP :L/5 :G-1
+    GAUCHE 90 LEVECRAYON AVANCE :L/5 BAISSECRAYON
+    REPETE 4 [TAP :L/5 :G-1 DROITE 90]
+    LEVECRAYON RECULE :L/5 DROITE 90 AVANCE :L/5 BAISSECRAYON
+    TAP :L/5 :G-1
+    DROITE 90 LEVECRAYON AVANCE :L/5 BAISSECRAYON
+    TAP :L/5 :G-1
+    REPETE 4 [TAP :L/5 :G-1 GAUCHE 90]
+    LEVECRAYON RECULE :L/5 GAUCHE 90 AVANCE :L/5 BAISSECRAYON
+    TAP :L/5 :G-1 ]
+FIN
+
+POUR TAPIS :G :L
+  REPETE 8 [  TAP :G :L TD 45]
+FIN
+
+VE
+TAPIS 80 3
+
+ve
+donne "size 10
+repete 60 [  av :size dr 120  donne "size :size + 7 ]
+
+pour SQUARE :SIZE
+    REPETE 4 [AV :SIZE DR 90]
+FIN
+
+VE
+REPETE 20 [SQUARE 100 DR 20]
+VE
+repetE 36 [square 100 DR 10]
+VE
+DONNE "size 200
+repete 36 [  square :size dr 10  donne "size :size - 5 ]
+VE
+DONNE "size 200
+FTC 2
+REPETE 36 [ FCC LISTE (HASARD 255) (HASARD 255) (HASARD 255)
+square :size  DR 10 DONNE "size :size - 5 ]
+VE
+DONNE "size 180
+FTC 2
+FCC LISTE HASARD 128 HASARD 255 HASARD 64
+TANTQUE [:size > 0] [ square :size DR 10  DONNE "size :size - 2 ]
+POUR star1 :size
+  repetE 5 [AV :size DR 144]     
+FIN
+VE
+ORIGINE
+DONNE "size 40
+TANTQUE [:size > 1] [LC FIXEPOS LISTE ((HASARD 700)-350) ((HASARD 400)-200)
+BC
+  FCC LISTE HASARD 255 HASARD 255 HASARD 255
+  star1 :size
+  DONNE "size :size - 0.5
+]
+
+; D'après TER Interpréteur Logo (ALLIER Simon – GROLLEMUND Naïtan – LALLUQUE Renaud - DELFOUR Kevin )
+; http://naitan.free.fr/logo/
+
+pour ccurve :long :profondeur
+sinon :profondeur< -1 [ av arrondi :long] [
+ga 45 ccurve :long/1.41421 :profondeur-1
+dr 45 ccurve :long/1.41421 :profondeur-1
+ga 45]
+fin
+
+pour ro :x
+fcc bleu
+lc fixexY -50 50 bc
+repete :x [ccurve 100 8 dr 360/:x]
+fin
+
+nettoietout
+ro 6
+
+POUR manpower  
+MONTRETORTUE   
+LEVECRAYON 
+fixepos [40 40]  
+BAISSECRAYON  
+FixePos [ 40 (-40)] FixePos [ -40 (-40) ] FixePos [ -40 40] 
+FixePos [ 40 40] FixePos [ -40 (-40) ] 
+FixePos [ 0 40] FixePos [ 40 0] FixePos [ 40 40] 
+FixePos [ -40 0] FixePos [ 40 0] 
+FixePos [ -40 40] FixePos [ 0 (-40) ]  
+FixePos [ -40 0] FixePos [ 40 0] FixePos [ -40 40] 
+FixePos [ 40 (-40) ] FixePos [ -40 0]  
+FixePos [ -40 (-40) ] FixePos [ 40 0] 
+FixePos [ 0 40] FixePos [ 40 (-40) ] 
+FixePos [ 0 (-40) ] FixePos [ -40 40] 
+FixePos [ 0 40] FixePos [ 0 (-40) ] FixePos [ 40 0] 
+FixePos [ 40 40] FixePos [ 0 (-40)] fixePos [0 40]
+FixePos [-40 0] 
+origine
+fin
+attends 300 
+manpower
+
+
+
+
+POUR soleil1 
+répète 360 [AV 58 RE 58 TD 1] 
+FIN 
+ 
+POUR couronne 
+répète 360 [LC AV 68 BC AV 6 LC RE 74 BC TD 1 FCC rouge] 
+FIN 
+ 
+POUR satellite 
+répète 14 [LC AV 92 BC répète 360 [AV 12 RE 12 TD 1] LC RE 92 TD 360 / 14 BC FCC vert] 
+FIN 
+ 
+POUR satellite2 
+répète 14 [LC AV 112 BC répète 360 [AV 8 RE 8 TD 1] LC RE 112 TD 360 / 14 BC FCC rouge] 
+FIN 
+ 
+POUR satellite3 
+répète 2 [répète 14 [LC AV 136 BC répète 360 [AV 8 RE 8 TD 1] LC RE 136 TD 360 / 28 BC bleu ] FCC rouge]  
+FIN 
+ 
+POUR couronne2 
+répète 3600 [LC AV 154 BC AV 4 LC RE 158 BC TD 0.1 FCC rouge]  
+FIN 
+ 
+POUR système 
+VE
+FCC JAUNE soleil1  
+FCC bleu couronne  
+FCC bleu satellite 
+FCC bleu TD 12 satellite2 
+FCC bleu FCAP 0 satellite3 
+couronne 
+FIN 
+ 
+attends 300 
+système 
+
+
+

@@ -11,7 +11,7 @@ function Interpreteur(id, logo, parent) { /***********************************/
     this.enfant = null;
     this.pile_op = [];                                                  // Pile des opérateurs / fonctions
     this.pile_arg = [];                                                 // Pile des arguments
-    this.analyseur_lexical = new Analyse_lexicale();
+    this.analyseur_lexical = new Analyse_lexicale(logo);
     this.dernier_token = null;
     this.termine = false;
     this.contexte = new Contexte(this);
@@ -221,6 +221,11 @@ Interpreteur.prototype.evaluer = function () { /*******************************/
         return token;
 }; // Evaluer
 
+Interpreteur.prototype.exporte = function(code) { /***************************/
+    var lex = new Analyse_lexicale(this.LWlogo);    
+    return lex.exporte(this.LWlogo,code);        
+} // Interpreteur.exporte(code)
+
 Interpreteur.prototype.get = function(t) { /**********************************/
     var e = this, ret;
     while (e) {
@@ -232,6 +237,11 @@ Interpreteur.prototype.get = function(t) { /**********************************/
     ret.valeur = t.nom;
     return ret;
 }; // get
+
+Interpreteur.prototype.importe = function(code) { /***************************/
+    var lex = new Analyse_lexicale(this.LWlogo);    
+    return lex.importe(this.LWlogo,code);        
+} // Interpreteur.importe(code)
 
 Interpreteur.prototype.interprete = function() { /****************************/
 

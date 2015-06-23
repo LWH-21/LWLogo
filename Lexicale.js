@@ -4,13 +4,14 @@
 "use strict";
 
 
-function Analyse_lexicale () { /**********************************************/
+function Analyse_lexicale (logo) { /*******************************************/
     this.src = null;    
     this.nligne=1;
     this.ncolonne = 0; 
     this.fin_analyse = false;   
     this.tokens=[];
     this.numero = 0;
+    this.logo = logo;
 } // Analyse_lexicale
  
  Analyse_lexicale.prototype.back = function(n) { /*****************************/
@@ -18,7 +19,7 @@ function Analyse_lexicale () { /**********************************************/
     this.numero -= n; 
     if (this.numero<0) this.numero=0;
 } // back
- 
+  
  /* Creation des procedures utilisateur **************************************/
 Analyse_lexicale.prototype.creation_procs = function() { /********************/
         var i,j,t,fin,f,debut,trouve;
@@ -97,6 +98,39 @@ Analyse_lexicale.prototype.erreur = function(t,s,cpl) { /*********************/
         if (cpl) err.exdata=cpl; else err.exdata = t;                                              
         return err;
 } // erreur
+
+// Exporte les tokens dans un format lisible dans toutes les langues
+Analyse_lexicale.prototype.exporte = function(logo,code) { /**************************/
+    var i,j,t,p,s,d=false;
+    s='';
+    this.logo = logo;
+    this.src = code.rtrim();    
+    this.nligne=1;
+    this.ncolonne = 0;      
+    this.fin_analyse = false;
+    this.tokens=[];
+    this.numero = 0;         
+    do {
+        t = this.suivant();  
+        if ((d) || ( ! t.est_blanc())) { 
+            d = true;
+            if ((! p) || (! t.est_blanc()) || (! p.est_blanc())) { 
+                this.decore(t);
+                this.tokens.push(t); 
+            }
+        }
+        p=t;
+    } while ( (t) && (t.type!=='erreur') && (t.type!=='eof')); 
+    if ((t) && (t.type=='erreur')) return '';    
+    
+    for (i=0;i<this.tokens.length;i++) {
+        if ((! this.tokens[i].est_blanc) || (i<this.tokens.length-1)) {
+            s=s+this.tokens[i].exporte(this.logo)+' ';        
+        }
+    }
+    
+    return s;
+}
  
 Analyse_lexicale.prototype.get = function() { /*******************************/    
     if (this.numero < this.tokens.length) {
@@ -109,6 +143,45 @@ Analyse_lexicale.prototype.get = function() { /*******************************/
         return new Token('eof','');
     }
 } // get 
+ 
+// Importe les tokens à partir d'un format lisible dans toutes les langues
+Analyse_lexicale.prototype.importe = function(logo,code) { /**************************/
+    var t,f,key,i,j,s,s1,newline,procedure;
+    newline=false;
+    procedure=false;
+    var sep = String.fromCharCode(254)+String.fromCharCode(255);
+    s='';
+    t = code.split(' ');
+    for (i=0;i<t.length;i++) {        
+        if (t[i].substring(0,2)===sep) {
+            t[i]=t[i].substring(2);
+            for( key in this.logo.reference.procedures) {
+                f = this.logo.reference.procedures[key];
+                if (t[i]===f.num) {
+                    s1 = this.logo.reference.les_fonctions[f.code].std[0];
+                    s1 = s1.toUpperCase(); 
+                    if (f.num==='D14') {
+                        procedure = true;
+                        s+=s1+' '; 
+                    } else if (f.num==='D15') {
+                        procedure = false;
+                        s+=s1+'\n'; 
+                    } else {
+                        if ((procedure) && (newline)) s=s+'    ';
+                         s+=s1+' ';
+                    }                  
+                    newline = false;                    
+                    break;
+                }
+            }
+        } else {         
+            if ((procedure) && (newline)) s=s+'    ';
+            newline = false;                    
+            if (t[i]==='\n') {newline = true; s = s+'\n';} else {s=s+t[i]+' '; }
+        }        
+    }
+    return s;
+} 
  
  Analyse_lexicale.prototype.init= function(parent,texte,dligne,dcol,token) { //
     
@@ -513,12 +586,6 @@ Analyse_lexicale.prototype.tests = function() { /*****************************/
             } 
             i++;
         }        
-        /*if (debug) {
-            for (i=0;i<this.tokens.length;i++) {
-                t = this.tokens[i];
-                console.log('Analyse '+i+':',t);
-            }         
-        }*/
 } //tests
  
 
