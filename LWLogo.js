@@ -481,7 +481,7 @@ LWLogo.prototype.erreur = function(token) {
         this.editeur.focus();
         if (lg>0) {
             var Range = require("ace/range").Range;            
-            editor.selection.setRange(new Range(l-1, c-1, l-1, c+lg));
+            this.editeur.selection.setRange(new Range(l-1, c-1, l-1, c+lg));
         }        
     } 
 

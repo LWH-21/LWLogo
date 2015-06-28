@@ -23,7 +23,8 @@
 <button id="play" style="vertical-align: top;margin-top:2px;" onclick="play()">Lancer</button>
 <button id="stop" style="vertical-align: top;margin-top:2px;" onclick="stop()">Stop</button>
 <button id="pause" style="vertical-align: top;margin-top:2px;" onclick="pause()">Pause</button> 
-<button id="export" style="vertical-align: top;margin-top:2px;" onclick="reformate()">Reformate</button>  
+<button id="export" style="vertical-align: top;margin-top:2px;" onclick="reformate()">Traduire</button>  
+<button id="export" style="vertical-align: top;margin-top:2px;" onclick="formate()">Inv</button>
 <select id="seltortue">
   <option value="0">1 Pointeur</option>
   <option value="1">2 Robot</option>
@@ -106,8 +107,13 @@ function pause() {
     
 function reformate() {
     var s = document.getElementById('editor').value;
-    s = logo.exporte(s);    
-    s = logo.importe(s);
+    s = logo.exporte(s);        
+    document.getElementById('editor').value=s;
+}
+
+function formate() {
+    var s = document.getElementById('editor').value;
+    s = logo.importe(s);        
     document.getElementById('editor').value=s;
 }
     

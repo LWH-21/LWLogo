@@ -39,7 +39,12 @@ Dessin.prototype.ligne = function(n,o,d,couleur,epaisseur) { /****************/
     this.ajoute(n,o,d,couleur,epaisseur);    
 } // Dessin.ligne(n,o,d,couleur,epaisseur)
 
-Dessin.prototype.toSVG = function(f) { /**************************************/
+Dessin.prototype.remplir = function(x,y,fillcolor) {
+    var ctx=this.canvas.getContext("2d");
+    ctx.floodfill(x,y,fillcolor,this.largeur,this.hauteur);
+}
+
+Dessin.prototype.toSVG = function(f,code) { /**********************************/
     var d = new Date(), s='', i, e;
     if (f) {
         s='<?xml version="1.0" encoding="utf-8"?>';
@@ -58,9 +63,9 @@ Dessin.prototype.toSVG = function(f) { /**************************************/
     }    
     s=s+'viewbox=" 0 0 '+this.largeur+' '+this.hauteur+'">'   
     if (f) {
+        if (!code) { code='Genere a partir de : http://lwh.free.fr'; }
         s=s+'<title>Dessin Logo</title>';
-        s=s+'<desc> Code : '+'\n';
-        s=s+'Genere a partir de : http://lwh.free.fr\n';
+        s=s+'<desc> Code : '+code+'\n';
         s=s+'</desc>\n';     
     }
     for (i=0;i<this.lst.length;i++) {

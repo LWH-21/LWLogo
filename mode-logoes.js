@@ -1,45 +1,52 @@
-﻿define("ace/mode/logofr_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
+﻿define("ace/mode/logoes_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 
-var LogoFRpHighlightRules = function() {
+var logoespHighlightRules = function() {
 
 
     var keywordMapper = this.createKeywordMapper({
         "variable.language": "",
         "keyword": 
-            " ARRONDI ATTENDS AVANCE AV " +
-            " BAISSECRAYON BC BLANC BLEU BRUN"+
-            " CACHETORTUE CAP CHOIX CHOSE COMPTE COMPTEUR.R COS CTO CYAN " +
-            " DERNIER DESQUE DIFFERENCE DONNE DONNELOCALE DR DROITE " +
-            " EGAL? ENLEVE ENT ET ETIQUETTE EXEC EXECUTE " +
-            " FAUX FCC FTC FIXECAP FIXECOULEURCRAYON FIXEPOS FIXETAILLECRAYON FIXEX FIXEXY FIXEY " +
-            " GA GAUCHE GRIS" +
-            " HASARD " +
-            " INVERSE ITEM " +
-            " JAUNE " +
+            " alto amarillo avanza av azar azul" +
+            " bajalapiz bl blanco borrapantalla bp "+
+            " centro cian cierto cos coseno cuenta cuentarepite " +
+            " devuelve dev diferencia division " +
+            " ejecuta elegir elemento entero espera " +
+            " falso fr frase " +
+            " gd giraderecha gi giraizquierda gris " +
+            " hasta haz hazlocal " +
+            " igual? iguales? init! invierte " +
+            "  " +
             " " +
-            " LC LEVECRAYON LISTE LISTE? LOCALE LOG10 " +
-            " MAGENTA MELANGE MD METSDERNIER METSPREMIER MOINS MONTRE MONTRETORTUE MOT MOT? MP MTO " +
-            " NETTOIE NETTOIETOUT NOIR NOMBRE? NON NT " +
-            " ORIGINE OU "+
-            " PI PHRASE PLUSGRAND? PLUSPETIT? POS PREMIER PRODUIT PUISSANCE "+
-            " QUOTIENT " +
-            " RACINE RAPPORTE RE RECULE REPETE REPETEPOUR RESTE RENDS RETOURNE ROUGE " +
-            " SAUFDERNIER SAUFPREMIER SD SI SIN SINON SP SOMME STOP STOPPE " +
-            " TANTQUE TD TG TRONQUE "+
+            " limpia lista lista? local log10 " +
+            " mayor? mayorque? magenta marron md menor? menorque? menos menosprimero menosultimo mezcla mientras mp muestra muestratortuga mt " +
+            " negro no noigual? numero? " +
+            " o ocultatortuga ot "+
+            " palabra palabra? para pared& poncl poncolorlapiz pong pongrosor ponpos ponprimero ponrumbo ponultimo ponx ponxy pony pos potencia pp pri primero producto pu "+
+            " quita " +
+            " raizcuadrada rc re redondea repite repitepara resto retrocede ro rojo rotula rumbo " +
+            " si sen seno sisino sl subelapiz suma " +
+            "  "+
+            " ul ultimo " +
+            " valor vacio? verdadero verde" +
             " " +
-            " VE VERT VIDE? VIDEECRAN VRAI" +
+            " y " +
+            " " +
+            " " +
+            " " +
+            " " +
+            " " +
             " " +
             " ",
         "constant.language": 
-            "POUR FIN VRAI FAUX",
+            "PARA FIN VERDADERAO FALSO",
         "support.type": 
             "",
         "keyword.operator":
-            "ARRONDI COS DIFFERENCE LOG10 MOINS PI PUISSANCE QUOTIENT RACINE SIN "
+            "redondea COS diferencia LOG10 MENOS PI potencia divid raizcuadrada SIN multi "
     }, "text", true, " ");
 
     var compoundKeywords = "WITH\\W+(?:HEADER\\W+LINE|FRAME|KEY)|NO\\W+STANDARD\\W+PAGE\\W+HEADING|"+
@@ -101,9 +108,9 @@ var LogoFRpHighlightRules = function() {
         ]
     };
 };
-oop.inherits(LogoFRpHighlightRules, TextHighlightRules);
+oop.inherits(logoespHighlightRules, TextHighlightRules);
 
-exports.LogoFRpHighlightRules = LogoFRpHighlightRules;
+exports.logoespHighlightRules = logoespHighlightRules;
 });
 
 
@@ -194,10 +201,10 @@ oop.inherits(FoldMode, BaseFoldMode);
 
 });
 
-define("ace/mode/logofr",["require","exports","module","ace/mode/logofr_highlight_rules","ace/mode/folding/coffee","ace/range","ace/mode/text","ace/lib/oop"], function(require, exports, module) {
+define("ace/mode/logoes",["require","exports","module","ace/mode/logoes_highlight_rules","ace/mode/folding/coffee","ace/range","ace/mode/text","ace/lib/oop"], function(require, exports, module) {
 "use strict";
 
-var Rules = require("./logofr_highlight_rules").LogoFRpHighlightRules;
+var Rules = require("./logoes_highlight_rules").logoespHighlightRules;
 var FoldMode = require("./folding/coffee").FoldMode;
 var Range = require("../range").Range;
 var TextMode = require("./text").Mode;
@@ -235,7 +242,7 @@ oop.inherits(Mode, TextMode);
         }
     };
     
-    this.$id = "ace/mode/logofr";
+    this.$id = "ace/mode/logoes";
 }).call(Mode.prototype);
 
 exports.Mode = Mode;

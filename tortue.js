@@ -508,6 +508,12 @@ Tortue.prototype.texte = function(text) {
     ctx.translate(-(p.x-w),-(p.y+h));    */        
 };
 
+Tortue.prototype.remplir =function() {
+    var p = this.convert(this.posx,this.posy); 
+    this.dessin.remplir(p.x,p.y,this.couleur_crayon);
+};
+
+
 Tortue.prototype.videecran =function() {
     this.draw();
     this.dessin.vide();
@@ -738,7 +744,12 @@ Tortue.prototype.tick = function() {
                                 } 
                                 rep --;
                             } while (rep>0);                   
-                            break;                            
+                            break;  
+        case 'REMPLIS'  :   if (this.crayon_baisse) {
+                                this.remplir();
+                            }
+                            this.retour(new Token('booleen',0,'ignore'));    
+                            break;
         case 'TD'       :   do {
                                 if (this.param_tr[0]<1) { dep = this.param_tr[0]; } else {
                                     if (v>=1) { dep = 1; } else { dep=Math.min(this.param_tr[0],v); }                           

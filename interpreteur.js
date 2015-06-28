@@ -286,7 +286,7 @@ Interpreteur.prototype.interprete = function() { /****************************/
                 }
                 else {
                     t = this.valorise(ret);
-                    if (t.type==='erreur') { return ret; }
+                    if (t.type==='erreur') { return ret; }                    
                     this.pile_arg.push(t);
                 }
             }
@@ -374,7 +374,7 @@ Interpreteur.prototype.traite_token = function() { /***************************/
                             return this.evaluer();
                         } else {
                             var t = this.valorise(this.dernier_token);
-                            if (t.type==='erreur') { return t; }
+                            if (t.type==='erreur') { return t; }                            
                             this.pile_arg.push(t);
                             this.dernier_token = null;
                         }

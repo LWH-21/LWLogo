@@ -17,114 +17,118 @@ function Reference() { /******************************************************/
     /* Libellés */
 
     this.libelle = {
-        crayon: 'Crayon :',
-        encours: 'En cours',
-        enpause: 'En pause.',
-        pile   : 'Taille de la pile :',
-        statut : 'Statut de la tortue : '
+        crayon: 'Lapiz :',
+        encours: 'En marcha',
+        enpause: 'Pausa.',
+        pile   : 'Tamaño de la pila :',
+        statut : 'Estado de la tortuga : '
     };
 
     /* Messages d'erreurs */
     this.les_messages = {
-      crochet       : 'Caracteres "[" et "]" non apparies.',
-      inconnu       : 'Caractere non inconnu par le langage',
-      nombre        : 'Ne peux pas interpreter ce nombre',
-      type          : 'Type inconnu'
+      crochet       : '"[" y "]" emparejadas.',
+      inconnu       : 'Carácter desconocido en el lenguaje',
+      nombre        : 'No se puede interpretar este número',
+      type          : 'Tipo desconocido'
     };
 
     /* Nom des fonctions */
     this.les_fonctions = {
-      ARRONDI : {std: ['arrondi'] },
-      ATTENDS : {std: ['attends'] },
-      AV : {std: ['avance','av']},
-      BC : {std: ['baissecrayon','bc']},
-      BLANC : {std:['blanc']},
-      BLEU : {std: ['bleu']},
-      BRUN : {std:['brun']},
-      CACHETORTUE : {std:['cachetortue','cto']},
-      CAP :{std:['cap']},
-      CHOIX : {std:['choix']},
-      CHOSE : {std:['chose']},
-      COMPTE:{std:['compte']},
-      COMPTEUR : {std: ['compteur.r']},
-      COS : {std:['cos']},
-      CYAN : {std:['cyan']},
-      DERNIER : {std:['dernier']},
-      DIFFERENCE : {std:['difference']},
-      DONNE : {std:['donne']},
-      DONNELOCALE : {std:['donnelocale']},
-      EGALQ : {std:['egal?']},
-      ENLEVE : {std:['enleve']},
-      ENT : {std:['tronque','ent']},
-      ET : {std:['et']},
-      ETIQUETTE : {std:['etiquette']},
-      EXECUTE : {std:['execute','exec']},
-      FAUX : {std:['faux']},
-      FCC : {std:['fixecouleurcrayon','fcc']},
+      ARRONDI : {std: ['redondea'] }, // Round
+      ATTENDS : {std: ['espera'] },   // Wait
+      AV : {std: ['avanza','av']},
+      BC : {std: ['bajalapiz','bl']},
+      BLANC : {std:['blanco']},
+      BLEU : {std: ['azul']},
+      BRUN : {std:['marron']},
+      CACHETORTUE : {std:['ocultatortuga','ot']},
+      CAP :{std:['rumbo']},     // heading
+      CHOIX : {std:['elegir']},  // pick
+      CHOSE : {std:['valor']},
+      COMPTE:{std:['cuenta']},   // count
+      COMPTEUR : {std: ['cuentarepite']}, // repcount
+      COS : {std:['coseno','cos']}, // cos
+      CYAN : {std:['cian']}, 
+      DERNIER : {std:['ultimo','ul']}, // last
+      DIFFERENCE : {std:['diferencia']},
+      DONNE : {std:['haz']}, // make
+      DONNELOCALE : {std:['hazlocal']}, // localmake
+      EGALQ : {std:['iguales?','igual?']},
+      ENLEVE : {std:['quita']},   // remove
+      ENT : {std:['entero']}, // int
+      ET : {std:['y']}, // and
+      ETIQUETTE : {std:['rotula','ro']}, // label
+      EXECUTE : {std:['ejecuta']},
+      FAUX : {std:['falso']},
+      FCC : {std:['poncolorlapiz','poncl']},
       FIN : {std:['fin']},
-      FIXECAP : {std:['fixecap']},
-      FIXEPOS : {std:['fixepos']},
-      FIXEX : {std:['fixex']},
-      FIXEXY : {std:['fixexy']},
-      FIXEY : {std:['fixey']},
-      FTC : {std:['fixetaillecrayon','ftc']},
-      HASARD : {std:['hasard']},
+      FIXECAP : {std:['ponrumbo']},
+      FIXEPOS : {std:['ponpos']},
+      FIXEX : {std:['ponx']},
+      FIXEXY : {std:['ponxy']},
+      FIXEY : {std:['pony']},
+      FTC : {std:['pongrosor','pong']},
+      GRIS: {std:['gris']},
+      HASARD : {std:['azar']},
       INIT : {std:['init!']},
-      INVERSE : {std:['inverse']},
-      ITEM : {std:['item']},
-      JAUNE : {std:['jaune']},
-      JUSQUA : {std:['desque']},
-      LC : {std:['levecrayon','lc']},
-      LISTE : {std:['liste']},
-      LISTEQ : {std:['liste?']},
-      LOCALE : {std:['locale']},
+      INVERSE : {std:['invierte']}, // reverse
+      ITEM : {std:['elemento']}, // item
+      JAUNE : {std:['amarillo']},
+      JUSQUA : {std:['hasta']},
+      LC : {std:['subelapiz','sl']},
+      LISTE : {std:['lista']},
+      LISTEQ : {std:['lista?']},
+      LOCALE : {std:['local']},
       LOG10 : {std:['log10','lg']},
       MAGENTA : {std:['magenta']},
-      MOINS : {std:['moins']},
-      MELANGE : {std:['melange']},
-      METSDERNIER : {std : ['metsdernier','md']},
-      METSPREMIER : {std : ['metspremier','mp']},
-      MONTRE : {std:['montre']},
-      MONTRETORTUE : {std:['montretortue','mto']},
-      MOT  : {std:['mot']},
-      MOTQ : {std:['mot?']},
-      MUR : {std:['mur&']},
-      NETTOIE : {std:['nettoie']},
-      NOIR : {std:['noir']},
-      NOMBREQ : {std:['nombre?']},
-      NON : {std:['non']},
-      ORIGINE : {std:['origine']},
-      OU : {std:['ou']},
+      MOINS : {std:['menos']}, // minus
+      MELANGE : {std:['mezcla']},
+      METSDERNIER : {std : ['ponultimo','pu']}, // lput
+      METSPREMIER : {std : ['ponprimero','pp']}, // fput
+      MONTRE : {std:['muestra']},
+      MONTRETORTUE : {std:['muestratortuga','mt']},
+      MOT  : {std:['palabra']}, // word
+      MOTQ : {std:['palabra?']}, //word?
+      MUR : {std:['pared&']},
+      NETTOIE : {std:['limpia']}, // clean
+      NOIR : {std:['negro']},
+      NOMBREQ : {std:['numero?']}, // number?
+      NON : {std:['no']},
+      NONEQ : {std:['noigual?']}, 
+      ORIGINE : {std:['centro']},
+      OU : {std:['o']},
       PI : {std:['pi']},
-      PHRASE : {std:['phrase']},
-      POS: {std:['pos']},
-      POUR: {std:['pour']},
-      PREMIER: {std:['premier','prem']},
-      PRODUIT: {std:['produit']},
-      PUISSANCE: {std:['puissance']},
-      QUOTIENT: {std:['quotient']},
-      RACINE: {std:['racine']},
-      RE : {std:['recule','re']},
-      REMPLIS : {std:['remplis']},
-      REPETE : {std:['repete']},
-      REPETEPOUR : {std:['repetepour']},
-      RESTE : {std:['reste']},
-      RETOURNE : {std:['retourne','rapporte','rends']},
-      ROUGE : {std:['rouge']},
-      SD : {std:['saufdernier','sd']},
-      SI : {std:['si']},
-      SIN : {std:['sin']},
-      SINON : {std:['sinon']},
-      SOMME : {std:['somme']},
-      SP : {std:['saufpremier','sp']},
-      STOP : {std:['stop','stoppe']},
-      TANTQUE: {std:['tantque']},
-      TD : {std:['droite','td','dr']},
-      TG : {std:['gauche','tg','ga']},
-      VE : {std:['videecran', 've','nettoietout','nt']},
-      VERT : {std:['vert']},
-      VIDEQ : {std:['vide?']},
-      VRAI : {std:['vrai']}
+      PHRASE : {std:['frase','fr']}, // sentence
+      PLGRQ : {std:['mayorque?','mayor?']},
+      PLPEQ : {std:['menorque?','menor?']},      
+      POS: {std:['posicion','pos']},
+      POUR: {std:['para']}, // to
+      PREMIER: {std:['primero','pri']}, // first
+      PRODUIT: {std:['producto']}, // product
+      PUISSANCE: {std:['potencia']}, // power
+      QUOTIENT: {std:['division']},
+      RACINE: {std:['raizcuadrada','rc']}, // srqt
+      RE : {std:['retrocede','re']}, // back
+      REMPLIS : {std:['rellena']},  // fill
+      REPETE : {std:['repite']}, // repeat
+      REPETEPOUR : {std:['repitepara']},
+      RESTE : {std:['resto']}, // remainder
+      RETOURNE : {std:['devuelve','dev']}, // output
+      ROUGE : {std:['rojo']},
+      SD : {std:['menosultimo','mu']}, // butlast
+      SI : {std:['si']}, // if
+      SIN : {std:['seno','sen']},
+      SINON : {std:['sisino']},
+      SOMME : {std:['suma']},
+      SP : {std:['menosprimero','mp']}, // butfirst
+      STOP : {std:['alto']},
+      TANTQUE: {std:['mientras']},
+      TD : {std:['giraizquierda','gi']},
+      TG : {std:['giraderecha','gd']},
+      VE : {std:['borrapantalla', 'bp']}, // Clearscreen
+      VERT : {std:['verde']},
+      VIDEQ : {std:['vacio?']}, // empty?
+      VRAI : {std:['verdadero','cierto']} // true
     };
 
     //      code,   mini_arg,   maxi_arg,   style,  ret,    priorite,   action           arguments attendus. *=nimp, n=nombre, b=booleen, l=liste, m=mot, w=mot ou liste, c=couleur
@@ -278,44 +282,44 @@ Reference.prototype.erreur = function(token) { /******************************/
     var s='';
     if (token) {
             switch (token.origine) {
-                case 'analyse' : s='<b>Erreur lors de l analyse</b><br>';
+                case 'analyse' : s='<b>Error análisis léxico</b><br>';
                                  break;
-                case 'interprete' :s='<b>Erreur lors de l interpretation</b><br>';
+                case 'interprete' :s='<b>Error de interpretación</b><br>';
                                  break;
-                case 'eval' :    s='<b>Erreur lors de l evaluation</b><br>';
+                case 'eval' :    s='<b>Error de apreciación</b><br>';
                                  break;
-                default :       s='<b>Erreur</b><br>';break;
+                default :       s='<b>Error</b><br>';break;
             }
-            if (token.ligne) {s=s+'Ligne: '+token.ligne+' ';}
-            if (token.colonne) {s=s+'Colonne: '+token.colonne+'<br>';}
+            if (token.ligne) {s=s+'Línea: '+token.ligne+' ';}
+            if (token.colonne) {s=s+'Columna: '+token.colonne+'<br>';}
             switch (token.nom) {
-                case 'analyse'        : s=s+'Code impossible à analyser.';break;
-                case 'argument'     : s=s+'Les arguments ne correspondent pas pour la commande <span class="valencia">'+token.valeur+'</span>';break;
-                case 'booleen'      : s=s+'Paramètre de type <booleen> attendu après <span class="valencia">'+token.valeur+'</span>';break;
-                case 'caractere non reconnu' : s=s+'Caractère <span class="valencia">'+token.valeur+'</span> non reconnu';break;
-                case 'couleur'      :  s=s+'Paramètre de type <couleur> (liste de 3 nombres) attendu après <span class="valencia">'+token.valeur+'</span>';break;
-                case 'crochet'      : s=s+'Les crochets ([ - ]) ne correspondent pas';break;
-                case 'element vide' : s=s+'Erreur système : Token à nul';break;
-                case 'evaluation'   : s=s+'Probleme lors de l evaluation de <span class="valencia">'+token.valeur+'</span>';
+                case 'analyse'        : s=s+'Código no para ser analizados.';break;
+                case 'argument'     : s=s+'Los argumentos no corresponden a la orden <span class="valencia">'+token.valeur+'</span>';break;
+                case 'booleen'      : s=s+'Tipo de parámetro < booleano> espera después <span class="valencia">'+token.valeur+'</span>';break;
+                case 'caractere non reconnu' : s=s+'Carácter <span class="valencia">'+token.valeur+'</span> no reconocido';break;
+                case 'couleur'      :  s=s+'Parámetro de tipo <color> ( 3 lista de números ) espera después<span class="valencia">'+token.valeur+'</span>';break;
+                case 'crochet'      : s=s+'Los corchetes ([ -] ) no coinciden';break;
+                case 'element vide' : s=s+'Error del sistema';break;
+                case 'evaluation'   : s=s+'Problema durante la evaluación de <span class="valencia">'+token.valeur+'</span>';
                                       if (token.err) {s=s+'<br>'+token.err+'</br>';}
                                       break;
-                case 'fin fonction' : s=s+'La fin de la fonction <span class="valencia">'+token.valeur+'</span> n est pas indiquée.';break;
-                case 'format numerique' : s=s+'Mauvais format pour le nombre <span class="valencia">'+token.valeur+'</span>';break;
-                case 'inconnu'      : s=s+'Je ne connais pas <span class="valencia">'+token.valeur+'</span>';break;
-                case 'init'         : s=s+'L appel à  <span class="valencia">'+token.valeur+'</span> doit se faire dans une fonction d initialisation.';
-                case 'liste'        : s=s+'Paramètre de type <liste> attendu après <span class="valencia">'+token.valeur+'</span>';break;
-                case 'nombre'       : s=s+'Nombre attendu dans l expression <span class="valencia">'+token.valeur+'</span>';break;
-                case 'non trouve'   : s=s+'Je ne connais pas <em>'+token.valeur+'</em>';break;
-                case 'nul'            : s=s+'Erreur système. Token à nul';break;
-                case 'parenthese'   : s=s+'Probleme de parentheses';break;
-                case 'pile vide'    : s=s+'Erreur système : La pile des opérateurs est vide';break;
-                case 'procedure dupliquee' : s=s+'La procédure <span class="valencia">'+token.valeur+'</span> a déjà été définie';break;
-                case 'procedure imbriquee' : s=s+'Définition imbriquée de procédures';break;
-                case 'que faire'    : s=s+'Que faire avec <em>'+token.valeur+'</em> ?';break;
-                case 'variable non trouve' : s=s+'Variable <em>'+token.valeur+'</em> non trouvee';break;
+                case 'fin fonction' : s=s+'El final de la función <span class="valencia">'+token.valeur+'</span> no está indicado.';break;
+                case 'format numerique' : s=s+'Formato incorrecto para el número <span class="valencia">'+token.valeur+'</span>';break;
+                case 'inconnu'      : s=s+'No conozco <span class="valencia">'+token.valeur+'</span>';break;
+                case 'init'         : s=s+'La llamada a <span class="valencia">'+token.valeur+'</span> ebe hacerse en una función de inicialización.';
+                case 'liste'        : s=s+'Tipo de parámetro < lista> esperado después <span class="valencia">'+token.valeur+'</span>';break;
+                case 'nombre'       : s=s+'Numero esparado en <span class="valencia">'+token.valeur+'</span>';break;
+                case 'non trouve'   : s=s+'No conozco<em>'+token.valeur+'</em>';break;
+                case 'nul'            : s=s+'Error del sistema. ';break;
+                case 'parenthese'   : s=s+'Problema de paréntesis';break;
+                case 'pile vide'    : s=s+'Error del sistema.';break;
+                case 'procedure dupliquee' : s=s+'El procedimiento <span class="valencia">'+token.valeur+'</span> ya ha sido definido';break;
+                case 'procedure imbriquee' : s=s+'Procedimientos definición anidado';break;
+                case 'que faire'    : s=s+'¿ Qué hacer con <em>'+token.valeur+'</em> ?';break;
+                case 'variable non trouve' : s=s+'Variable <em>'+token.valeur+'</em> no encontrada';break;
                 default             : s=s+token.nom;break;
             }
-    } else { s='Erreur inconnue'; }
+    } else { s='Error desconocido'; }
     return s;
 }; // erreur
 
@@ -339,10 +343,13 @@ function f_compare(interpreteur,token,params) { /*****************************/
                 switch (token.procedure.code) {
                     case '='    :   if (i==1) {s=params[0].valeur == params[1].valeur;}
                                    break;
-                    case '>'    :    if (i==1) {s=params[0].valeur > params[1].valeur;}
+                    case 'PLGRQ':
+                    case '>'    :  if (i==1) {s=params[0].valeur > params[1].valeur;}
                                    break;
-                    case '<'    :   if (i==1) {s=params[0].valeur < params[1].valeur;}
+                    case 'PLPEQ':
+                    case '<'    :   if (i==1) {s=params[0].valeur < params[1].valeur;}                    
                                     break;
+                    case 'NONEQ':
                     case '<>'   :   if (i==1) {s=params[0].valeur != params[1].valeur;}
                                     break;
                     case '<='   :   if (i==1) {s=params[0].valeur <= params[1].valeur;}
@@ -357,6 +364,7 @@ function f_compare(interpreteur,token,params) { /*****************************/
                                     return ret;
                 }
             }
+                        
             catch(err) {
                 ret = erreur(params[i],'evaluation',new Error().stack);
                 ret.origine='eval';
@@ -923,7 +931,7 @@ function f_math(interpreteur,token,params) { /********************************/
                     case '-'    :   if (i===0) {s=params[i].valeur;} else {s = s - params[i].valeur;}
                                     break;
                     case 'ENT'  :   s = Math.trunc(params[i].valeur);
-                                    break;
+                                    break;                                    
                     case 'HASARD':  s=Math.round(params[i].valeur*Math.random());
                                     break;
                     case 'SIN'  :   s = Math.sin(params[i].valeur*Math.PI/180);

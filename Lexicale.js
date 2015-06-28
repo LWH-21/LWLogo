@@ -5,21 +5,21 @@
 
 
 function Analyse_lexicale (logo) { /*******************************************/
-    this.src = null;    
+    this.src = null;
     this.nligne=1;
-    this.ncolonne = 0; 
-    this.fin_analyse = false;   
+    this.ncolonne = 0;
+    this.fin_analyse = false;
     this.tokens=[];
     this.numero = 0;
     this.logo = logo;
 } // Analyse_lexicale
- 
+
  Analyse_lexicale.prototype.back = function(n) { /*****************************/
     if (! n) n=1;
-    this.numero -= n; 
+    this.numero -= n;
     if (this.numero<0) this.numero=0;
 } // back
-  
+
  /* Creation des procedures utilisateur **************************************/
 Analyse_lexicale.prototype.creation_procs = function() { /********************/
         var i,j,t,fin,f,debut,trouve;
@@ -28,21 +28,21 @@ Analyse_lexicale.prototype.creation_procs = function() { /********************/
             t = this.tokens[i];
             if ((t.type=='mot') && (t.procedure) && (t.procedure.code==='POUR')) {
                 fin = false;
-                debut = t;                
+                debut = t;
                 f=new Fonction_utilisateur();
                 do {
-                    f.add(t); 
+                    f.add(t);
                     this.tokens.splice(i,1);
                     if ((t.type == 'mot') && (t.procedure) && (t.procedure.code==='FIN')) {
-                        fin=true; 
+                        fin=true;
                         i--;
                     } else t = this.tokens[i];
-					if ((t.procedure) && (t.procedure.code==='POUR')) {
-						t = this.erreur(debut,'procedure imbriquee',new Error().stack);
-						return t;
-					}
+                    if ((t.procedure) && (t.procedure.code==='POUR')) {
+                        t = this.erreur(debut,'procedure imbriquee',new Error().stack);
+                        return t;
+                    }
                 } while ((!fin) && (i<this.tokens.length))
-                if (!fin) {                    
+                if (!fin) {
                     t = this.erreur(debut,'fin fonction',new Error().stack);
                     return t;
                 } else {
@@ -51,8 +51,8 @@ Analyse_lexicale.prototype.creation_procs = function() { /********************/
                         if (this.logo.reference.procedures_util[j].code===f.code) {
                             trouve=true;
                             this.logo.reference.procedures_util[j]=f;
-							t = this.erreur(debut,'procedure dupliquee',new Error().stack);
-							return t;
+                            t = this.erreur(debut,'procedure dupliquee',new Error().stack);
+                            return t;
                         } else j++;
                     }
                     if (! trouve) {
@@ -63,25 +63,25 @@ Analyse_lexicale.prototype.creation_procs = function() { /********************/
             }
             i++;
         }
-} // creation_procs 
+} // creation_procs
 
 Analyse_lexicale.prototype.decore = function (token) { /**********************/
     var i,s,j;
     if ((token.type==='operateur') || (token.type==='mot')) {
-        s = sans_accent(token.nom); 
-		j = this.logo.reference.procedures.length;
+        s = sans_accent(token.nom);
+        j = this.logo.reference.procedures.length;
         for (i=0;i<j;i++) {
             if (this.logo.reference.procedures[i].noms.indexOf(s)>=0)  {
-                token.procedure = this.logo.reference.procedures[i];              
+                token.procedure = this.logo.reference.procedures[i];
                 return;
-            } 
-        }    
+            }
+        }
     }
     return null;
 } // decore
 
 Analyse_lexicale.prototype.est_termine = function() { /************************/
-    var i;    
+    var i;
     for (i=this.numero;i<this.tokens.length;i++) {
         if (! this.tokens[i].est_blanc()) return false;
     }
@@ -90,181 +90,238 @@ Analyse_lexicale.prototype.est_termine = function() { /************************/
 
 Analyse_lexicale.prototype.erreur = function(t,s,cpl) { /*********************/
         var err = new Token('erreur',s);
-        err.origine = 'analyse'; 
+        err.origine = 'analyse';
         if (t) {
             err.ligne = t.ligne;
-            err.colonne = t.colonne;  
+            err.colonne = t.colonne;
         }
-        if (cpl) err.exdata=cpl; else err.exdata = t;                                              
+        if (cpl) err.exdata=cpl; else err.exdata = t;
         return err;
 } // erreur
 
 // Exporte les tokens dans un format lisible dans toutes les langues
 Analyse_lexicale.prototype.exporte = function(logo,code) { /**************************/
-    var i,j,t,p,s,d=false;
+    var i,j,t,p,s,d=false,test;
+    var sep = String.fromCharCode(160);
+    code = code.replace(sep,' ');
+    //code = code.replace('°µ','°u');
     s='';
     this.logo = logo;
-    this.src = code.rtrim();    
+    this.src = code.rtrim();
     this.nligne=1;
-    this.ncolonne = 0;      
+    this.ncolonne = 0;
     this.fin_analyse = false;
     this.tokens=[];
-    this.numero = 0;         
+    this.numero = 0;
     do {
-        t = this.suivant();  
-        if ((d) || ( ! t.est_blanc())) { 
+        t = this.suivant();
+        if ((d) || ( ! t.est_blanc())) {
             d = true;
-            if ((! p) || (! t.est_blanc()) || (! p.est_blanc())) { 
+            if ((! p) || (! t.est_blanc()) || (! p.est_blanc())) {
                 this.decore(t);
-                this.tokens.push(t); 
+                this.tokens.push(t);
             }
         }
         p=t;
-    } while ( (t) && (t.type!=='erreur') && (t.type!=='eof')); 
-    if ((t) && (t.type=='erreur')) return '';    
-    
-    for (i=0;i<this.tokens.length;i++) {
-        if ((! this.tokens[i].est_blanc) || (i<this.tokens.length-1)) {
-            s=s+this.tokens[i].exporte(this.logo)+' ';        
+    } while ( (t) && (t.type!=='erreur') && (t.type!=='eof'));
+    if ((t) && (t.type=='erreur')) return '';
+    // Moins unaires
+    i = 0;
+    while (i<this.tokens.length) {
+        test=false;
+        if ((this.tokens[i].type=='operateur') && (this.tokens[i].nom=='-')) {
+            // Le token suivant doit être un nombre, sur la même ligne
+            if ((i+1<this.tokens.length) && (this.tokens[i+1].type=='nombre') && (this.tokens[i+1].ligne==this.tokens[i].ligne)) {
+                // Le moins doit être collé au token suivant
+                if (this.tokens[i].colonne == this.tokens[i+1].colonne - 1) {
+                    // si pas de token précédent => ok
+                    if (i==0) {
+                        test=true;
+                    } else if (this.tokens[i-1].type=='operateur') { // Si le token précédent est un opérateur
+                        test=true;
+                    } else if ((this.tokens[i-1].type=='parenthese') && (this.tokens[i-1].nom=='(')) { // parenthese ouvrante
+                        test=true;
+                    } else if (this.tokens[i-1].ligne<this.tokens[i].ligne) { // pas sur la même ligne
+                        test=true;
+                    } else if (this.tokens[i-1].colonne+this.tokens[i-1].longueur()<this.tokens[i].colonne) { // pas collé
+                        test=true;
+                    }  else test=false;
+                }
+            }
+
         }
+        if (test) {
+            this.tokens[i+1].valeur = 0 - this.tokens[i+1].valeur;
+            this.tokens[i+1].nom = '-'+this.tokens[i+1].nom;
+            this.tokens[i+1].colonne = this.tokens[i].colonne;
+            this.tokens.splice(i,1);
+        } else i++;
     }
     
+    
+    for (i=0;i<this.tokens.length;i++) {
+        if ((! this.tokens[i].est_blanc() ) || (i<this.tokens.length-1)) {
+            s=s+this.tokens[i].exporte(this.logo);
+           // s=s+sep;
+            if (! this.tokens[i].est_blanc()) { 
+                s = s+sep;                
+            } 
+        }
+    }
+
     return s;
 }
- 
-Analyse_lexicale.prototype.get = function() { /*******************************/    
+
+Analyse_lexicale.prototype.get = function() { /*******************************/
     if (this.numero < this.tokens.length) {
         if (this.tokens[this.numero].type=='eof') {
             this.fin_analyse = this.est_termine();
-        }  
+        }
         return this.tokens[this.numero ++];
     } else {
         this.fin_analyse = true;
         return new Token('eof','');
     }
-} // get 
- 
+} // get
+
 // Importe les tokens à partir d'un format lisible dans toutes les langues
 Analyse_lexicale.prototype.importe = function(logo,code) { /**************************/
-    var t,f,key,i,j,s,s1,newline,procedure;
+    var t,f,key,i,j,s,s1,newline,procedure;    
+    var re = /[\n\xA0\s]/;
+    var ident = /\{[A-Za-z0-9]*\}/;
     newline=false;
     procedure=false;
-    var sep = String.fromCharCode(254)+String.fromCharCode(255);
     s='';
-    t = code.split(' ');
-    for (i=0;i<t.length;i++) {        
-        if (t[i].substring(0,2)===sep) {
-            t[i]=t[i].substring(2);
-            for( key in this.logo.reference.procedures) {
-                f = this.logo.reference.procedures[key];
-                if (t[i]===f.num) {
-                    s1 = this.logo.reference.les_fonctions[f.code].std[0];
-                    s1 = s1.toUpperCase(); 
-                    if (f.num==='D14') {
-                        procedure = true;
-                        s+=s1+' '; 
-                    } else if (f.num==='D15') {
-                        procedure = false;
-                        s+=s1+'\n'; 
-                    } else {
-                        if ((procedure) && (newline)) s=s+'    ';
-                         s+=s1+' ';
-                    }                  
-                    newline = false;                    
-                    break;
-                }
+    code = code.replace(new RegExp('&quot;', 'g'),'"');
+    t = code.split(re);
+    for (i=0;i<t.length;i++) {
+        if (t[i].match(ident)) {             
+            t[i]=t[i].trim();          
+            t[i]=t[i].substring(1,t[i].length-1 ); 
+            switch (t[i]) {
+                case '0PG'  : if ((procedure) && (newline)) s+='    ';s+='> ';break;
+                case '0PP'  : if ((procedure) && (newline)) s+='    ';s+='< ';break;
+                case '0PGE' : if ((procedure) && (newline)) s+='    ';s+='>= ';break;
+                case '0PPE' : if ((procedure) && (newline)) s+='    ';s+='<= ';break;
+                case '0NEG' : if ((procedure) && (newline)) s+='    ';s+='<> ';break;
+                case '0ET'  : if ((procedure) && (newline)) s+='    ';s+='& ';break;
+                case '0OU'  : if ((procedure) && (newline)) s+='    ';s+='| ';break;            
+                case 'BR'   : newline=true;s=s+'\n';break;                             
+                default     : for( key in this.logo.reference.procedures) {
+                                f = this.logo.reference.procedures[key];
+                                if (t[i]===f.code) {
+                                    s1 = this.logo.reference.les_fonctions[f.code].std[0];
+                                    s1 = s1.toUpperCase();
+                                    if (f.code==='POUR') {
+                                        procedure = true;
+                                        s+=s1+' ';
+                                    } else if (f.code==='FIN') {
+                                        procedure = false;
+                                        s+=s1+'\n';
+                                    } else {
+                                        if ((procedure) && (newline)) s+='    ';
+                                        s+=s1+' ';
+                                    }                        
+                                    break;
+                                }
+                            }
+                            newline = false;
+                            break;
             }
-        } else {         
+        } else {
+            if ((t[i]!=='\n') && (t[i]!=="")) {                
             if ((procedure) && (newline)) s=s+'    ';
-            newline = false;                    
-            if (t[i]==='\n') {newline = true; s = s+'\n';} else {s=s+t[i]+' '; }
-        }        
+            newline = false;
+            s+=t[i].trim()+' ';     
+            }       
+        }
+        
     }
     return s;
-} 
- 
+}
+
  Analyse_lexicale.prototype.init= function(parent,texte,dligne,dcol,token) { //
-    
+
     var t,cont;
-    
+
     if ((! texte.rtrim) || ((typeof texte)!=='string')) {
         /* Non analysable */
         t = this.erreur('','analyse',new Error().stack);
         return t;
     }
-    
+
     this.src = texte.rtrim();
     this.logo = parent;
     this.nligne=1;
-    this.ncolonne = 0;   
+    this.ncolonne = 0;
     /* au cas où on interprete à partir d'une autre source que le code d'origine */
     if (dligne) this.nligne=dligne;
-    if (dcol) this.ncolonne = dcol;    
-    
+    if (dcol) this.ncolonne = dcol;
+
     this.fin_analyse = false;
     this.tokens=[];
-    this.numero = 0;  
+    this.numero = 0;
     // Au cas où le token a déjà été analysé, inutile de refaire le travail
     if (token) {
         if (token.tokens) {
             if (token.tokens.length>0) {
-                this.tokens = token.tokens;                
+                this.tokens = token.tokens;
                 return;
             }
         }
-    } 
-    //1ere phase : lecture 
+    }
+    //1ere phase : lecture
     do {
-            t = this.suivant();  
-	    if (t.type=='cont') {
-		cont=true;
-	    } else if (t.type=='eol') {
-		if (!cont) this.tokens.push(t); 
-	    } else {
-		this.tokens.push(t); 
-		cont=false;
-	    }                             
-    } while ( (t) && (t.type!=='erreur') && (t.type!=='eof')); 
-    if ((t) && (t.type=='erreur')) return t; 
-    this.tokens.push(new Token('eof')); 
+        t = this.suivant();
+        if (t.type=='cont') {
+        cont=true;
+        } else if (t.type=='eol') {
+        if (!cont) this.tokens.push(t);
+        } else if (t.type!=='comment') {
+            this.tokens.push(t);
+            cont=false;
+        }
+    } while ( (t) && (t.type!=='erreur') && (t.type!=='eof'));
+    if ((t) && (t.type=='erreur')) return t;
+    this.tokens.push(new Token('eof'));
     //2eme phase : tests basiques
     t = this.tests();
-    if ((t) && (t.type=='erreur')) return t;  
-    //3eme phase : creation des procedures 
+    if ((t) && (t.type=='erreur')) return t;
+    //3eme phase : creation des procedures
     t = this.creation_procs();
     // Mise en mémoire pour utilisation ulterieure
     if (( ! t) || (t.type!='erreur')) {
         if ((token) && (this.tokens.length>0)) {
             token.tokens = this.tokens;
-        }     
+        }
     }
     return t;
 } // init
- 
+
 Analyse_lexicale.prototype.suivant =function() { /****************************/
-    
-    var result,i,j,token,c,fin;           
+
+    var result,i,j,token,c,fin;
 
     var mot = /[\w\u00C0-\u017F\.\?\!&]/;
-    var blancs = ' \t\f\r';    
-    
+    var blancs = ' \t\f\r';
+
     while (this.src.length>0) {
         c = this.src.charAt(0);
         this.src = this.src.slice(1);
-        
+
         this.ncolonne++;
-        
+
         if (c=='\n') {                                                  // Fin de ligne
             token = new Token('eol','');
             token.ligne = this.nligne;
             token.colonne = this.ncolonne;
-            token.origine = 'analyse'; 
+            token.origine = 'analyse';
             this.nligne++;
             this.ncolonne=0;
-            return token;  
+            return token;
         } else if (c=='~') {
-	    token = new Token('cont','');				// Caractere de continuation
-      	    return token;
+        token = new Token('cont','');                // Caractere de continuation
+              return token;
         } else if ((c>='0' && c<='9') || (c=='.')) {                    // Nombre. Forme acceptées : 12 / 12.5 / 0.5 / .5
             result=c;
             if (c=='.') j=1; else j=0;
@@ -273,10 +330,10 @@ Analyse_lexicale.prototype.suivant =function() { /****************************/
                 fin = false;
                 do {
                     c = this.src.charAt(i);
-                    if (c=='.') j++; 
+                    if (c=='.') j++;
                     if ((c>='0' && c<='9') || (c=='.')) {
                         result+=c;
-                        i++;                        
+                        i++;
                     } else fin=true;
                 } while ((!fin) && (i<this.src.length))
             }
@@ -293,7 +350,7 @@ Analyse_lexicale.prototype.suivant =function() { /****************************/
                 token.ligne = this.nligne;
                 token.colonne = this.ncolonne;
                 token.origine = 'analyse';
-                token.valeur = result;                
+                token.valeur = result;
                 return token;
             }
         } else if (c==')' || c=='(') {                                  // Parenthèses
@@ -302,34 +359,34 @@ Analyse_lexicale.prototype.suivant =function() { /****************************/
                 token.colonne = this.ncolonne;
                 token.origine = 'analyse';
                 return token;
-        } else if (c==']') { 
+        } else if (c==']') {
                     token = this.erreur(null,'crochet',new Error().stack);
                     token.ligne = this.nligne;
                     token.colonne = this.ncolonne;
-                    return token;                
-        } else if (c=='[') {                                            // Listes 
+                    return token;
+        } else if (c=='[') {                                            // Listes
                 var p=1,d,f;i=0;
                 d = this.nligne;
                 f = this.ncolonne;
-                if (this.src.length>0) {                    
+                if (this.src.length>0) {
                     result='';
                     do {
                         c = this.src.charAt(i);
                         this.ncolonne++;
                         if ((c==';') || (c=='#')) { // Commentaires
-                            fin=false;                            
+                            fin=false;
                             do {
-                                c = this.src.charAt(i);                                
+                                c = this.src.charAt(i);
                                 if (c=='\n') fin=true; else i++;
-                            } while ((!fin) && (i<this.src.length));                             
-                        }      
+                            } while ((!fin) && (i<this.src.length));
+                        }
                         if (c=='\n') {
-                            this.nligne++; 
+                            this.nligne++;
                             this.ncolonne = 0;
                         }
-                        if (c==']') p--;  
-                        if (c=='[') p++; 
-                        if (p>0) {                                                        
+                        if (c==']') p--;
+                        if (c=='[') p++;
+                        if (p>0) {
                             result+=c;
                         }
                         i++;
@@ -339,16 +396,16 @@ Analyse_lexicale.prototype.suivant =function() { /****************************/
                     token = this.erreur(null,'crochet',new Error().stack);
                     token.ligne = d;
                     token.colonne = f;
-                    return token;                    
+                    return token;
                 } else {
-                    this.src = this.src.slice(i);                    
+                    this.src = this.src.slice(i);
                     token = new Token('liste',result,'!');
                     token.ligne = d;
-                    token.colonne = f; 
-                    token.origine = 'analyse';            
-                    return token;                
-                }        
-        } else if ("+-*/%^=><&|".indexOf(c)>=0) {                              // Operateur + - * /       
+                    token.colonne = f;
+                    token.origine = 'analyse';
+                    return token;
+                }
+        } else if ("+-*/%^=><&|".indexOf(c)>=0) {                              // Operateur + - * /
             switch (c) {
                 case '<' : var suivant = this.src.charAt(0);
                            if ((suivant=='=') || (suivant=='>')) {
@@ -361,25 +418,32 @@ Analyse_lexicale.prototype.suivant =function() { /****************************/
                             c=c+suivant;
                             this.src = this.src.slice(1);
                            }
-                           break;                           
+                           break;
             }
-            
+
             token = new Token('operateur',c);
             token.ligne = this.nligne;
-            token.colonne = this.ncolonne; 
-            token.origine = 'analyse';            
+            token.colonne = this.ncolonne;
+            token.origine = 'analyse';
             return token;
         } else if ((c=='#') || (c==';')) {                              // Commentaire jusqu'à la fin de ligne
             if (this.src.length>0) {
                 i = 0;fin=false;
+                result='';
                 do {
                     c = this.src.charAt(i);
+                    result += c;
                     if (c=='\n') fin=true; else i++;
                 } while ((!fin) && (i<this.src.length));
+                token = new Token('comment',result,'!');
+                token.ligne = this.nligne;
+                token.colonne = this.ncolonne;
+                token.origine = 'analyse';                               
                 this.ncolonne += i;
                 this.src = this.src.slice(i);
+                return token;
             }
-        } else if ((c>='A'&& c<='Z') || (c>='a' && c<='z') ) {          // Identificateur (mot) Commence par une lettre. Peut comporter un point. 
+        } else if ((c>='A'&& c<='Z') || (c>='a' && c<='z') ) {          // Identificateur (mot) Commence par une lettre. Peut comporter un point.
             result=c;fin=false;i=0;
             while ((!fin) && (i<this.src.length)) {
                 c = this.src.charAt(i);
@@ -391,15 +455,15 @@ Analyse_lexicale.prototype.suivant =function() { /****************************/
                     fin=true;
                 }  else {
                     result = result+c;
-                    i++;                    
+                    i++;
                 }
             }
             token = new Token('mot',result,'!');
             token.ligne = this.nligne;
             token.colonne = this.ncolonne;
             token.origine = 'analyse';
-            this.src = this.src.slice(i); 
-            this.ncolonne+=i;           
+            this.src = this.src.slice(i);
+            this.ncolonne+=i;
             return token;
         } else if (c==':') {                                            // Variable
             result=c;fin=false;i=0;
@@ -413,16 +477,16 @@ Analyse_lexicale.prototype.suivant =function() { /****************************/
                     fin=true;
                 }  else {
                     result = result+c;
-                    i++;                    
+                    i++;
                 }
             }
             token = new Token('variable',result.toLowerCase(),'!');
             token.ligne = this.nligne;
             token.colonne = this.ncolonne;
             token.origine = 'analyse';
-            this.src = this.src.slice(i); 
-            this.ncolonne+=i;           
-            return token;                        
+            this.src = this.src.slice(i);
+            this.ncolonne+=i;
+            return token;
         } else if (c=='"') {                                             // Symbole
             result=c;fin=false;i=0;
             while ((!fin) && (i<this.src.length)) {
@@ -435,72 +499,72 @@ Analyse_lexicale.prototype.suivant =function() { /****************************/
                     fin=true;*/
                 }  else {
                     result = result+c;
-                    i++;                    
+                    i++;
                 }
             }
             token = new Token('symbole',result,'!');
             token.ligne = this.nligne;
             token.colonne = this.ncolonne;
             token.origine = 'analyse';
-            this.src = this.src.slice(i); 
-            this.ncolonne+=i;                  
-            return token; 
+            this.src = this.src.slice(i);
+            this.ncolonne+=i;
+            return token;
         } else if (blancs.indexOf(c)>=0) {                              // Caractères blancs
             i=0;j=0;
             fin = false;
             do {
-                c = this.src.charAt(i);                    
-                if (blancs.indexOf(c)>=0) {                        
+                c = this.src.charAt(i);
+                if (blancs.indexOf(c)>=0) {
                     if (c=='\n') {
-                        this.nligne++; 
+                        this.nligne++;
                         this.ncolonne = 0;
-                        j=0;                        
-                    } else j++;                    
-                    i++;                        
+                        j=0;
+                    } else j++;
+                    i++;
                 } else fin=true;
             } while ((!fin) && (i<this.src.length))
             this.src = this.src.slice(i);
-            this.ncolonne += j;                
-        } else {            
+            this.ncolonne += j;
+        } else {
             token = this.erreur(null,'caractere non reconnu',new Error().stack);
             token.ligne = this.nligne;
-            token.colonne = this.ncolonne;            
-            token.origine = 'analyse';   
-			token.valeur=c;
+            token.colonne = this.ncolonne;
+            token.origine = 'analyse';
+            token.valeur=c;
             return token;
         }
-        
-                
+
+
     } // while (this.src.length)>0
-                      
+
     token = new Token('eof','');
     token.ligne = this.nligne;
     token.colonne = this.ncolonne;
-    token.origine = 'analyse';    
+    token.origine = 'analyse';
     return token;
 
-} // Suivant 
+} // Suivant
 
 Analyse_lexicale.prototype.reset = function() { /*****************************/
     this.src = null;
     this.nligne=1;
-    this.ncolonne = 0; 
-    this.fin_analyse = true;   
+    this.ncolonne = 0;
+    this.fin_analyse = true;
     this.tokens=[];
-    this.numero = 0;    
+    this.numero = 0;
 } // reset
- 
-/* Tests sur l'analyse lexicale **********************************************/ 
+
+/* Tests sur l'analyse lexicale **********************************************/
 Analyse_lexicale.prototype.tests = function() { /*****************************/
         var i,j,t,test;
-        // Suppression des lignes inutiles 
+        // Suppression des lignes inutiles
         i = 1;
         while (i<this.tokens.length) {
             if ((this.tokens[i].est_blanc()) &&  (this.tokens[i - 1].est_blanc())) {
                 this.tokens.splice(i-1,1);
-            } else i++;            
+            } else i++;
         }
-        // Test parantheses 
+        // Test parantheses
         var p=[];
         for (i=0;i<this.tokens.length;i++) {
             t = this.tokens[i];
@@ -522,14 +586,14 @@ Analyse_lexicale.prototype.tests = function() { /*****************************/
         i = 0;
         while (i<this.tokens.length) {
             test=false;
-            if ((this.tokens[i].type=='operateur') && (this.tokens[i].nom=='-')) {                
+            if ((this.tokens[i].type=='operateur') && (this.tokens[i].nom=='-')) {
                 // Le token suivant doit être un nombre, sur la même ligne
                 if ((i+1<this.tokens.length) && (this.tokens[i+1].type=='nombre') && (this.tokens[i+1].ligne==this.tokens[i].ligne)) {
-                    // Le moins doit être collé au token suivant                    
+                    // Le moins doit être collé au token suivant
                     if (this.tokens[i].colonne == this.tokens[i+1].colonne - 1) {
                         // si pas de token précédent => ok
                         if (i==0) {
-                            test=true; 
+                            test=true;
                         } else if (this.tokens[i-1].type=='operateur') { // Si le token précédent est un opérateur
                             test=true;
                         } else if ((this.tokens[i-1].type=='parenthese') && (this.tokens[i-1].nom=='(')) { // parenthese ouvrante
@@ -538,18 +602,18 @@ Analyse_lexicale.prototype.tests = function() { /*****************************/
                             test=true;
                         } else if (this.tokens[i-1].colonne+this.tokens[i-1].longueur()<this.tokens[i].colonne) { // pas collé
                             test=true;
-                        }  else test=false; 
+                        }  else test=false;
                     }
                 }
-                
+
             }
             if (test) {
                 this.tokens[i+1].valeur = 0 - this.tokens[i+1].valeur;
                 this.tokens[i+1].nom = '-'+this.tokens[i+1].nom;
                 this.tokens[i+1].colonne = this.tokens[i].colonne;
-                this.tokens.splice(i,1);            
+                this.tokens.splice(i,1);
             } else i++;
-        }        
+        }
         // Compléte les tokens
         i=0;
         while (i<this.tokens.length) {
@@ -561,32 +625,32 @@ Analyse_lexicale.prototype.tests = function() { /*****************************/
         i = 0;
         while (i<this.tokens.length) {
             test=false;
-            if ((this.tokens[i].type=='operateur') && (this.tokens[i].nom=='-')) {                
+            if ((this.tokens[i].type=='operateur') && (this.tokens[i].nom=='-')) {
                 // Le token suivant doit être un nombre, sur la même ligne
                 if ((i+1<this.tokens.length) && (this.tokens[i+1].ligne==this.tokens[i].ligne)) {
                     // si pas de token précédent => ok
                     if (i==0) {
-                        test=true; 
+                        test=true;
                     } else if (this.tokens[i-1].type=='operateur') { // Si le token précédent est un opérateur
                         test=true;
                     } else if ((this.tokens[i-1].type=='parenthese') && (this.tokens[i-1].nom=='(')) { // parenthese ouvrante
                         test=true;
-                    } else test=false; 
-                    
+                    } else test=false;
+
                 }
-                
+
             }
             if (test) {
                  for (j=0;j<this.logo.reference.procedures.length;j++) {
                     if (this.logo.reference.procedures[j].code=='MOINS')  {
-                        this.tokens[i].procedure = this.logo.reference.procedures[j];              
-                        break;                
-                    } 
+                        this.tokens[i].procedure = this.logo.reference.procedures[j];
+                        break;
+                    }
                 }
-            } 
+            }
             i++;
-        }        
+        }
 } //tests
- 
+
 
 

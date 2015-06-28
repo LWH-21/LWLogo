@@ -140,7 +140,7 @@ Logo3D.prototype.start = function() {
         shininess:10,
         //lightMap: this.dessin,
         //specularMap:this.dessin,
-        alphaTest:0.13,
+        alphaTest:0.102,
         fog:false
     } );
 
@@ -159,8 +159,14 @@ Logo3D.prototype.start = function() {
     this.fond.minFilter = THREE.LinearFilter;
     var geometry = new THREE.PlaneGeometry( WIDTH, HEIGHT);
     var material = new THREE.MeshPhongMaterial( {
-        map: this.fond, side:THREE.FrontSide,color: 0xEDE5E4,
+        //alphaMap: this.dessin,
+        //bumpMap: this.dessin,        
+        wrapRGB : (0.5,0.5,0.5),
+        map: this.fond,
+        //envMap:this.dessin,
+        side:THREE.FrontSide,color: 0xEDE5E4,
         shading:THREE.SmoothShading
+        //alphaTest:0.8
     } );
     this.monde = new THREE.Mesh( geometry, material );
     this.monde.receiveShadow=true;
