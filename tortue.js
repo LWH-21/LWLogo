@@ -8,6 +8,7 @@ function Tortue(id,nom_canvas, dessin, logo) { /******************************/
     this.LWlogo = logo;
     
     this.canvas = document.getElementById(nom_canvas); 
+    if (! this.canvas) { return; }
     this.textCanvas = document.createElement('canvas');    
     
     this.dessin = new Dessin(logo,dessin);
@@ -63,8 +64,8 @@ Tortue.prototype.convert = function (x,y) { /*********************************/
 /* Conversion des points "marquants de la tortue *****************************/
 /* Ces points servent à la gestion des collisions                            */
 Tortue.prototype.convert_pts = function (pts,xr,yr) { /***********************/    
-    var ret = [],i=0,x,y,sin,cos,p,j=pts.length;
-    var direction = ((this.cap) * (Math.PI / -180));
+    var ret = [],i=0,x,y,sin,cos,p,j=pts.length,
+    direction = ((this.cap) * (Math.PI / -180));
     if (!xr) {xr=this.posx;}
     if (!yr) {yr=this.posy;}
     sin = Math.sin(direction);
@@ -103,7 +104,7 @@ Tortue.prototype.dessin_robot = function(ctx,points) { /**********************/
     ctx.stroke();
     ctx.fill();
     ctx.beginPath();
-    if (this.crayon_baisse) { i = 1 ; } { i = 6; }
+    if (this.crayon_baisse) { i = 1 ; } else { i = 6; }
     if (this.visible) {ctx.strokeStyle="#0000FF"; } else { ctx.strokeStyle=this.couleur_crayon; }
     ctx.fillStyle=this.couleur_crayon;
     ctx.arc( 0,0,i,0,2*Math.PI);
@@ -118,7 +119,7 @@ Tortue.prototype.dessin_robot = function(ctx,points) { /**********************/
         }                
     }        
     ctx.restore();     
-} // dessin_robot
+}; // dessin_robot
 
 Tortue.prototype.dessin_probot = function(ctx,points) { /**********************/
 
@@ -170,20 +171,21 @@ Tortue.prototype.dessin_probot = function(ctx,points) { /**********************/
         }                
     }        
     ctx.restore();     
-} // dessin_probot
+}; // dessin_probot
 
 Tortue.prototype.dessin_simple = function(ctx,points) { /*********************/
+	var i, tx=2, ty=2.3, x, y;
     ctx.save();  
     ctx.fillStyle="#009933";
     ctx.strokeStyle="#000000";
 
     ctx.beginPath();
       
-    var i,tx=2,ty=2.3;
+    
     
     //tête
-    var x = [   2,  3,   3,   1,  -1,  -3, -3,   -2 ];
-    var y = [-7.5, -9, -11, -14, -14, -11, -9, -7.5];        
+    x = [   2,  3,   3,   1,  -1,  -3, -3,   -2 ];
+    y = [-7.5, -9, -11, -14, -14, -11, -9, -7.5];        
     for (i=0;i<x.length;i++) {
         if (i===0) {ctx.moveTo(x[i]*tx,y[i]*ty);} else {ctx.lineTo(x[i]*tx ,y[i]*ty);}
     }
@@ -246,7 +248,7 @@ Tortue.prototype.dessin_std = function(ctx,points) { /************************/
     ctx.lineTo(7,5);
     ctx.lineTo(0,-10);
     ctx.stroke();
-    if (this.visible) ctx.fill(); 
+    if (this.visible) { ctx.fill();} 
     if (points) {  
         ctx.fillStyle="#ff0000"; 
         for (i=0;i<this.points.length;i++) {           
@@ -264,9 +266,9 @@ Tortue.prototype.dessin_3d = function() {
 
 // Renvoie un rectangle encadrant la tortue **********************************/
 Tortue.prototype.getAAB = function(xr,yr) { /********************************/
-    var i=0,x,y,sin,cos,p,j=this.points.length;
-    var x1,x2,y1,y2;
-    var direction = ((this.cap) * (Math.PI / -180));
+    var i=0,x,y,sin,cos,p,j=this.points.length,
+    x1,x2,y1,y2,
+    direction = ((this.cap) * (Math.PI / -180));
     if (!xr) {xr=this.posx;}
     if (!yr) {yr=this.posy;}
     sin = Math.sin(direction);
@@ -281,17 +283,15 @@ Tortue.prototype.getAAB = function(xr,yr) { /********************************/
         } else {
             x1 = Math.min(x1,p.x);x2=Math.max(x2,p.x);
             y1 = Math.min(y1,p.y);y2=Math.max(y2,p.y);
-        }
-        
+        }    
     }
     p = new AAB(x1,y1,x2-x1,y2-y1);
     return p;
-} // getAAB
+}; // getAAB
 
 Tortue.prototype.montre = function( nctx,p,aff) {
-    var mwt,h;
+    var mwt,h, i, y1, wt, ctx;
     if (this.oldbulle !== this.bulle) {
-        var i,x1,y1,y2,wt,w,ctx;
         this.oldbulle = this.bulle;   
         h = 20 + this.text.length * 15;
         
@@ -329,7 +329,9 @@ Tortue.prototype.montre = function( nctx,p,aff) {
 
 Tortue.prototype.draw = function() { /****************************************/
 
-	var nt;
+	var nt,
+    w = this.canvas.width, h = this.canvas.height, ctx=this.canvas.getContext("2d"),
+    p = this.convert(this.posx,this.posy), p1;    
 	
     if (this.LWlogo.troisD) {
         this.dessine();  
@@ -345,8 +347,6 @@ Tortue.prototype.draw = function() { /****************************************/
         }
         this.dessin_3d();       
     } else {
-        var w = this.canvas.width, h = this.canvas.height, ctx=this.canvas.getContext("2d");
-        var p = this.convert(this.posx,this.posy);    
         ctx.fillStyle="rgba(255,255,255,0.1)";
         ctx.clearRect ( 0 , 0 , w,h );
         if (this.visible) {
@@ -370,8 +370,8 @@ Tortue.prototype.draw = function() { /****************************************/
             ctx.translate(-p.x,-p.y);
             ctx.restore();
              if (debug) {
-             var p1 = this.getAAB(this.posx,this.posy);
-             ctx.strokeRect(p1.x,p1.y,p1.w,p1.h); 
+				p1 = this.getAAB(this.posx,this.posy);
+				ctx.strokeRect(p1.x,p1.y,p1.w,p1.h); 
              }
              
         }  else if (this.bulle>0) {
@@ -395,10 +395,10 @@ Tortue.prototype.draw = function() { /****************************************/
 }; // draw
 
 Tortue.prototype.dessine = function() { /**************************************/
-    if ((this.posx!=this.oldx) || (this.posy != this.oldy)) {
+    if ((this.posx !== this.oldx) || (this.posy !== this.oldy)) {
         if (this.crayon_baisse) {
-            var old = this.convert(this.oldx,this.oldy);            
-            var p = this.convert(this.posx,this.posy);
+            var old = this.convert(this.oldx,this.oldy),           
+            p = this.convert(this.posx,this.posy);
             this.dessin.ligne(this.num_ordre,old,p,this.couleur_crayon,this.taille_crayon);
         }
     }
@@ -448,7 +448,7 @@ Tortue.prototype.set_tortue = function(t) { /*********************************/
                         this.points.push(new Point(-7,5));
                         //this.points.push(new Point(0,0));
                         this.points.push(new Point(7,5));
-                        this.points.push(new Point(0,-10))
+                        this.points.push(new Point(0,-10));
                         break;
     }  
     this.draw();  
@@ -475,7 +475,7 @@ Tortue.prototype.collision = function(x,y) {
     var p,ret;    
     p = this.getAAB(x,y);
     ret =  this.LWlogo.monde.collision(p);
-	if (ret) this.etats.push('collision!');
+	if (ret) { this.etats.push('collision!'); }
 	return ret;
 };
 
@@ -522,16 +522,15 @@ Tortue.prototype.videecran =function() {
 };
 
 Tortue.prototype.tick = function() {    
-    var dx,dy,dep,rep,v,chg,oldcap;
-    var direction;
+    var dx, dy, dep, rep, v, chg, oldcap, direction, d, t, n, i, that;
     this.oldx = this.posx;
     this.oldy = this.posy;    
     v = this.vitesse / 10;   
     if (v>1) {rep = Math.ceil(v); } else { rep=1; }
     if (this.vitesse>=100) { rep=10000; }  
     switch (this.ordre.procedure.code) {
-        case 'ATTENDS'  :   var d = new Date();
-                            var t = d.getTime(); 
+        case 'ATTENDS'  :   d = new Date();
+                            t = d.getTime(); 
                             t = Math.floor(t*6/100);
                             if ((! this.param_tr[1]) || (this.param_tr[1]<=0) || (this.param_tr[1]>t)) {
                                 this.param_tr[1] = t;
@@ -610,7 +609,7 @@ Tortue.prototype.tick = function() {
                             this.debut = false;
                             do {
                                 // param_tr[1] => x, param_tr[0] => y, 
-                                var n = Math.max(Math.abs(this.posx - this.param_tr[1]), Math.abs(this.posy - this.param_tr[0]));
+                                n = Math.max(Math.abs(this.posx - this.param_tr[1]), Math.abs(this.posy - this.param_tr[0]));
                                 if (n<1) {
                                     dx = this.param_tr[1];
                                     dy = this.param_tr[0];                                    
@@ -636,7 +635,7 @@ Tortue.prototype.tick = function() {
                                 } else {
                                     this.posx=dx;this.posy=dy; // // Deplacement complet on renvoie la distance
                                     dep = Math.sqrt(Math.pow(dx-this.param_tr[3],2)+Math.pow(dy-this.param_tr[2],2));
-                                    if ((this.posx==this.param_tr[1]) && (this.posy==this.param_tr[0])) {
+                                    if ((this.posx === this.param_tr[1]) && (this.posy === this.param_tr[0])) {
                                        this.cap = this.param_tr[3];
                                        this.retour(new Token('nombre',dep,'ignore')); 
                                        rep=0; 
@@ -659,7 +658,7 @@ Tortue.prototype.tick = function() {
                                     rep=0;                                   
                                 } else {
                                     this.posx = dx;
-                                    if (this.posx==this.param_tr[0]) {
+                                    if (this.posx === this.param_tr[0]) {
                                         this.retour(new Token('nombre',Math.abs(this.param_tr[1]-this.posx),'ignore')); 
                                         rep=0;                                      
                                     }
@@ -681,7 +680,7 @@ Tortue.prototype.tick = function() {
                                     rep=0;                                   
                                 } else {
                                     this.posy = dy;
-                                    if (this.posy==this.param_tr[0]) {
+                                    if (this.posy === this.param_tr[0]) {
                                         this.retour(new Token('nombre',Math.abs(this.param_tr[1]-this.posy),'ignore')); 
                                         rep=0;                                      
                                     }
@@ -694,10 +693,10 @@ Tortue.prototype.tick = function() {
                             this.retour(new Token('booleen',chg,'ignore'));                  
                             break; 
         case 'MONTRE':      this.bulle = new Date().getTime();
-                            var that = this;
+                            that = this;
                             if (! this.timer) { this.timer=setInterval(function () {that.draw();},60); }
                             this.text=[];
-                            for (var i=0;i<this.param_tr.length;i++) {
+                            for (i=0;i<this.param_tr.length;i++) {
                                 this.text[i] = this.param_tr[i]+' ';
                                 this.text[i] = this.text[i].trim();
                             }

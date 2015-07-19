@@ -531,6 +531,7 @@ Token.prototype.toString = function () { /************************************/
 } // toString
 
 Token.prototype.toText = function () { /**************************************/
+    var s;
     switch (this.type) {
         case 'cont'          : return this.type;break;
         case 'comment'    : return this.valeur;break;
@@ -548,7 +549,8 @@ Token.prototype.toText = function () { /**************************************/
         case 'operateur'  : return this.nom;break;
         case 'parenthese' : return this.nom;break;
         case 'symbole'    : return this.valeur.slice(1);break;
-        case 'variable'   : if (this.src) return this.src.toText();
+        case 'variable'   : if (this.src) return this.src.toText();   
+                            s = this.valeur;                            
                             return this.valeur;break;
         default           : return 'type '+this.type+' inconnu';
     }

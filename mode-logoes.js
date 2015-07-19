@@ -27,7 +27,7 @@ var logoespHighlightRules = function() {
             " o ocultatortuga ot "+
             " palabra palabra? para pared& poncl poncolorlapiz pong pongrosor ponpos ponprimero ponrumbo ponultimo ponx ponxy pony pos potencia pp pri primero producto pu "+
             " quita " +
-            " raizcuadrada rc re redondea repite repitepara resto retrocede ro rojo rotula rumbo " +
+            " raizcuadrada rc re redondea rellena repite repitepara resto retrocede ro rojo rotula rumbo " +
             " si sen seno sisino sl subelapiz suma " +
             "  "+
             " ul ultimo " +

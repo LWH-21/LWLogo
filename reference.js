@@ -302,7 +302,7 @@ Reference.prototype.erreur = function(token) { /******************************/
                 case 'fin fonction' : s=s+'La fin de la fonction <span class="valencia">'+token.valeur+'</span> n est pas indiquée.';break;
                 case 'format numerique' : s=s+'Mauvais format pour le nombre <span class="valencia">'+token.valeur+'</span>';break;
                 case 'inconnu'      : s=s+'Je ne connais pas <span class="valencia">'+token.valeur+'</span>';break;
-                case 'init'         : s=s+'L appel à  <span class="valencia">'+token.valeur+'</span> doit se faire dans une fonction d initialisation.';
+                case 'init'         : s=s+'L appel à  <span class="valencia">'+token.valeur+'</span> doit se faire dans une fonction d initialisation.';break;
                 case 'liste'        : s=s+'Paramètre de type <liste> attendu après <span class="valencia">'+token.valeur+'</span>';break;
                 case 'nombre'       : s=s+'Nombre attendu dans l expression <span class="valencia">'+token.valeur+'</span>';break;
                 case 'non trouve'   : s=s+'Je ne connais pas <em>'+token.valeur+'</em>';break;
@@ -337,19 +337,19 @@ function f_compare(interpreteur,token,params) { /*****************************/
             if (params[i].numero>n) {n = params[i].numero;}
             try {
                 switch (token.procedure.code) {
-                    case '='    :   if (i==1) {s=params[0].valeur == params[1].valeur;}
+                    case '='    :   if (i === 1) {s=params[0].valeur === params[1].valeur;}
                                    break;
-                    case '>'    :    if (i==1) {s=params[0].valeur > params[1].valeur;}
+                    case '>'    :    if (i === 1) {s=params[0].valeur > params[1].valeur;}
                                    break;
-                    case '<'    :   if (i==1) {s=params[0].valeur < params[1].valeur;}
+                    case '<'    :   if (i === 1) {s=params[0].valeur < params[1].valeur;}
                                     break;
-                    case '<>'   :   if (i==1) {s=params[0].valeur != params[1].valeur;}
+                    case '<>'   :   if (i === 1) {s=params[0].valeur !== params[1].valeur;}
                                     break;
-                    case '<='   :   if (i==1) {s=params[0].valeur <= params[1].valeur;}
+                    case '<='   :   if (i === 1) {s=params[0].valeur <= params[1].valeur;}
                                     break;
-                    case '>='   :   if (i==1) {s=params[0].valeur >= params[1].valeur;}
-                                    break;
-                    case 'EGALQ':   if (i==1) {s=params[0].valeur == params[1].valeur;}
+                    case '>='   :   if (i === 1) {s=params[0].valeur >= params[1].valeur;}
+                                    break; 
+                    case 'EGALQ':   if (i === 1) {s=params[0].valeur === params[1].valeur;}
                                     break;
                     default     :   ret = erreur(params[i],'evaluation',new Error().stack);
                                     ret.origine='eval';
@@ -381,8 +381,7 @@ function f_compare(interpreteur,token,params) { /*****************************/
 
 /* Compteur pour l'instruction repete ****************************************/
 function f_compteur(interpreteur,token,params) {
-    var t = new Token('variable',':$-compteur');
-    var ret;
+    var t = new Token('variable',':$-compteur'),ret;
     ret = interpreteur.get(t);
     ret.numero = token.numero;
     ret.exdata='!';
@@ -428,7 +427,7 @@ function f_couleur(interpreteur,token,params) { /*****************************/
 // Réponse aux évenements survenus à la tortue *******************************/
 // Fonctions liées aux évenements ********************************************/
 function f_evenement(interpreteur,token,params) { /***************************/
-    var i,j,t,e;
+    var i, j, t, e, v, r;
     
     
     switch (token.procedure.code) {
@@ -450,11 +449,10 @@ function f_evenement(interpreteur,token,params) { /***************************/
                         return f_procedure(interpreteur,t,params);
                     }
                     return null;
-                    break;
     case 'MUR' :    e = interpreteur;
-                    var v=[];
+                    v=[];
                     // L'appel doit obligatoirement se faire depuis une fonction "init!"
-                    while ((e.parent) && (! e.fonction)) e=e.parent;
+                    while ((e.parent) && (! e.fonction)) { e=e.parent; }
                     t = interpreteur.LWlogo.reference.les_fonctions['INIT'].std[0];
                     if ((! t) || (!e.fonction) || (t!==e.fonction.procedure.code)) {
                         t = erreur(token,'init',new Error().stack);
@@ -463,16 +461,16 @@ function f_evenement(interpreteur,token,params) { /***************************/
                         return t;                   
                     }
                     // Seule la première tortue peut appeler cette fonction
-                    while (e.parent) e=e.parent;
+                    while (e.parent) { e=e.parent; }
                     if (e.ID !== 0) { return; }
                     e = new Interpreteur(interpreteur.ID,interpreteur.LWlogo,interpreteur);
                     t = e.interpreter(params[0].valeur,params[0].ligne,params[0].colonne);
-                    if ((t) && (t.type=='erreur')) {
-                        return ret;
+                    if ((t) && (t.type === 'erreur')) {
+                        return t;
                     }                    
                     while (! e.termine) {
                         t = e.interprete();
-                        if ((t) && (t.type=='erreur')) {
+                        if ((t) && (t.type === 'erreur')) {
                             return t;
                         }
                     }
@@ -480,7 +478,7 @@ function f_evenement(interpreteur,token,params) { /***************************/
                     while ((i<4) && (e.pile_arg.length>0)) {
                         t = e.pile_arg.pop();
                         if (t) {
-                            if (t.type=='erreur') {return t;}
+                            if (t.type === 'erreur') {return t;}
                             if (t.est_nombre()) {
                                 v[3-i] = t.valeur;
                                 i++;
@@ -508,15 +506,15 @@ function f_exec(interpreteur,token,params) { /********************************/
                         break;
         case 'REPETE' : p=params[0].clone();
                         p.valeur = Math.floor(params[0].valeur);
-                        if ((! p.exdata) || (p.exdata=='!')) {p.exdata=0;}
+                        if ((! p.exdata) || (p.exdata === '!')) {p.exdata=0;}
                         if (p.valeur>0) {
                             p.exdata++;
                             interpreteur.enfant = new Interpreteur(interpreteur.ID,interpreteur.LWlogo,interpreteur);
                             v = new Token('variable',':$-compteur');
                             v.valeur = p.exdata;
-                            v.exdata=='ignore';
+                            v.exdata = 'ignore';
                             ret = interpreteur.enfant.interpreter(params[1].valeur,params[1].ligne,params[1].colonne,params[1]);
-                            if ((ret) && (ret.type=='erreur')) {
+                            if ((ret) && (ret.type === 'erreur')) {
                                 return ret;
                             }
                             interpreteur.enfant.contexte.ajoute(v);
@@ -550,10 +548,10 @@ function f_exec(interpreteur,token,params) { /********************************/
                                     interpreteur.enfant = new Interpreteur(interpreteur.ID,interpreteur.LWlogo,interpreteur);
                                     ret = interpreteur.enfant.interpreter(params[1].valeur,params[1].ligne,params[1].colonne,params[1]);
                                     interpreteur.enfant.contexte.ajoute(v);
-                                    if ((ret) && (ret.type=='erreur')) {
+                                    if ((ret) && (ret.type === 'erreur')) {
                                         return ret;
                                     }
-                                    if (p.length==4) {
+                                    if (p.length === 4) {
                                         p[1] = p[1] + p[3];
                                     }  else {
                                         p[1] = p[1] + 1;
@@ -582,10 +580,10 @@ function f_exec(interpreteur,token,params) { /********************************/
         case 'JUSQUA' :
         case 'TANTQUE': inter = new Interpreteur(interpreteur.ID,interpreteur.LWlogo,interpreteur);
                         ret = inter.interpreter(params[0].valeur,params[0].ligne,params[0].colonne,params[0]);
-                        if ((ret) && (ret == erreur)) {return ret;}
+                        if ((ret) && (ret === erreur)) {return ret;}
                         while (! inter.termine) {
                             ret = inter.interprete();
-                            if ((ret) && (ret.type=='erreur')) {
+                            if ((ret) && (ret.type === 'erreur')) {
                                 return ret;
                             }
                         }
@@ -595,7 +593,7 @@ function f_exec(interpreteur,token,params) { /********************************/
                             if (ret.est_booleen) {v=ret;}
                         }
                         if (!v) {ret = erreur(params[i],'evaluation',new Error().stack);}
-                        if (token.procedure.code=='JUSQUA') {v.valeur = !v.valeur;}
+                        if (token.procedure.code === 'JUSQUA') {v.valeur = !v.valeur;}
                         if (v.valeur) {
                             interpreteur.enfant = new Interpreteur(interpreteur.ID,interpreteur.LWlogo,interpreteur);
                             ret = interpreteur.enfant.interpreter(params[1].valeur,params[1].ligne,params[1].colonne,params[1]);
@@ -611,14 +609,14 @@ function f_exec(interpreteur,token,params) { /********************************/
             default :   break;
 
     }
-    if ((ret) && (ret.type=='erreur')) {
+    if ((ret) && (ret.type ==='erreur')) {
         return ret;
     }
 } // f_exec
 
 /* Fonctions sur les listes **************************************************/
 function f_liste(interpreteur,token,params) { /*******************************/
-    var ret,s,i,j,n,t,t1,tr,analyseur;
+    var ret, s, i, j, n, t, t1, tr, analyseur,a, b;
     i=0;s='';n=0;
     tr='?';
     while (i<params.length) {
@@ -650,7 +648,7 @@ function f_liste(interpreteur,token,params) { /*******************************/
                                     return ret;
                                 }
                                 break;
-                case 'ENLEVE':  if (i==1) {
+                case 'ENLEVE':  if (i === 1) {
                                     if (params[1].est_liste()) {
                                         t = params[1].split();
                                         tr='liste';
@@ -658,9 +656,9 @@ function f_liste(interpreteur,token,params) { /*******************************/
                                     if (t.length>0) {
                                         s='';
                                         for (i=0;i<t.length;i++) {
-                                            if (t[i] != params[0].valeur) {
+                                            if (t[i] !== params[0].valeur) {
                                                 s=s+t[i];
-                                                if (tr=='liste') {s=s+' ';}
+                                                if (tr === 'liste') {s=s+' ';}
                                             }
                                         }
                                         s=s.trim();
@@ -674,14 +672,14 @@ function f_liste(interpreteur,token,params) { /*******************************/
                                 break;
                 case 'INVERSE': t = params[0].split();
                                 tr=params[0].type;
-                                s=''                                
+                                s='';                                
                                 for (i=t.length;i>0;i--) {
                                     s=s+t[i - 1];
                                     if (tr==='liste') {s=s+' ';}
                                 }
                                 s=s.trim(); 
                                 break;
-                case 'ITEM':    if (i==1) {
+                case 'ITEM':    if (i === 1) {
                                     t = params[1].split();
                                     params[0].valeur = Math.floor(params[0].valeur - 1);
                                     if ((params[0].valeur>=0) && (t.length>params[0].valeur)) {
@@ -725,28 +723,28 @@ function f_liste(interpreteur,token,params) { /*******************************/
                                 t1=t;
                               } else {
                                 for (j=0;j<3;j++) {
-                                    var a = parseFloat(t1[j]);
-                                    var b = parseFloat(t[j]);
+                                    a = parseFloat(t1[j]);
+                                    b = parseFloat(t[j]);
                                     t1[j]=Math.sqrt(0.5*Math.pow(a,2)+0.5*Math.pow(b,2));
                                     if (t1[j]<0) {t1[j]=0;}
                                     if (t1[j]>255) {t1[j]=255;}
                                     t1[j] = Math.round(t1[j]);
                                 }
                               }
-                              if (i==params.length-1) {
+                              if (i === params.length-1) {
                                 s='';
                                 for (j=0;j<3;j++) {s=s+' '+t1[j];}
                                 s=s.trim();
                               }
                               break;
                 case 'METSPREMIER' :
-                                if (i==1) {
+                                if (i === 1) {
                                     s=params[0].toText()+' '+params[1].valeur;
                                     tr='liste';
                                 }
                                 break;
                 case 'METSDERNIER' :
-                                if (i==1) {
+                                if (i === 1) {
                                     s=params[1].valeur+' '+params[0].toText();
                                     tr='liste';
                                 }
@@ -787,9 +785,9 @@ function f_liste(interpreteur,token,params) { /*******************************/
                                     s='';
                                     for (i=1;i<t.length;i++) {
                                         s=s+t[i];
-                                        if (tr=='liste') {s=s+' ';}
+                                        if (tr === 'liste') {s=s+' ';}
                                     }
-                                    s=s.trim();
+                                    s=s.trim(); 
                                 } else {
                                     ret = erreur(token,'evaluation',new Error().stack,params);
                                     ret.origine='eval';
@@ -805,7 +803,7 @@ function f_liste(interpreteur,token,params) { /*******************************/
                                     s='';
                                     for (i=0;i<t.length-1;i++) {
                                         s=s+t[i];
-                                        if (tr=='liste') {s=s+' ';}
+                                        if (tr === 'liste') {s=s+' ';}
                                     }
                                     s=s.trim();
                                 } else {
@@ -932,7 +930,7 @@ function f_math(interpreteur,token,params) { /********************************/
                                     break;
                     case 'LOG10':   s = Math.log10(params[i].valeur);
                                     break;
-                    case 'MOINS':   s = 0-params[i].valeur;
+                    case 'MOINS':   s = -params[i].valeur;
                                     break;
                     case 'PRODUIT':
                     case '*'    :   if (i===0) {s=params[i].valeur;} else {s = s * params[i].valeur;}
@@ -967,7 +965,7 @@ function f_math(interpreteur,token,params) { /********************************/
             i++;
         }
     }
-    if ( (tr=='nombre') && (isNaN(s) || (! isFinite(s)))) {
+    if ( (tr === 'nombre') && (isNaN(s) || (! isFinite(s)))) {
         ret = erreur(token,'evaluation',new Error().stack,params);
         ret.origine='eval';
         ret.cpl = interpreteur;
@@ -1041,17 +1039,17 @@ function f_si(interpreteur,token,params) { /**********************************/
     if (params[0].valeur) {
         interpreteur.enfant = new Interpreteur(interpreteur.ID,interpreteur.LWlogo,interpreteur);
         ret = interpreteur.enfant.interpreter(params[1].valeur,params[1].ligne,params[1].colonne);
-        if ((ret) && (ret.type=='erreur')) {
+        if ((ret) && (ret.type === 'erreur')) {
             return ret;
         }
         if (interpreteur.dernier_token.type!=='eop') {
             if (! interpreteur.analyseur_lexical.fin_analyse) { interpreteur.analyseur_lexical.back(1); }
         }
         interpreteur.dernier_token = new Token('eop','');
-    } else if (token.procedure.code=='SINON') {
+    } else if (token.procedure.code === 'SINON') {
         interpreteur.enfant = new Interpreteur(interpreteur.ID,interpreteur.LWlogo,interpreteur);
         ret=interpreteur.enfant.interpreter(params[2].valeur,params[2].ligne,params[2].colonne);
-        if ((ret) && (ret.type=='erreur')) {
+        if ((ret) && (ret.type === 'erreur')) {
             return ret;
         }
 
@@ -1080,7 +1078,7 @@ function f_stop(interpreteur,token,params) { /********************************/
         if (e.fonction) {c=e.fonction.numero;} else {c=token.numero;}
         if (token.procedure.code==='RETOURNE') {
             if (e.fonction) {
-                if (e.fonction.procedure.code[0]==='$') return
+                if (e.fonction.procedure.code[0]==='$') { return; }
             }
             if (e.parent) {e=e.parent;}
             if ((params.length>0) && (params[0])) {
@@ -1094,8 +1092,7 @@ function f_stop(interpreteur,token,params) { /********************************/
 /* Ordres pour la tortue *****************************************************/
 function f_tortue(interpreteur,token,params) { /******************************/
 
-    var v=[],i,j,ret;
-    var inter;
+    var v=[],i,j, ret, inter;
     interpreteur.ordre_tortue = true;
 
     switch (token.procedure.code) {
@@ -1105,15 +1102,15 @@ function f_tortue(interpreteur,token,params) { /******************************/
                             break;
         case 'FIXEPOS'  :
         case 'FCC'      :   j=2;
-                            if (token.procedure.code=='FCC') {j=3;}
+                            if (token.procedure.code === 'FCC') {j=3;}
                             inter = new Interpreteur(interpreteur.ID,interpreteur.LWlogo,interpreteur);
                             ret = inter.interpreter(params[0].valeur,params[0].ligne,params[0].colonne);
-                            if ((ret) && (ret.type=='erreur')) {
+                            if ((ret) && (ret.type === 'erreur')) {
                                 return ret;
                             }
                             while (! inter.termine) {
                                 ret = inter.interprete();
-                                if ((ret) && (ret.type=='erreur')) {
+                                if ((ret) && (ret.type === 'erreur')) {
                                     return ret;
                                 }
                             }
@@ -1121,7 +1118,7 @@ function f_tortue(interpreteur,token,params) { /******************************/
                             while ((i<j) && (inter.pile_arg.length>0)) {
                                 ret = inter.pile_arg.pop();
                                 if (ret) {
-                                    if (ret.type=='erreur') {return ret;}
+                                    if (ret.type === 'erreur') {return ret;}
                                     if (ret.est_nombre()) {
                                         v[i] = ret.valeur;
                                         i++;
@@ -1157,12 +1154,11 @@ function f_variable(interpreteur,token,params) { /****************************/
                             ret = interpreteur.valorise(ret);
                             ret.numero = token.numero;
                             return ret;
-                            break;
-            case 'DONNE':   if (i==1) { // Création d'une variable globale
+            case 'DONNE':   if (i === 1) { // Création d'une variable globale
                                 ret=new Token('variable',':'+params[0].nom);
                                 // On vérifie d'abord qu'aucune variable locale du même nom existe
                                 ret = interpreteur.valorise(ret,'L',params[1]);
-                                if (ret.type != 'erreur') {
+                                if (ret.type !== 'erreur') {
                                     ret.valeur=params[1].valeur;
                                     ret.src =  params[1];
                                     ret.numero = token.numero;
@@ -1181,7 +1177,7 @@ function f_variable(interpreteur,token,params) { /****************************/
                             }
                             break;
             case 'DONNELOCALE':
-                            if (i==1) {
+                            if (i === 1) {
                                 ret = new Token('variable',':'+params[0].nom,params[0].valeur,token.ligne,token.colonne);
                                 ret.valeur = params[1].valeur;
                                 ret.src =  params[1];

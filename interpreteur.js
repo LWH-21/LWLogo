@@ -64,7 +64,7 @@ Interpreteur.prototype.est_termine = function() { /****************************/
                 var ret;
                 while (this.pile_arg.length>0) {
                     ret = this.pile_arg.pop();
-                    if ((ret.exdata) && (ret.exdata=='!')) {
+                    if ((ret.exdata) && (ret.exdata === '!')) {
                         this.err = this.erreur(ret,'que faire',new Error().stack);
                         return this.termine;
                     }
@@ -80,17 +80,17 @@ Interpreteur.prototype.est_complet = function(i,t) { /**************************
     if (this.pile_op[i].procedure.nbarg===0) { return true; }
     if (this.pile_op[i].procedure.style==='p') {
         j = this.pile_arg.length - 1;
-        if (t==='maxi') { nbarg = this.pile_op[i].procedure.maxiarg; } else { nbarg = this.pile_op[i].procedure.nbarg; };
+        if (t==='maxi') { nbarg = this.pile_op[i].procedure.maxiarg; } else { nbarg = this.pile_op[i].procedure.nbarg; }
         while ((j>=0) && (this.pile_arg[j].numero>this.pile_op[i].numero)) { nbarg--; j--;}
         if (nbarg<=0) {return true; } // // L'instruction a tous ses paramètres 
-    } else if (this.pile_op[i].procedure.style=='i') {
+    } else if (this.pile_op[i].procedure.style ==='i') {
         j = this.pile_arg.length - 1;
         nbarg = this.pile_op[i].procedure.nbarg - 1;
         while ((j>=0) && (this.pile_arg[j].numero>this.pile_op[i].numero)) { nbarg--; j--;}
         if (nbarg<=0) { return true; }
     }  
     return false;  
-}
+}; // Interpreteur.est_complet(i,t)
 
 /* Teste si l'ajout du Token implique l'évalution de la pile */
 Interpreteur.prototype.evaluation_necessaire = function(t) { /*****************/
@@ -104,8 +104,8 @@ Interpreteur.prototype.evaluation_necessaire = function(t) { /*****************/
         case 'nombre':  i = this.pile_op.length -1;
                         j = this.pile_arg.length - 1;
                         if (! this.pile_op[i].procedure) { return false; } // Cas des parentheses
-                        if (this.pile_op[i].procedure.nbarg===0) { return true; }
-                        if ((j>=0) && (this.pile_op[i].type!='parenthese')) {
+                        if (this.pile_op[i].procedure.nbarg === 0) { return true; }
+                        if ((j>=0) && (this.pile_op[i].type !== 'parenthese')) {
                             if (this.est_complet(i,'maxi')) {return true;}
                         }
                         break;
@@ -121,7 +121,7 @@ Interpreteur.prototype.evaluation_necessaire = function(t) { /*****************/
                                 return false;
                             }
                             if (this.pile_op[i].procedure.nbarg===0) { return true; } // L'instruction précèdente n'attend pas de paramètres => evaluer
-                            if (this.pile_op[this.pile_op.length-1].procedure.priorite==t.procedure.priorite) {
+                            if (this.pile_op[this.pile_op.length-1].procedure.priorite === t.procedure.priorite) {
                                  if (this.est_complet(i,'maxi')) {return true;}
                             }
                         }
@@ -137,7 +137,6 @@ Interpreteur.prototype.evaluation_necessaire = function(t) { /*****************/
                                 return true;
                         }
                         return false;
-                        break;
         case 'eop' :
         case 'eof' :    return true;
                         break;
@@ -149,17 +148,17 @@ Interpreteur.prototype.evaluation_necessaire = function(t) { /*****************/
 
 Interpreteur.prototype.evaluer = function () { /*******************************/
 
-        var i,token;
+        var i, token, elt, arg, t;
 
         if (this.pile_op.length===0) {
             return this.erreur(null,'pile vide',new Error().stack);
         }
-        var elt = this.pile_op.pop();
+        elt = this.pile_op.pop();
         
         if (! elt) {
             return this.erreur(null,'element vide',new Error().stack);
         }
-        var arg=[];
+        arg=[];
         if (!elt.procedure) {return null;}
         if (elt.procedure.nbarg>0) { // L'operateur prend des arguments
             i = 0;
@@ -168,7 +167,7 @@ Interpreteur.prototype.evaluer = function () { /*******************************/
                         break;
                     } else {
                         token = this.pile_arg.pop();
-                        if (elt.procedure.style=='p') {
+                        if (elt.procedure.style === 'p') {
                             if (token.numero> elt.numero) {
                                 arg.unshift(token);
                                 i++;
@@ -190,7 +189,7 @@ Interpreteur.prototype.evaluer = function () { /*******************************/
         if (elt.procedure) {
             this.LWlogo.ligne(this,elt,arg);
             token = test_params(this,elt,arg);
-            if ((token) && (token.type=='erreur')) {return token;}
+            if ((token) && (token.type === 'erreur')) {return token;}
             token = elt.procedure.action(this,elt,arg);           
         } else { return this.erreur(token,'inconnu',new Error().stack); }
         if ((elt.procedure.ret>0) && (token)) {
@@ -199,20 +198,20 @@ Interpreteur.prototype.evaluer = function () { /*******************************/
         } else if ((elt.procedure.ret===0) && (elt.procedure.code[0]!=='$')) {
             i=0;
             while (i<this.pile_arg.length) {
-                if (this.pile_arg[i].exdata=='ignore') {
+                if (this.pile_arg[i].exdata === 'ignore') {
                     this.pile_arg.splice(i,1);
                 } else { i++; }
             }
         }
-        if ((this.pile_op.length==0) && (this.pile_arg.length>0)) {
+        if ((this.pile_op.length === 0) && (this.pile_arg.length>0)) {
             i=0;
             while (i<this.pile_arg.length) {
-                if (this.pile_arg[i].exdata=='ignore') {
+                if (this.pile_arg[i].exdata === 'ignore') {
                     this.pile_arg.splice(i,1);
                 } else { i++; }
             }
             if (this.pile_arg.length>0) {
-                var t = this.pile_arg[this.pile_arg.length-1];
+                t = this.pile_arg[this.pile_arg.length-1];
                 if (t.numero < elt.numero) {                   
                     return this.erreur(t,'que faire',new Error().stack);
                 }
@@ -224,13 +223,13 @@ Interpreteur.prototype.evaluer = function () { /*******************************/
 Interpreteur.prototype.exporte = function(code) { /***************************/
     var lex = new Analyse_lexicale(this.LWlogo);    
     return lex.exporte(this.LWlogo,code);        
-} // Interpreteur.exporte(code)
+}; // Interpreteur.exporte(code)
 
 Interpreteur.prototype.get = function(t) { /**********************************/
     var e = this, ret;
     while (e) {
         ret = e.contexte.get(t);
-        if ((ret) && (ret.type!='erreur')) { return ret; }
+        if ((ret) && (ret.type !== 'erreur')) { return ret; }
         e = e.parent;
     }
     ret = erreur(t,'variable non trouve',new Error().stack);
@@ -241,7 +240,7 @@ Interpreteur.prototype.get = function(t) { /**********************************/
 Interpreteur.prototype.importe = function(code) { /***************************/
     var lex = new Analyse_lexicale(this.LWlogo);    
     return lex.importe(this.LWlogo,code);        
-} // Interpreteur.importe(code)
+}; // Interpreteur.importe(code)
 
 Interpreteur.prototype.interprete = function() { /****************************/
 
@@ -268,13 +267,12 @@ Interpreteur.prototype.interprete = function() { /****************************/
                 }
                 this.enfant = null;
                 return null;
-            } else {
-                ret = this.enfant.interprete();
-                if (ret) {
-                    if (ret.type!=='erreur') { ret=null; }
-                }
-                return ret;
-            }
+            } 
+			ret = this.enfant.interprete();
+			if (ret) {
+				if (ret.type!=='erreur') { ret=null; }
+			}
+			return ret;
         }
 
         if (this.dernier_token) {
@@ -284,11 +282,9 @@ Interpreteur.prototype.interprete = function() { /****************************/
                     this.termine=true;
                     return ret;
                 }
-                else {
-                    t = this.valorise(ret);
-                    if (t.type==='erreur') { return ret; }                    
-                    this.pile_arg.push(t);
-                }
+				t = this.valorise(ret);
+				if (t.type==='erreur') { return ret; }                    
+				this.pile_arg.push(t);
             }
             continue;
         } else {
@@ -307,16 +303,16 @@ Interpreteur.prototype.interprete = function() { /****************************/
                }
 
                 // Tente de l'ajouter à l'expression en cours
-                if ((!ret) || (ret.type!='erreur')) {
+                if ((!ret) || (ret.type !== 'erreur')) {
                     this.dernier_token = t;
                 }
             }
             this.dernier_token = t;
             if ( (t) && (t.type!=='eof') && (!ret || ret.type!=='erreur')) {
 
-            } else   if ((ret) && (ret.type=='erreur')) {
+            } else   if ((ret) && (ret.type === 'erreur')) {
                 this.termine=true;
-                return t;
+                return t;  
             }
         }
     } while ((! this.ordre_tortue) && (!this.est_termine()) && (cpt<10) && (!debug) );
@@ -347,6 +343,7 @@ Interpreteur.prototype.token_suivant = function() { /*************************/
 }; // token suivant
 
 Interpreteur.prototype.traite_token = function() { /***************************/
+	var t, e;
     switch(this.dernier_token.type) {
     case 'parenthese' : if (this.dernier_token.nom==='(' ) {
                                 this.pile_op.push(this.dernier_token);
@@ -357,14 +354,13 @@ Interpreteur.prototype.traite_token = function() { /***************************/
                                this.dernier_token = null;
                                return null;
                             }
-                            var e = this.pile_op[this.pile_op.length - 1];
-                            if ((e.type!=='parenthese') || (e.nom != '(')) {
+                            e = this.pile_op[this.pile_op.length - 1];
+                            if ((e.type!=='parenthese') || (e.nom !== '(')) {
                                 return this.evaluer();
-                            } else {
-                                e = this.pile_op.pop();
-                                this.dernier_token = null;
-                                return null;
-                            }
+                            } 
+							e = this.pile_op.pop();
+							this.dernier_token = null;
+							return null;
                         }
                         break;
     case 'symbole'  :
@@ -372,46 +368,38 @@ Interpreteur.prototype.traite_token = function() { /***************************/
     case 'liste'    :
     case 'nombre'   :  if (this.evaluation_necessaire(this.dernier_token)) {
                             return this.evaluer();
-                        } else {
-                            var t = this.valorise(this.dernier_token);
-                            if (t.type==='erreur') { return t; }                            
-                            this.pile_arg.push(t);
-                            this.dernier_token = null;
                         }
+						t = this.valorise(this.dernier_token);
+						if (t.type==='erreur') { return t; }                            
+						this.pile_arg.push(t);
+						this.dernier_token = null;
                         break;
     case 'evenement':
     case 'mot'      :
     case 'operateur':  if (this.evaluation_necessaire(this.dernier_token)) {
                             return this.evaluer();
-                        } else {
-                            this.pile_op.push(this.dernier_token);
-                            this.dernier_token = null;
-                        }
+                        } 
+						this.pile_op.push(this.dernier_token);
+						this.dernier_token = null;
                         break;
     case 'eop' :
     case 'eof' :    if (this.evaluation_necessaire(this.dernier_token)) {
                             return this.evaluer();
-                    } else {
-                        this.dernier_token = null;
-                    }
+                    } 
+                    this.dernier_token = null;
                     break;
     case 'eol' :    if (this.evaluation_necessaire(this.dernier_token)) {
                             return this.evaluer();
-                    } else {
-                        this.dernier_token = null;
                     }
-                    break;
+                    this.dernier_token = null;break;
     case 'erreur' : return this.dernier_token;
-                    break;
     default    :    return this.erreur(this.dernier_token,'inconnu',new Error().stack);
-                    break;
-
     }
     return null;
-}; // Traite_token
+}; // Interpreteur.Traite_token
 
 Interpreteur.prototype.valorise= function(token,ctx,maj) { /*******************/
-    var ret,e,trouve=false;
+    var ret, e, trouve=false;
     if (!token) { return this.erreur(token,'nul',new Error().stack);}
     if (!ctx) { ctx='T'; }
     if (token.type === 'variable') {
@@ -420,14 +408,13 @@ Interpreteur.prototype.valorise= function(token,ctx,maj) { /*******************/
             /* ctx = contexte si (L) LOCAL on ne recherche que dans le local,
                               si (G) GLOBAL on ne recherche que dans le global,
                               si (T) TOUT on recherche dans local + global*/
-            if  ((ctx==='T') || (ctx==='G' && (! e.parent)) || (ctx=='L' && (e.parent))) {
-                    ret = e.contexte.get(token);
-                    if (ret.type==='erreur') { trouve = false ; } else {
-                        token.valeur = ret.valeur;
-                        if (maj) { ret.valeur = maj.valeur; }
-                        if (ret.src) { token.src = ret.src; }
-                        return token.clone();
-                        trouve=true;
+            if  ((ctx === 'T') || (ctx === 'G' && (! e.parent)) || (ctx === 'L' && (e.parent))) {
+				ret = e.contexte.get(token);
+				if (ret.type==='erreur') { trouve = false ; } else {
+					token.valeur = ret.valeur;
+					if (maj) { ret.valeur = maj.valeur; }
+					if (ret.src) { token.src = ret.src; }
+					return token.clone();
                 }
             }
             e = e.parent;
